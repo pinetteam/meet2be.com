@@ -1,0 +1,1949 @@
+---
+alwaysApply: true
+---
+# ELITE PROJECT DEVELOPMENT STANDARDS
+# ZERO-TOLERANCE ENFORCEMENT - WORLD-CLASS EXCELLENCE MANDATORY
+# SENIOR ARCHITECT LEVEL - FORTUNE 500 STANDARDS
+
+## 🚨 ABSOLUTE TECHNOLOGY STACK - BREACH = IMMEDIATE REJECTION
+MANDATORY STACK - NO EXCEPTIONS:
+- Laravel 12 ONLY (No Symfony/CodeIgniter/CakePHP)
+- FluxUI Pro + Alpine.js ONLY (ZERO React/Vue/Livewire/Inertia)
+- Alpine.js 3.x ONLY (No jQuery/Stimulus/Vanilla JS for interactions)
+- FontAwesome Pro ONLY (No Heroicons/Lucide/Tabler)
+- Tailwind CSS ONLY (No Bootstrap/Bulma/Foundation/Custom CSS)
+- MySQL 8.0+/PostgreSQL 15+ ONLY (No MongoDB/SQLite in production)
+- Redis ONLY (No Memcached/File cache)
+- Vite ONLY (No Webpack/Rollup/Parcel/Mix)
+
+## ⚡ ELITE CODING ASSISTANT - FORTRESS-LEVEL STANDARDS
+
+### CORE COMMANDMENTS - VIOLATE = INSTANT FAILURE
+1. ZERO TECHNICAL DEBT - Every line must be production-grade
+2. COMPLETE OWNERSHIP - Take full responsibility for all solutions
+3. SURGICAL PRECISION - Match requirements with mathematical accuracy
+4. PRESENT-FOCUSED - No future speculation or over-engineering
+5. DRY/KISS RELIGIOUS - Absolute adherence without compromise
+6. MINIMAL FOOTPRINT - Maximum impact with minimum code
+7. SELF-DOCUMENTATION - Code explains itself completely
+
+### TECHNICAL LAWS - BREAK = IMMEDIATE TERMINATION
+- LAW 1: NO COMMENTS EVER - Code must be self-explanatory
+- LAW 2: ZERO BOILERPLATE - Every line serves a purpose
+- LAW 3: DESCRIPTIVE NAMING - Variables/functions explain their intent
+- LAW 4: INDUSTRY PATTERNS - Follow established best practices religiously
+- LAW 5: MAXIMUM REUSE - Build once, use everywhere
+- LAW 6: PERFORMANCE FIRST - Fast code that remains readable
+- LAW 7: ELEGANT ERRORS - Handle edge cases gracefully
+
+## 🏗️ ARCHITECTURAL COMMANDMENTS
+
+### SINGLE RESPONSIBILITY ENFORCEMENT
+# ✅ FORTRESS STANDARD - One purpose, perfect execution
+class UserCreator
+{
+    public function create(array $data): User
+    {
+        return User::create($data);
+    }
+}
+
+class UserValidator
+{
+    public function validate(array $data): bool
+    {
+        return validator($data, $this->rules())->passes();
+    }
+}
+
+# ❌ INSTANT REJECTION - Multiple responsibilities
+class UserManager with multiple methods for different purposes
+
+### DRY PRINCIPLE - ZERO TOLERANCE FOR REPETITION
+# ✅ FORTRESS STANDARD - Write once, inherit everywhere
+abstract class BaseController extends Controller
+{
+    protected function success($data = null, string $message = 'Success', int $code = 200)
+    {
+        return response()->json(['success' => true, 'message' => $message, 'data' => $data], $code);
+    }
+    
+    protected function error(string $message = 'Error', int $code = 400, $errors = null)
+    {
+        return response()->json(['success' => false, 'message' => $message, 'errors' => $errors], $code);
+    }
+}
+
+class UserController extends BaseController
+{
+    public function store(StoreUserRequest $request)
+    {
+        $user = User::create($request->validated());
+        return $this->success($user, 'User created', 201);
+    }
+}
+
+# ❌ INSTANT REJECTION - Code repetition across controllers
+
+### KISS PRINCIPLE - COMPLEXITY = FAILURE
+# ✅ FORTRESS STANDARD - Simple, direct, effective
+class UserService
+{
+    public function create(array $data): User
+    {
+        return User::create($data);
+    }
+    
+    public function findById(int $id): ?User
+    {
+        return User::find($id);
+    }
+}
+
+# ❌ INSTANT REJECTION - Unnecessary complexity like UserManagementFactoryServiceProviderInterface
+
+## 🎨 FLUXUI + ALPINE.JS - SURGICAL PRECISION
+
+### COMPONENT ARCHITECTURE - MILITARY PRECISION
+# ✅ FORTRESS STANDARD - Minimal, reusable, perfect
+<x-form-wrapper :action="$action" :title="$title">
+    <x-input name="name" :value="$user->name" />
+    <x-input name="email" :value="$user->email" type="email" />
+    <x-submit-button>Update</x-submit-button>
+</x-form-wrapper>
+
+# Component: form-wrapper.blade.php
+<flux:card>
+    <flux:header>
+        <flux:heading>{{ $title }}</flux:heading>
+    </flux:header>
+    <flux:form action="{{ $action }}" method="POST" class="space-y-4">
+        @csrf
+        {{ $slot }}
+    </flux:form>
+</flux:card>
+
+# ❌ INSTANT REJECTION - Repeated markup, no reusability
+
+### ALPINE.JS - ZERO-WASTE IMPLEMENTATION
+# ✅ FORTRESS STANDARD - Minimal, focused, reusable
+Alpine.store('api', {
+    async call(url, options = {}) {
+        const response = await fetch(url, {
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf() },
+            ...options
+        });
+        if (!response.ok) throw new Error(`API Error: ${response.status}`);
+        return response.json();
+    }
+});
+
+Alpine.data('form', (endpoint) => ({
+    data: {},
+    loading: false,
+    errors: {},
+    
+    async submit() {
+        this.loading = true;
+        this.errors = {};
+        try {
+            await this.$store.api.call(endpoint, { method: 'POST', body: JSON.stringify(this.data) });
+            this.data = {};
+        } catch (e) {
+            this.errors = e.response?.data?.errors || {};
+        } finally {
+            this.loading = false;
+        }
+    }
+}));
+
+# ❌ INSTANT REJECTION - Verbose, complex, unreusable components
+
+## 🔒 SECURITY - FORTRESS-LEVEL PROTECTION
+
+### REQUEST VALIDATION - BULLETPROOF
+# ✅ FORTRESS STANDARD - Comprehensive, secure, clean
+class StoreUserRequest extends FormRequest
+{
+    public function rules(): array
+    {
+        return [
+            'name' => 'required|string|min:2|max:50|regex:/^[a-zA-Z\s]+$/',
+            'email' => 'required|email:rfc,dns|unique:users,email',
+            'password' => ['required', 'string', 'min:12', new SecurePasswordRule()],
+            'terms' => 'required|accepted'
+        ];
+    }
+}
+
+# ❌ INSTANT REJECTION - Weak validation like basic required rules only
+
+### CUSTOM RULES - UNBREACHABLE
+# ✅ FORTRESS STANDARD - Bulletproof password security
+class SecurePasswordRule implements Rule
+{
+    public function passes($attribute, $value): bool
+    {
+        return strlen($value) >= 12 &&
+               preg_match('/[A-Z]/', $value) &&
+               preg_match('/[a-z]/', $value) &&
+               preg_match('/\d/', $value) &&
+               preg_match('/[!@#$%^&*]/', $value) &&
+               !$this->isCommon($value);
+    }
+    
+    private function isCommon(string $password): bool
+    {
+        return in_array(strtolower($password), ['password123', 'admin123', 'welcome123']);
+    }
+}
+
+# ❌ INSTANT REJECTION - Weak security implementations
+
+## 🆔 UUID STANDARDS - MANDATORY IMPLEMENTATION
+
+### UUID ENFORCEMENT - NEVER USE AUTO-INCREMENT ID
+- ALL models MUST use UUID as primary key
+- NEVER use auto-increment integer IDs
+- UUID version 4 (random) MANDATORY
+- All foreign keys MUST be UUID type
+
+### MODEL UUID IMPLEMENTATION
+```php
+// MANDATORY UUID trait usage
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+
+class User extends Model
+{
+    use HasUuids;
+    
+    protected $keyType = 'string';
+    public $incrementing = false;
+}
+```
+
+### MIGRATION UUID STRUCTURE
+```php
+// PRIMARY KEY - Always UUID
+$table->uuid('id')->primary();
+
+// FOREIGN KEYS - Always UUID
+$table->uuid('user_id');
+$table->foreign('user_id')->references('id')->on('users');
+
+// NEVER use these:
+// $table->id(); 
+// $table->bigIncrements('id');
+// $table->foreignId('user_id');
+```
+
+### ROUTE MODEL BINDING WITH UUID
+```php
+// Routes automatically work with UUID
+Route::resource('users', Panel\User\UserController::class);
+// /panel/users/550e8400-e29b-41d4-a716-446655440000
+
+// Controller methods receive UUID models
+public function show(User $user): View
+{
+    // $user is loaded by UUID automatically
+    return view('panel.user.show', compact('user'));
+}
+```
+
+### FACTORY UUID GENERATION
+```php
+// Factories automatically generate UUIDs
+class UserFactory extends Factory
+{
+    public function definition(): array
+    {
+        return [
+            'name' => $this->faker->name(),
+            'email' => $this->faker->email(),
+            // UUID automatically generated by HasUuids trait
+        ];
+    }
+}
+```
+
+### DATABASE SCHEMA STANDARDS
+```sql
+-- PRIMARY KEYS
+id CHAR(36) PRIMARY KEY
+
+-- FOREIGN KEYS  
+user_id CHAR(36)
+order_id CHAR(36)
+product_id CHAR(36)
+
+-- INDEXES
+KEY idx_users_email (email)
+KEY idx_orders_user_id (user_id)
+KEY idx_order_items_order_id (order_id)
+```
+
+### API RESOURCE UUID HANDLING
+```php
+class UserResource extends JsonResource
+{
+    public function toArray($request): array
+    {
+        return [
+            'id' => $this->id, // UUID string
+            'name' => $this->name,
+            'email' => $this->email,
+            'created_at' => $this->created_at,
+        ];
+    }
+}
+```
+
+### ALPINE.JS UUID USAGE
+```javascript
+Alpine.data('userForm', () => ({
+    userId: null, // Will contain UUID string
+    
+    async loadUser(uuid) {
+        const response = await fetch(`/api/users/${uuid}`);
+        this.user = await response.json();
+    },
+    
+    async deleteUser(uuid) {
+        await fetch(`/api/users/${uuid}`, { method: 'DELETE' });
+    }
+}));
+```
+
+## 🚫 UUID VIOLATIONS - INSTANT REJECTION
+- Auto-increment integer IDs
+- Missing HasUuids trait
+- Foreign keys as integers
+- Manual UUID generation
+- $table->id() in migrations
+- $table->foreignId() usage
+
+## ⚡ UUID MIGRATION PATTERN
+```php
+// CORRECT migration structure
+Schema::create('users', function (Blueprint $table) {
+    $table->uuid('id')->primary();
+    $table->string('name');
+    $table->string('email')->unique();
+    $table->timestamp('email_verified_at')->nullable();
+    $table->string('password');
+    $table->rememberToken();
+    $table->timestamps();
+});
+
+Schema::create('orders', function (Blueprint $table) {
+    $table->uuid('id')->primary();
+    $table->uuid('user_id');
+    $table->decimal('total', 10, 2);
+    $table->string('status');
+    $table->timestamps();
+    
+    $table->foreign('user_id')->references('id')->on('users');
+    $table->index('user_id');
+});
+```
+
+### MANDATORY CRUD METHODS - NEVER DEVIATE
+- index() create() store() show() edit() update() destroy() ONLY
+- ALWAYS use Route::resource() - NEVER manual routes
+- ZERO custom method names (list, add, save, modify, remove, delete)
+
+### HIERARCHICAL NAMESPACE STRUCTURE - ABSOLUTE COMPLIANCE
+```
+Controllers:     Panel/User/UserController
+Views:          panel/user/index.blade.php
+Requests:       Panel/User/StoreUserRequest
+Resources:      Panel/User/UserResource
+Routes:         panel.users.index
+JS Components:  panel/user/user-form.js
+```
+
+### CONTROLLER ORGANIZATION
+```
+app/Http/Controllers/
+├── Panel/
+│   ├── Dashboard/DashboardController
+│   ├── User/UserController
+│   ├── Order/OrderController
+│   ├── Product/ProductController
+│   └── Payment/PaymentController
+├── Admin/
+│   ├── Dashboard/DashboardController
+│   ├── User/UserController
+│   └── System/SystemSettingController
+├── Api/V1/
+│   ├── Auth/LoginController
+│   ├── User/UserController
+│   └── Order/OrderController
+└── Auth/
+    ├── LoginController
+    └── RegisterController
+```
+
+### VIEW ORGANIZATION
+```
+resources/views/
+├── panel/
+│   ├── dashboard/index.blade.php
+│   ├── user/[index,create,show,edit].blade.php
+│   ├── order/[index,create,show,edit].blade.php
+│   └── product/[index,create,show,edit].blade.php
+├── admin/
+│   ├── dashboard/index.blade.php
+│   ├── user/[index,create,show,edit].blade.php
+│   └── system/[index,create,show,edit].blade.php
+└── auth/
+    ├── login.blade.php
+    └── register.blade.php
+```
+
+### REQUEST ORGANIZATION
+```
+app/Http/Requests/
+├── Panel/User/[Store,Update]UserRequest
+├── Panel/Order/[Store,Update]OrderRequest
+├── Admin/User/[Store,Update]UserRequest
+└── Api/V1/User/[Store,Update]UserRequest
+```
+
+### RESOURCE ORGANIZATION
+```
+app/Http/Resources/
+├── Panel/User/[User]Resource
+├── Admin/User/[AdminUser]Resource
+└── Api/V1/User/[User]Resource
+```
+
+### ROUTE STANDARDS
+```php
+Route::prefix('panel')->name('panel.')->group(function() {
+    Route::resource('users', Panel\User\UserController::class);
+    Route::resource('orders', Panel\Order\OrderController::class);
+});
+
+Route::prefix('admin')->name('admin.')->group(function() {
+    Route::resource('users', Admin\User\UserController::class);
+});
+
+Route::prefix('api/v1')->name('api.v1.')->group(function() {
+    Route::resource('users', Api\V1\User\UserController::class);
+});
+```
+
+### ALPINE.JS ORGANIZATION
+```
+resources/js/components/
+├── panel/user/user-form.js
+├── admin/user/user-management.js
+└── shared/forms/input.js
+```
+
+## 🚫 ABSOLUTE VIOLATIONS - INSTANT REJECTION
+- Custom CRUD method names
+- Manual route definitions
+- Flat directory structure
+- Missing namespace hierarchy
+- Non-Laravel standard naming
+- Input creation without proper Request validation
+- Breaking hierarchical organization
+
+## ⚡ ENFORCEMENT RULES
+- MUST use Route::resource() for all CRUD operations
+- MUST follow hierarchical namespace structure
+- MUST create Request classes before input handling
+- MUST maintain consistent namespace across all layers
+- ZERO tolerance for Laravel standard violations
+
+### ROOT DIRECTORY STRUCTURE - GLOBAL STANDARDS
+```
+project-root/
+├── .cursorrules                 # Development standards enforcement
+├── .env.example                 # Environment template
+├── .gitignore                   # Version control exclusions
+├── .phpcs.xml                   # PHP CodeSniffer configuration
+├── .phpstan.neon               # Static analysis configuration
+├── artisan                     # Laravel command-line interface
+├── composer.json               # PHP dependencies
+├── composer.lock               # Dependency lock file
+├── package.json                # Node.js dependencies
+├── package-lock.json           # Node dependency lock file
+├── phpunit.xml                 # Testing configuration
+├── README.md                   # Project documentation
+├── tailwind.config.js          # Tailwind CSS configuration
+├── vite.config.js              # Vite build configuration
+├── app/                        # Application core (detailed below)
+├── bootstrap/                  # Framework bootstrap files
+├── config/                     # Configuration files
+├── database/                   # Database files (detailed below)
+├── public/                     # Web server document root
+├── resources/                  # Raw assets and views (detailed below)
+├── routes/                     # Route definitions (detailed below)
+├── storage/                    # Generated files and logs
+├── tests/                      # Test files (detailed below)
+└── vendor/                     # Composer dependencies
+```
+
+### APP DIRECTORY - ENTERPRISE STRUCTURE
+```
+app/
+├── Console/                    # Artisan commands
+│   ├── Commands/              # Custom command classes
+│   │   ├── Data/             # Data processing commands
+│   │   ├── Maintenance/      # System maintenance commands
+│   │   └── User/             # User management commands
+│   └── Kernel.php            # Command scheduler
+├── Events/                    # Domain events
+│   ├── Auth/                 # Authentication events
+│   ├── Order/                # Order-related events
+│   ├── Payment/              # Payment events
+│   └── User/                 # User events
+├── Exceptions/               # Custom exceptions
+│   ├── Auth/                # Authentication exceptions
+│   ├── Business/            # Business logic exceptions
+│   ├── Handler.php          # Global exception handler
+│   ├── Payment/             # Payment exceptions
+│   └── Validation/          # Validation exceptions
+├── Http/                    # HTTP layer
+│   ├── Controllers/         # Request controllers (detailed below)
+│   ├── Middleware/          # HTTP middleware
+│   │   ├── Auth/           # Authentication middleware
+│   │   ├── Cors/           # CORS handling
+│   │   ├── RateLimit/      # Rate limiting
+│   │   └── Security/       # Security middleware
+│   ├── Requests/           # Form request validation (detailed below)
+│   ├── Resources/          # API resource transformers (detailed below)
+│   └── Kernel.php          # HTTP kernel
+├── Jobs/                   # Queued jobs
+│   ├── Email/             # Email sending jobs
+│   ├── Export/            # Data export jobs
+│   ├── Import/            # Data import jobs
+│   └── Payment/           # Payment processing jobs
+├── Listeners/             # Event listeners
+│   ├── Auth/             # Authentication listeners
+│   ├── Notification/     # Notification listeners
+│   └── User/             # User event listeners
+├── Mail/                 # Email classes
+│   ├── Auth/            # Authentication emails
+│   ├── Notification/    # System notifications
+│   └── User/            # User-related emails
+├── Models/              # Eloquent models (detailed below)
+├── Notifications/       # Notification classes
+│   ├── Database/       # Database notifications
+│   ├── Email/          # Email notifications
+│   └── Sms/            # SMS notifications
+├── Observers/          # Model observers
+│   ├── User/          # User model observers
+│   └── Order/         # Order model observers
+├── Policies/          # Authorization policies
+│   ├── User/         # User authorization
+│   └── Order/        # Order authorization
+├── Providers/         # Service providers
+│   ├── AppServiceProvider.php        # Application services
+│   ├── AuthServiceProvider.php       # Authentication services
+│   ├── BroadcastServiceProvider.php  # Broadcasting services
+│   ├── EventServiceProvider.php      # Event services
+│   └── RouteServiceProvider.php      # Route services
+├── Rules/             # Custom validation rules
+│   ├── Auth/         # Authentication rules
+│   ├── Business/     # Business logic rules
+│   └── Payment/      # Payment validation rules
+├── Services/         # Business logic services (detailed below)
+└── Traits/           # Reusable traits
+    ├── Database/     # Database-related traits
+    ├── File/         # File handling traits
+    └── Validation/   # Validation traits
+```
+
+### CONTROLLERS DIRECTORY - DOMAIN ORGANIZATION
+```
+app/Http/Controllers/
+├── Api/                      # API controllers
+│   ├── V1/                  # API version 1
+│   │   ├── Auth/           # Authentication endpoints
+│   │   │   ├── LoginController.php
+│   │   │   ├── LogoutController.php
+│   │   │   ├── RegisterController.php
+│   │   │   └── ResetPasswordController.php
+│   │   ├── User/           # User management endpoints
+│   │   │   ├── UserController.php
+│   │   │   ├── UserProfileController.php
+│   │   │   └── UserPreferenceController.php
+│   │   ├── Order/          # Order management endpoints
+│   │   │   ├── OrderController.php
+│   │   │   ├── OrderItemController.php
+│   │   │   └── OrderStatusController.php
+│   │   └── Payment/        # Payment endpoints
+│   │       ├── PaymentController.php
+│   │       ├── PaymentMethodController.php
+│   │       └── RefundController.php
+│   └── V2/                 # API version 2 (future)
+├── Admin/                  # Administrative controllers
+│   ├── DashboardController.php
+│   ├── User/              # Admin user management
+│   │   ├── UserController.php
+│   │   ├── UserRoleController.php
+│   │   └── UserPermissionController.php
+│   ├── Order/             # Admin order management
+│   │   ├── OrderController.php
+│   │   └── OrderReportController.php
+│   └── System/            # System administration
+│       ├── SettingController.php
+│       ├── LogController.php
+│       └── BackupController.php
+├── Auth/                  # Authentication controllers
+│   ├── LoginController.php
+│   ├── LogoutController.php
+│   ├── RegisterController.php
+│   ├── ResetPasswordController.php
+│   ├── VerificationController.php
+│   └── TwoFactorController.php
+├── User/                  # User-facing controllers
+│   ├── DashboardController.php
+│   ├── ProfileController.php
+│   ├── PreferenceController.php
+│   └── NotificationController.php
+├── Order/                 # Order management controllers
+│   ├── OrderController.php
+│   ├── OrderItemController.php
+│   ├── OrderHistoryController.php
+│   └── OrderTrackingController.php
+├── Payment/               # Payment controllers
+│   ├── PaymentController.php
+│   ├── PaymentMethodController.php
+│   ├── RefundController.php
+│   └── InvoiceController.php
+├── Controller.php         # Base controller
+└── HomeController.php     # Home page controller
+```
+
+### REQUESTS DIRECTORY - VALIDATION ORGANIZATION
+```
+app/Http/Requests/
+├── Auth/                  # Authentication requests
+│   ├── LoginRequest.php
+│   ├── RegisterRequest.php
+│   ├── ResetPasswordRequest.php
+│   └── TwoFactorRequest.php
+├── User/                  # User management requests
+│   ├── StoreUserRequest.php
+│   ├── UpdateUserRequest.php
+│   ├── UpdateProfileRequest.php
+│   └── ChangePasswordRequest.php
+├── Order/                 # Order requests
+│   ├── StoreOrderRequest.php
+│   ├── UpdateOrderRequest.php
+│   ├── AddOrderItemRequest.php
+│   └── CancelOrderRequest.php
+├── Payment/               # Payment requests
+│   ├── ProcessPaymentRequest.php
+│   ├── AddPaymentMethodRequest.php
+│   ├── RefundRequest.php
+│   └── UpdateBillingRequest.php
+└── Admin/                 # Administrative requests
+    ├── User/             # Admin user requests
+    │   ├── CreateUserRequest.php
+    │   ├── UpdateUserRequest.php
+    │   └── AssignRoleRequest.php
+    └── System/           # System requests
+        ├── UpdateSettingRequest.php
+        └── BackupRequest.php
+```
+
+### RESOURCES DIRECTORY - API TRANSFORMERS
+```
+app/Http/Resources/
+├── Auth/                  # Authentication resources
+│   ├── AuthUserResource.php
+│   └── TokenResource.php
+├── User/                  # User resources
+│   ├── UserResource.php
+│   ├── UserProfileResource.php
+│   ├── UserPreferenceResource.php
+│   └── UserCollection.php
+├── Order/                 # Order resources
+│   ├── OrderResource.php
+│   ├── OrderItemResource.php
+│   ├── OrderStatusResource.php
+│   └── OrderCollection.php
+├── Payment/               # Payment resources
+│   ├── PaymentResource.php
+│   ├── PaymentMethodResource.php
+│   ├── RefundResource.php
+│   └── InvoiceResource.php
+└── Admin/                 # Administrative resources
+    ├── AdminUserResource.php
+    ├── SystemLogResource.php
+    └── ReportResource.php
+```
+
+### MODELS DIRECTORY - DOMAIN ENTITIES
+```
+app/Models/
+├── Auth/                  # Authentication models
+│   ├── PersonalAccessToken.php
+│   ├── PasswordReset.php
+│   └── TwoFactorAuth.php
+├── User/                  # User domain models
+│   ├── User.php
+│   ├── UserProfile.php
+│   ├── UserPreference.php
+│   ├── UserRole.php
+│   └── UserPermission.php
+├── Order/                 # Order domain models
+│   ├── Order.php
+│   ├── OrderItem.php
+│   ├── OrderStatus.php
+│   └── OrderTracking.php
+├── Payment/               # Payment domain models
+│   ├── Payment.php
+│   ├── PaymentMethod.php
+│   ├── Refund.php
+│   ├── Invoice.php
+│   └── Transaction.php
+├── Product/               # Product domain models
+│   ├── Product.php
+│   ├── ProductCategory.php
+│   ├── ProductVariant.php
+│   └── ProductImage.php
+├── System/                # System models
+│   ├── Setting.php
+│   ├── Log.php
+│   ├── Backup.php
+│   └── Notification.php
+└── Traits/                # Model traits
+    ├── HasUuid.php
+    ├── HasSlug.php
+    ├── Searchable.php
+    └── Auditable.php
+```
+
+### SERVICES DIRECTORY - BUSINESS LOGIC
+```
+app/Services/
+├── Auth/                  # Authentication services
+│   ├── AuthService.php
+│   ├── TwoFactorService.php
+│   └── PasswordResetService.php
+├── User/                  # User services
+│   ├── UserService.php
+│   ├── UserProfileService.php
+│   ├── UserRoleService.php
+│   └── UserNotificationService.php
+├── Order/                 # Order services
+│   ├── OrderService.php
+│   ├── OrderProcessingService.php
+│   ├── OrderTrackingService.php
+│   └── OrderCalculationService.php
+├── Payment/               # Payment services
+│   ├── PaymentService.php
+│   ├── PaymentGatewayService.php
+│   ├── RefundService.php
+│   └── InvoiceService.php
+├── Product/               # Product services
+│   ├── ProductService.php
+│   ├── InventoryService.php
+│   └── PricingService.php
+├── Notification/          # Notification services
+│   ├── EmailService.php
+│   ├── SmsService.php
+│   └── PushNotificationService.php
+├── File/                  # File handling services
+│   ├── FileUploadService.php
+│   ├── ImageProcessingService.php
+│   └── DocumentService.php
+├── Report/                # Reporting services
+│   ├── ReportService.php
+│   ├── AnalyticsService.php
+│   └── ExportService.php
+└── External/              # External API services
+    ├── PaymentGateway/   # Payment gateway integrations
+    │   ├── StripeService.php
+    │   ├── PayPalService.php
+    │   └── SquareService.php
+    ├── Shipping/         # Shipping services
+    │   ├── FedExService.php
+    │   ├── UpsService.php
+    │   └── DhlService.php
+    └── Social/           # Social media integrations
+        ├── FacebookService.php
+        ├── TwitterService.php
+        └── InstagramService.php
+```
+
+### DATABASE DIRECTORY - DATA STRUCTURE
+```
+database/
+├── factories/             # Model factories for testing
+│   ├── Auth/             # Authentication factories
+│   │   └── UserFactory.php
+│   ├── Order/            # Order factories
+│   │   ├── OrderFactory.php
+│   │   └── OrderItemFactory.php
+│   ├── Payment/          # Payment factories
+│   │   ├── PaymentFactory.php
+│   │   └── PaymentMethodFactory.php
+│   └── Product/          # Product factories
+│       ├── ProductFactory.php
+│       └── ProductCategoryFactory.php
+├── migrations/           # Database migrations (detailed below)
+├── seeders/              # Database seeders
+│   ├── DatabaseSeeder.php          # Main seeder
+│   ├── Production/                 # Production seeders
+│   │   ├── UserRoleSeeder.php
+│   │   ├── SystemSettingSeeder.php
+│   │   └── CountrySeeder.php
+│   ├── Development/                # Development seeders
+│   │   ├── UserSeeder.php
+│   │   ├── ProductSeeder.php
+│   │   └── OrderSeeder.php
+│   └── Testing/                    # Testing seeders
+│       ├── TestUserSeeder.php
+│       └── TestDataSeeder.php
+└── schema/               # Database schema documentation
+    ├── mysql.sql        # MySQL schema
+    ├── postgresql.sql   # PostgreSQL schema
+    └── erd.md          # Entity Relationship Diagram
+```
+
+### MIGRATIONS NAMING - CHRONOLOGICAL PRECISION
+```
+database/migrations/
+├── 2024_01_01_000000_create_users_table.php
+├── 2024_01_01_000001_create_user_profiles_table.php
+├── 2024_01_01_000002_create_user_preferences_table.php
+├── 2024_01_01_000003_create_user_roles_table.php
+├── 2024_01_01_000004_create_user_permissions_table.php
+├── 2024_01_01_000005_create_role_user_pivot_table.php
+├── 2024_01_01_000006_create_permission_role_pivot_table.php
+├── 2024_01_02_000000_create_password_resets_table.php
+├── 2024_01_02_000001_create_personal_access_tokens_table.php
+├── 2024_01_02_000002_create_two_factor_auths_table.php
+├── 2024_01_03_000000_create_products_table.php
+├── 2024_01_03_000001_create_product_categories_table.php
+├── 2024_01_03_000002_create_product_variants_table.php
+├── 2024_01_03_000003_create_product_images_table.php
+├── 2024_01_04_000000_create_orders_table.php
+├── 2024_01_04_000001_create_order_items_table.php
+├── 2024_01_04_000002_create_order_statuses_table.php
+├── 2024_01_04_000003_create_order_tracking_table.php
+├── 2024_01_05_000000_create_payments_table.php
+├── 2024_01_05_000001_create_payment_methods_table.php
+├── 2024_01_05_000002_create_refunds_table.php
+├── 2024_01_05_000003_create_invoices_table.php
+├── 2024_01_05_000004_create_transactions_table.php
+├── 2024_01_06_000000_create_notifications_table.php
+├── 2024_01_06_000001_create_system_logs_table.php
+├── 2024_01_06_000002_create_system_settings_table.php
+├── 2024_01_06_000003_create_backups_table.php
+├── 2024_01_07_000000_add_indexes_to_users_table.php
+├── 2024_01_07_000001_add_indexes_to_orders_table.php
+├── 2024_01_07_000002_add_indexes_to_products_table.php
+├── 2024_01_08_000000_add_foreign_keys_to_order_items_table.php
+├── 2024_01_08_000001_add_foreign_keys_to_payments_table.php
+└── 2024_01_09_000000_add_full_text_search_indexes.php
+```
+
+### RESOURCES DIRECTORY - FRONTEND ASSETS
+```
+resources/
+├── css/                  # Stylesheets
+│   ├── app.css          # Main stylesheet entry point
+│   ├── components/      # Component-specific styles
+│   │   ├── auth/       # Authentication component styles
+│   │   ├── user/       # User component styles
+│   │   ├── order/      # Order component styles
+│   │   └── admin/      # Admin component styles
+│   ├── layouts/        # Layout-specific styles
+│   │   ├── app.css     # Main application layout
+│   │   ├── admin.css   # Admin layout
+│   │   └── auth.css    # Authentication layout
+│   └── utilities/      # Custom utility classes
+│       ├── animations.css
+│       ├── transitions.css
+│       └── custom.css
+├── js/                  # JavaScript files
+│   ├── app.js          # Main JavaScript entry point
+│   ├── components/     # Alpine.js components
+│   │   ├── auth/      # Authentication components
+│   │   │   ├── login-form.js
+│   │   │   ├── register-form.js
+│   │   │   └── two-factor.js
+│   │   ├── user/      # User components
+│   │   │   ├── profile-form.js
+│   │   │   ├── preference-form.js
+│   │   │   └── notification-center.js
+│   │   ├── order/     # Order components
+│   │   │   ├── order-form.js
+│   │   │   ├── order-tracking.js
+│   │   │   └── order-history.js
+│   │   ├── payment/   # Payment components
+│   │   │   ├── payment-form.js
+│   │   │   ├── payment-methods.js
+│   │   │   └── invoice-viewer.js
+│   │   ├── admin/     # Admin components
+│   │   │   ├── dashboard.js
+│   │   │   ├── user-management.js
+│   │   │   └── system-settings.js
+│   │   └── shared/    # Shared components
+│   │       ├── modal.js
+│   │       ├── dropdown.js
+│   │       ├── toast.js
+│   │       └── data-table.js
+│   ├── stores/        # Alpine.js global stores
+│   │   ├── auth.js    # Authentication store
+│   │   ├── user.js    # User data store
+│   │   ├── cart.js    # Shopping cart store
+│   │   ├── notification.js  # Notification store
+│   │   └── ui.js      # UI state store
+│   └── utils/         # Utility functions
+│       ├── api.js     # API helper functions
+│       ├── validation.js  # Client-side validation
+│       ├── formatter.js   # Data formatting utilities
+│       └── helpers.js     # General helper functions
+├── views/              # Blade templates
+│   ├── components/    # Reusable Blade components
+│   │   ├── forms/    # Form components
+│   │   │   ├── input.blade.php
+│   │   │   ├── select.blade.php
+│   │   │   ├── textarea.blade.php
+│   │   │   └── submit-button.blade.php
+│   │   ├── ui/       # UI components
+│   │   │   ├── card.blade.php
+│   │   │   ├── modal.blade.php
+│   │   │   ├── alert.blade.php
+│   │   │   └── breadcrumb.blade.php
+│   │   ├── navigation/  # Navigation components
+│   │   │   ├── navbar.blade.php
+│   │   │   ├── sidebar.blade.php
+│   │   │   └── footer.blade.php
+│   │   └── data/     # Data display components
+│   │       ├── table.blade.php
+│   │       ├── pagination.blade.php
+│   │       └── search.blade.php
+│   ├── layouts/      # Layout templates
+│   │   ├── app.blade.php        # Main application layout
+│   │   ├── admin.blade.php      # Admin panel layout
+│   │   ├── auth.blade.php       # Authentication layout
+│   │   └── guest.blade.php      # Guest user layout
+│   ├── pages/        # Page templates
+│   │   ├── auth/     # Authentication pages
+│   │   │   ├── login.blade.php
+│   │   │   ├── register.blade.php
+│   │   │   ├── forgot-password.blade.php
+│   │   │   └── two-factor.blade.php
+│   │   ├── user/     # User pages
+│   │   │   ├── dashboard.blade.php
+│   │   │   ├── profile.blade.php
+│   │   │   ├── preferences.blade.php
+│   │   │   └── notifications.blade.php
+│   │   ├── order/    # Order pages
+│   │   │   ├── index.blade.php
+│   │   │   ├── show.blade.php
+│   │   │   ├── create.blade.php
+│   │   │   └── history.blade.php
+│   │   ├── admin/    # Admin pages
+│   │   │   ├── dashboard.blade.php
+│   │   │   ├── users/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── show.blade.php
+│   │   │   │   └── edit.blade.php
+│   │   │   ├── orders/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   └── settings/
+│   │   │       ├── general.blade.php
+│   │   │       ├── email.blade.php
+│   │   │       └── security.blade.php
+│   │   └── errors/   # Error pages
+│   │       ├── 404.blade.php
+│   │       ├── 500.blade.php
+│   │       └── 503.blade.php
+│   └── emails/       # Email templates
+│       ├── auth/     # Authentication emails
+│       │   ├── verification.blade.php
+│       │   ├── password-reset.blade.php
+│       │   └── two-factor-code.blade.php
+│       ├── user/     # User emails
+│       │   ├── welcome.blade.php
+│       │   ├── profile-updated.blade.php
+│       │   └── account-deactivated.blade.php
+│       └── order/    # Order emails
+│           ├── confirmation.blade.php
+│           ├── shipped.blade.php
+│           └── delivered.blade.php
+### LANG DIRECTORY - ENTERPRISE INTERNATIONALIZATION
+```
+resources/lang/
+├── en/                           # English (Primary Language)
+│   ├── auth/                    # Authentication translations
+│   │   ├── login.php           # Login form translations
+│   │   ├── register.php        # Registration form translations
+│   │   ├── passwords.php       # Password reset translations
+│   │   ├── verification.php    # Email verification translations
+│   │   └── two_factor.php      # Two-factor authentication translations
+│   ├── user/                   # User management translations
+│   │   ├── profile.php         # User profile translations
+│   │   ├── preferences.php     # User preferences translations
+│   │   ├── dashboard.php       # User dashboard translations
+│   │   ├── notifications.php   # User notifications translations
+│   │   └── account.php         # Account management translations
+│   ├── order/                  # Order management translations
+│   │   ├── general.php         # General order translations
+│   │   ├── status.php          # Order status translations
+│   │   ├── tracking.php        # Order tracking translations
+│   │   ├── items.php           # Order items translations
+│   │   └── history.php         # Order history translations
+│   ├── payment/                # Payment translations
+│   │   ├── general.php         # General payment translations
+│   │   ├── methods.php         # Payment methods translations
+│   │   ├── invoices.php        # Invoice translations
+│   │   ├── refunds.php         # Refund translations
+│   │   └── billing.php         # Billing translations
+│   ├── product/                # Product translations
+│   │   ├── general.php         # General product translations
+│   │   ├── categories.php      # Product categories translations
+│   │   ├── variants.php        # Product variants translations
+│   │   └── reviews.php         # Product reviews translations
+│   ├── admin/                  # Admin panel translations
+│   │   ├── dashboard.php       # Admin dashboard translations
+│   │   ├── users.php           # User management translations
+│   │   ├── orders.php          # Order management translations
+│   │   ├── products.php        # Product management translations
+│   │   ├── settings.php        # System settings translations
+│   │   ├── reports.php         # Reports translations
+│   │   └── system.php          # System management translations
+│   ├── ui/                     # User interface translations
+│   │   ├── navigation.php      # Navigation translations
+│   │   ├── buttons.php         # Button translations
+│   │   ├── forms.php           # Form translations
+│   │   ├── tables.php          # Table translations
+│   │   ├── modals.php          # Modal translations
+│   │   └── alerts.php          # Alert translations
+│   ├── emails/                 # Email translations
+│   │   ├── auth.php           # Authentication emails
+│   │   ├── user.php           # User emails
+│   │   ├── order.php          # Order emails
+│   │   ├── payment.php        # Payment emails
+│   │   └── system.php         # System emails
+│   ├── errors/                 # Error message translations
+│   │   ├── http.php           # HTTP error translations
+│   │   ├── validation.php     # Validation error translations
+│   │   ├── business.php       # Business logic error translations
+│   │   └── system.php         # System error translations
+│   ├── time/                   # Time and date translations
+│   │   ├── formats.php        # Date/time format translations
+│   │   ├── relative.php       # Relative time translations
+│   │   └── timezones.php      # Timezone translations
+│   └── common/                 # Common translations
+│       ├── actions.php        # Action words (save, delete, etc.)
+│       ├── status.php         # Status translations
+│       ├── messages.php       # Common messages
+│       ├── units.php          # Unit measurements
+│       └── placeholders.php   # Placeholder texts
+├── tr/                         # Turkish (Secondary Language)
+│   ├── auth/                  # Kimlik doğrulama çevirileri
+│   │   ├── login.php         # Giriş formu çevirileri
+│   │   ├── register.php      # Kayıt formu çevirileri
+│   │   ├── passwords.php     # Şifre sıfırlama çevirileri
+│   │   ├── verification.php  # E-posta doğrulama çevirileri
+│   │   └── two_factor.php    # İki faktörlü kimlik doğrulama çevirileri
+│   ├── user/                 # Kullanıcı yönetimi çevirileri
+│   │   ├── profile.php       # Kullanıcı profili çevirileri
+│   │   ├── preferences.php   # Kullanıcı tercihleri çevirileri
+│   │   ├── dashboard.php     # Kullanıcı paneli çevirileri
+│   │   ├── notifications.php # Kullanıcı bildirimleri çevirileri
+│   │   └── account.php       # Hesap yönetimi çevirileri
+│   ├── order/                # Sipariş yönetimi çevirileri
+│   │   ├── general.php       # Genel sipariş çevirileri
+│   │   ├── status.php        # Sipariş durumu çevirileri
+│   │   ├── tracking.php      # Sipariş takibi çevirileri
+│   │   ├── items.php         # Sipariş öğeleri çevirileri
+│   │   └── history.php       # Sipariş geçmişi çevirileri
+│   ├── payment/              # Ödeme çevirileri
+│   │   ├── general.php       # Genel ödeme çevirileri
+│   │   ├── methods.php       # Ödeme yöntemleri çevirileri
+│   │   ├── invoices.php      # Fatura çevirileri
+│   │   ├── refunds.php       # İade çevirileri
+│   │   └── billing.php       # Faturalandırma çevirileri
+│   ├── product/              # Ürün çevirileri
+│   │   ├── general.php       # Genel ürün çevirileri
+│   │   ├── categories.php    # Ürün kategorileri çevirileri
+│   │   ├── variants.php      # Ürün varyantları çevirileri
+│   │   └── reviews.php       # Ürün değerlendirmeleri çevirileri
+│   ├── admin/                # Yönetici paneli çevirileri
+│   │   ├── dashboard.php     # Yönetici paneli çevirileri
+│   │   ├── users.php         # Kullanıcı yönetimi çevirileri
+│   │   ├── orders.php        # Sipariş yönetimi çevirileri
+│   │   ├── products.php      # Ürün yönetimi çevirileri
+│   │   ├── settings.php      # Sistem ayarları çevirileri
+│   │   ├── reports.php       # Raporlar çevirileri
+│   │   └── system.php        # Sistem yönetimi çevirileri
+│   ├── ui/                   # Kullanıcı arayüzü çevirileri
+│   │   ├── navigation.php    # Navigasyon çevirileri
+│   │   ├── buttons.php       # Buton çevirileri
+│   │   ├── forms.php         # Form çevirileri
+│   │   ├── tables.php        # Tablo çevirileri
+│   │   ├── modals.php        # Modal çevirileri
+│   │   └── alerts.php        # Uyarı çevirileri
+│   ├── emails/               # E-posta çevirileri
+│   │   ├── auth.php         # Kimlik doğrulama e-postaları
+│   │   ├── user.php         # Kullanıcı e-postaları
+│   │   ├── order.php        # Sipariş e-postaları
+│   │   ├── payment.php      # Ödeme e-postaları
+│   │   └── system.php       # Sistem e-postaları
+│   ├── errors/               # Hata mesajı çevirileri
+│   │   ├── http.php         # HTTP hata çevirileri
+│   │   ├── validation.php   # Doğrulama hata çevirileri
+│   │   ├── business.php     # İş mantığı hata çevirileri
+│   │   └── system.php       # Sistem hata çevirileri
+│   ├── time/                 # Zaman ve tarih çevirileri
+│   │   ├── formats.php      # Tarih/saat format çevirileri
+│   │   ├── relative.php     # Göreceli zaman çevirileri
+│   │   └── timezones.php    # Saat dilimi çevirileri
+│   └── common/               # Ortak çeviriler
+│       ├── actions.php      # Eylem kelimeleri (kaydet, sil, vb.)
+│       ├── status.php       # Durum çevirileri
+│       ├── messages.php     # Ortak mesajlar
+│       ├── units.php        # Birim ölçüleri
+│       └── placeholders.php # Yer tutucu metinler
+├── de/                       # German (Tertiary Language)
+│   └── [Same structure as en/ and tr/]
+├── fr/                       # French (Quaternary Language)
+│   └── [Same structure as en/ and tr/]
+├── es/                       # Spanish (Quinary Language)
+│   └── [Same structure as en/ and tr/]
+└── config/                   # Localization configuration
+    ├── locales.php          # Supported locale configurations
+    ├── fallbacks.php        # Language fallback configurations
+    ├── formats.php          # Locale-specific format configurations
+    └── currencies.php       # Currency configurations per locale
+```
+
+## 🌍 INTERNATIONALIZATION ARCHITECTURE
+
+### LANGUAGE SERVICE STRUCTURE
+```
+app/Services/Localization/
+├── LocalizationService.php           # Main localization service
+├── LanguageDetectionService.php      # User language detection
+├── TranslationCacheService.php       # Translation caching
+├── FallbackService.php               # Language fallback handling
+├── PluralizationService.php          # Pluralization rules
+├── CurrencyLocalizationService.php   # Currency formatting
+├── DateTimeLocalizationService.php   # Date/time formatting
+└── NumberLocalizationService.php     # Number formatting
+```
+
+### TRANSLATION MODELS
+```
+app/Models/Localization/
+├── Language.php                # Supported languages model
+├── Translation.php             # Dynamic translations model
+├── TranslationKey.php          # Translation keys model
+└── UserLanguagePreference.php  # User language preferences
+```
+
+### MIDDLEWARE FOR LOCALIZATION
+```
+app/Http/Middleware/Localization/
+├── SetLocaleMiddleware.php           # Set application locale
+├── DetectLocaleMiddleware.php        # Auto-detect user locale
+├── ValidateLocaleMiddleware.php      # Validate locale parameter
+└── CacheLocaleMiddleware.php         # Cache locale for performance
+```
+
+### LOCALIZATION MIGRATIONS
+```
+database/migrations/
+├── 2024_01_10_000000_create_languages_table.php
+├── 2024_01_10_000001_create_translations_table.php
+├── 2024_01_10_000002_create_translation_keys_table.php
+├── 2024_01_10_000003_create_user_language_preferences_table.php
+└── 2024_01_10_000004_add_locale_columns_to_content_tables.php
+```
+
+## 📚 TRANSLATION FILE EXAMPLES
+
+### AUTH LOGIN TRANSLATIONS
+```php
+// resources/lang/en/auth/login.php
+return [
+    'title' => 'Sign In',
+    'subtitle' => 'Welcome back! Please sign in to your account.',
+    'email_label' => 'Email Address',
+    'email_placeholder' => 'Enter your email address',
+    'password_label' => 'Password',
+    'password_placeholder' => 'Enter your password',
+    'remember_me' => 'Remember me',
+    'forgot_password' => 'Forgot your password?',
+    'sign_in_button' => 'Sign In',
+    'create_account' => 'Don\'t have an account? Create one',
+    'social_login' => 'Or sign in with',
+    'success_message' => 'Successfully signed in. Welcome back!',
+    'invalid_credentials' => 'Invalid credentials. Please check your email and password.',
+    'account_disabled' => 'Your account has been disabled. Please contact support.',
+    'too_many_attempts' => 'Too many login attempts. Please try again in :seconds seconds.'
+];
+
+// resources/lang/tr/auth/login.php
+return [
+    'title' => 'Giriş Yap',
+    'subtitle' => 'Tekrar hoş geldiniz! Lütfen hesabınıza giriş yapın.',
+    'email_label' => 'E-posta Adresi',
+    'email_placeholder' => 'E-posta adresinizi girin',
+    'password_label' => 'Şifre',
+    'password_placeholder' => 'Şifrenizi girin',
+    'remember_me' => 'Beni hatırla',
+    'forgot_password' => 'Şifrenizi mi unuttunuz?',
+    'sign_in_button' => 'Giriş Yap',
+    'create_account' => 'Hesabınız yok mu? Hesap oluşturun',
+    'social_login' => 'Veya şununla giriş yapın',
+    'success_message' => 'Başarıyla giriş yapıldı. Tekrar hoş geldiniz!',
+    'invalid_credentials' => 'Geçersiz kimlik bilgileri. Lütfen e-posta ve şifrenizi kontrol edin.',
+    'account_disabled' => 'Hesabınız devre dışı bırakılmıştır. Lütfen destek ile iletişime geçin.',
+    'too_many_attempts' => 'Çok fazla giriş denemesi. Lütfen :seconds saniye sonra tekrar deneyin.'
+];
+```
+
+### UI NAVIGATION TRANSLATIONS
+```php
+// resources/lang/en/ui/navigation.php
+return [
+    'main_menu' => 'Main Menu',
+    'dashboard' => 'Dashboard',
+    'users' => 'Users',
+    'orders' => 'Orders',
+    'products' => 'Products',
+    'payments' => 'Payments',
+    'reports' => 'Reports',
+    'settings' => 'Settings',
+    'profile' => 'Profile',
+    'logout' => 'Logout',
+    'breadcrumb_home' => 'Home',
+    'search_placeholder' => 'Search...',
+    'user_menu' => 'User Menu',
+    'admin_panel' => 'Admin Panel',
+    'back_to_dashboard' => 'Back to Dashboard'
+];
+
+// resources/lang/tr/ui/navigation.php
+return [
+    'main_menu' => 'Ana Menü',
+    'dashboard' => 'Panel',
+    'users' => 'Kullanıcılar',
+    'orders' => 'Siparişler',
+    'products' => 'Ürünler',
+    'payments' => 'Ödemeler',
+    'reports' => 'Raporlar',
+    'settings' => 'Ayarlar',
+    'profile' => 'Profil',
+    'logout' => 'Çıkış',
+    'breadcrumb_home' => 'Ana Sayfa',
+    'search_placeholder' => 'Ara...',
+    'user_menu' => 'Kullanıcı Menüsü',
+    'admin_panel' => 'Yönetici Paneli',
+    'back_to_dashboard' => 'Panele Dön'
+];
+```
+
+### VALIDATION TRANSLATIONS
+```php
+// resources/lang/en/errors/validation.php
+return [
+    'required' => 'The :attribute field is required.',
+    'email' => 'The :attribute must be a valid email address.',
+    'min' => [
+        'numeric' => 'The :attribute must be at least :min.',
+        'file' => 'The :attribute must be at least :min kilobytes.',
+        'string' => 'The :attribute must be at least :min characters.',
+        'array' => 'The :attribute must have at least :min items.',
+    ],
+    'max' => [
+        'numeric' => 'The :attribute may not be greater than :max.',
+        'file' => 'The :attribute may not be greater than :max kilobytes.',
+        'string' => 'The :attribute may not be greater than :max characters.',
+        'array' => 'The :attribute may not have more than :max items.',
+    ],
+    'unique' => 'The :attribute has already been taken.',
+    'confirmed' => 'The :attribute confirmation does not match.',
+    'custom' => [
+        'password' => [
+            'min' => 'Password must be at least 8 characters long.',
+            'regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
+        ],
+        'phone' => [
+            'regex' => 'Please enter a valid phone number.',
+        ],
+    ],
+    'attributes' => [
+        'email' => 'email address',
+        'password' => 'password',
+        'password_confirmation' => 'password confirmation',
+        'first_name' => 'first name',
+        'last_name' => 'last name',
+        'phone' => 'phone number',
+    ],
+];
+
+// resources/lang/tr/errors/validation.php
+return [
+    'required' => ':attribute alanı zorunludur.',
+    'email' => ':attribute geçerli bir e-posta adresi olmalıdır.',
+    'min' => [
+        'numeric' => ':attribute en az :min olmalıdır.',
+        'file' => ':attribute en az :min kilobayt olmalıdır.',
+        'string' => ':attribute en az :min karakter olmalıdır.',
+        'array' => ':attribute en az :min öğe içermelidir.',
+    ],
+    'max' => [
+        'numeric' => ':attribute :max değerinden büyük olamaz.',
+        'file' => ':attribute :max kilobayttan büyük olamaz.',
+        'string' => ':attribute :max karakterden uzun olamaz.',
+        'array' => ':attribute :max öğeden fazla içeremez.',
+    ],
+    'unique' => ':attribute zaten kullanılmaktadır.',
+    'confirmed' => ':attribute onayı eşleşmiyor.',
+    'custom' => [
+        'password' => [
+            'min' => 'Şifre en az 8 karakter uzunluğunda olmalıdır.',
+            'regex' => 'Şifre en az bir büyük harf, bir küçük harf, bir rakam ve bir özel karakter içermelidir.',
+        ],
+        'phone' => [
+            'regex' => 'Lütfen geçerli bir telefon numarası girin.',
+        ],
+    ],
+    'attributes' => [
+        'email' => 'e-posta adresi',
+        'password' => 'şifre',
+        'password_confirmation' => 'şifre onayı',
+        'first_name' => 'ad',
+        'last_name' => 'soyad',
+        'phone' => 'telefon numarası',
+    ],
+];
+```
+
+## 🔧 LOCALIZATION IMPLEMENTATION PATTERNS
+
+### BLADE TEMPLATE USAGE
+```blade
+{{-- ✅ FORTRESS STANDARD - Proper localization usage --}}
+<flux:card>
+    <flux:header>
+        <flux:heading>{{ __('user.dashboard.title') }}</flux:heading>
+        <flux:subheading>{{ __('user.dashboard.subtitle') }}</flux:subheading>
+    </flux:header>
+    <flux:form>
+        <flux:input 
+            name="email" 
+            label="{{ __('user.profile.email_label') }}" 
+            placeholder="{{ __('user.profile.email_placeholder') }}"
+        />
+        <flux:button type="submit">
+            {{ __('common.actions.save') }}
+        </flux:button>
+    </flux:form>
+</flux:card>
+
+{{-- ❌ INSTANT REJECTION - Hardcoded text --}}
+<flux:card>
+    <flux:header>
+        <flux:heading>User Dashboard</flux:heading>
+        <flux:subheading>Manage your account</flux:subheading>
+    </flux:header>
+</flux:card>
+```
+
+### CONTROLLER LOCALIZATION
+```php
+// ✅ FORTRESS STANDARD - Proper controller localization
+class UserController extends BaseController
+{
+    public function store(StoreUserRequest $request): JsonResponse
+    {
+        $user = User::create($request->validated());
+        
+        return $this->success(
+            $user, 
+            __('user.messages.created_successfully'),
+            201
+        );
+    }
+    
+    public function destroy(User $user): JsonResponse
+    {
+        $user->delete();
+        
+        return $this->success(
+            null,
+            __('user.messages.deleted_successfully')
+        );
+    }
+}
+
+// ❌ INSTANT REJECTION - Hardcoded messages
+class UserController extends BaseController
+{
+    public function store(StoreUserRequest $request): JsonResponse
+    {
+        $user = User::create($request->validated());
+        
+        return $this->success($user, 'User created successfully', 201);
+    }
+}
+```
+
+### ALPINE.JS LOCALIZATION
+```javascript
+// ✅ FORTRESS STANDARD - Localized Alpine.js component
+Alpine.data('userForm', () => ({
+    form: {},
+    errors: {},
+    loading: false,
+    
+    get submitButtonText() {
+        return this.loading 
+            ? window.translations.common.actions.saving 
+            : window.translations.common.actions.save;
+    },
+    
+    async submit() {
+        this.loading = true;
+        try {
+            await this.$store.api.call('/api/users', {
+                method: 'POST',
+                body: JSON.stringify(this.form)
+            });
+            
+            this.$store.notifications.add({
+                type: 'success',
+                message: window.translations.user.messages.created_successfully
+            });
+        } catch (error) {
+            this.$store.notifications.add({
+                type: 'error',
+                message: window.translations.errors.general.unexpected_error
+            });
+        } finally {
+            this.loading = false;
+        }
+    }
+}));
+
+// ❌ INSTANT REJECTION - Hardcoded text in JavaScript
+Alpine.data('userForm', () => ({
+    submitButtonText: 'Save User',
+    successMessage: 'User created successfully'
+}));
+```
+
+### JAVASCRIPT TRANSLATION HELPER
+```javascript
+// resources/js/utils/translations.js
+class TranslationHelper {
+    constructor(translations) {
+        this.translations = translations;
+    }
+    
+    get(key, replacements = {}) {
+        const keys = key.split('.');
+        let value = this.translations;
+        
+        for (const k of keys) {
+            if (value && typeof value === 'object' && k in value) {
+                value = value[k];
+            } else {
+                return key;
+            }
+        }
+        
+        if (typeof value === 'string') {
+            return this.replace(value, replacements);
+        }
+        
+        return key;
+    }
+    
+    replace(text, replacements) {
+        return text.replace(/:(\w+)/g, (match, key) => {
+            return replacements[key] || match;
+        });
+    }
+}
+
+// Make translations available globally
+window.__ = (key, replacements = {}) => {
+    return window.translationHelper.get(key, replacements);
+};
+```
+
+## 🌐 LOCALIZATION CONFIGURATION
+
+### CONFIG FILES
+```php
+// config/app.php - Locale configuration
+'locale' => env('APP_LOCALE', 'en'),
+'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
+'supported_locales' => [
+    'en' => ['name' => 'English', 'flag' => '🇺🇸', 'rtl' => false],
+    'tr' => ['name' => 'Türkçe', 'flag' => '🇹🇷', 'rtl' => false],
+    'de' => ['name' => 'Deutsch', 'flag' => '🇩🇪', 'rtl' => false],
+    'fr' => ['name' => 'Français', 'flag' => '🇫🇷', 'rtl' => false],
+    'es' => ['name' => 'Español', 'flag' => '🇪🇸', 'rtl' => false],
+    'ar' => ['name' => 'العربية', 'flag' => '🇸🇦', 'rtl' => true],
+],
+
+// config/localization.php - Custom localization settings
+return [
+    'auto_detect' => env('LOCALIZATION_AUTO_DETECT', true),
+    'cache_translations' => env('LOCALIZATION_CACHE', true),
+    'fallback_chain' => ['en'],
+    'date_formats' => [
+        'en' => 'M j, Y',
+        'tr' => 'd.m.Y',
+        'de' => 'd.m.Y',
+        'fr' => 'd/m/Y',
+        'es' => 'd/m/Y',
+    ],
+    'currency_formats' => [
+        'en' => ['symbol' => '
+```
+
+### ROUTES DIRECTORY - URL ORGANIZATION
+```
+routes/
+├── web.php           # Web routes (Blade views)
+├── api.php           # API routes (JSON responses)
+├── admin.php         # Admin panel routes
+├── auth.php          # Authentication routes
+├── console.php       # Artisan commands
+└── channels.php      # Broadcast channels
+```
+
+### TESTS DIRECTORY - COMPREHENSIVE TESTING
+```
+tests/
+├── Feature/          # Feature tests (full HTTP requests)
+│   ├── Auth/        # Authentication feature tests
+│   │   ├── LoginTest.php
+│   │   ├── RegisterTest.php
+│   │   ├── PasswordResetTest.php
+│   │   └── TwoFactorTest.php
+│   ├── User/        # User feature tests
+│   │   ├── UserManagementTest.php
+│   │   ├── ProfileTest.php
+│   │   └── PreferenceTest.php
+│   ├── Order/       # Order feature tests
+│   │   ├── OrderCreationTest.php
+│   │   ├── OrderProcessingTest.php
+│   │   └── OrderTrackingTest.php
+│   ├── Payment/     # Payment feature tests
+│   │   ├── PaymentProcessingTest.php
+│   │   ├── RefundTest.php
+│   │   └── InvoiceTest.php
+│   └── Admin/       # Admin feature tests
+│       ├── DashboardTest.php
+│       ├── UserManagementTest.php
+│       └── SystemSettingsTest.php
+├── Unit/            # Unit tests (isolated component testing)
+│   ├── Models/      # Model unit tests
+│   │   ├── UserTest.php
+│   │   ├── OrderTest.php
+│   │   └── PaymentTest.php
+│   ├── Services/    # Service unit tests
+│   │   ├── Auth/
+│   │   │   └── AuthServiceTest.php
+│   │   ├── User/
+│   │   │   └── UserServiceTest.php
+│   │   ├── Order/
+│   │   │   └── OrderServiceTest.php
+│   │   └── Payment/
+│   │       └── PaymentServiceTest.php
+│   ├── Rules/       # Validation rule tests
+│   │   ├── Auth/
+│   │   │   └── SecurePasswordRuleTest.php
+│   │   └── Payment/
+│   │       └── CreditCardRuleTest.php
+│   └── Helpers/     # Helper function tests
+│       ├── ValidationHelperTest.php
+│       └── FormatterHelperTest.php
+├── Browser/         # Browser tests (Laravel Dusk)
+│   ├── Auth/
+│   │   ├── LoginTest.php
+│   │   └── RegisterTest.php
+│   ├── User/
+│   │   └── DashboardTest.php
+│   └── Order/
+│       └── CheckoutTest.php
+├── CreatesApplication.php  # Test application bootstrap
+└── TestCase.php           # Base test case
+```
+
+### NAMING - MATHEMATICAL PRECISION
+# ✅ FORTRESS STANDARD - Self-documenting perfection
+class User extends Model
+{
+    public function isActive(): bool
+    {
+        return $this->status === UserStatus::ACTIVE;
+    }
+    
+    public function getFullNameAttribute(): string
+    {
+        return "{$this->first_name} {$this->last_name}";
+    }
+}
+
+enum UserStatus: string
+{
+    case ACTIVE = 'active';
+    case INACTIVE = 'inactive';
+    case SUSPENDED = 'suspended';
+}
+
+# ❌ INSTANT REJECTION - Unclear names like UserUtils with generic methods
+
+## 🧪 TESTING - ZERO DEFECTS TOLERANCE
+
+### COMPREHENSIVE COVERAGE
+# ✅ FORTRESS STANDARD - Complete test coverage
+class UserServiceTest extends TestCase
+{
+    public function test_creates_user_successfully(): void
+    {
+        $userData = ['name' => 'John Doe', 'email' => 'john@example.com'];
+        $user = $this->userService->create($userData);
+        
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertDatabaseHas('users', $userData);
+    }
+    
+    public function test_throws_exception_for_duplicate_email(): void
+    {
+        User::factory()->create(['email' => 'john@example.com']);
+        
+        $this->expectException(ValidationException::class);
+        $this->userService->create(['name' => 'Jane', 'email' => 'john@example.com']);
+    }
+}
+
+# ❌ INSTANT REJECTION - Incomplete or meaningless tests
+
+## 🚫 BANNED TECHNOLOGIES - AUTOMATIC REJECTION
+
+### FORBIDDEN IMPORTS
+# ❌ BANNED - Will cause immediate rejection
+use Livewire\Component;
+use Inertia\Inertia;
+use React\React;
+use Vue\Vue;
+import jQuery from 'jquery';
+import React from 'react';
+import Vue from 'vue';
+import Stimulus from 'stimulus';
+
+### FORBIDDEN COMPONENTS
+# ❌ BANNED - Will cause immediate rejection
+<x-livewire-component />
+<x-bootstrap-card />
+<x-blade-ui-kit />
+
+## ⚖️ QUALITY GATES - FORTRESS STANDARDS
+
+### PRE-MERGE CHECKLIST - ALL MUST PASS
+- ✅ Uses ONLY approved technology stack
+- ✅ ZERO code repetition (DRY enforcement)
+- ✅ Maximum simplicity (KISS enforcement)
+- ✅ Single responsibility per class/function
+- ✅ Self-documenting code (no comments needed)
+- ✅ Comprehensive error handling
+- ✅ Security vulnerabilities = ZERO
+- ✅ Performance benchmarks met
+- ✅ 100% test coverage
+- ✅ Accessibility compliance (WCAG 2.1 AA)
+
+### PERFORMANCE REQUIREMENTS - NON-NEGOTIABLE
+- Page load time: < 2 seconds
+- First Contentful Paint: < 1.2 seconds
+- Largest Contentful Paint: < 2.5 seconds
+- Cumulative Layout Shift: < 0.1
+- First Input Delay: < 100ms
+
+### SECURITY REQUIREMENTS - BULLETPROOF
+- SQL Injection protection: 100%
+- XSS protection: 100%
+- CSRF protection: 100%
+- Authentication: Multi-factor mandatory
+- Authorization: Role-based access control
+- Input validation: Server-side mandatory
+
+## 🎯 CODE GENERATION LAWS - ABSOLUTE COMPLIANCE
+
+### RESPONSE FORMAT - SURGICAL PRECISION
+# ✅ FORTRESS STANDARD - Perfect implementation
+class UserController extends BaseController
+{
+    public function __construct(private UserService $userService) {}
+    
+    public function store(StoreUserRequest $request): JsonResponse
+    {
+        $user = $this->userService->create($request->validated());
+        return $this->success($user, 'User created', 201);
+    }
+    
+    public function show(User $user): JsonResponse
+    {
+        return $this->success($user);
+    }
+}
+
+# ❌ INSTANT REJECTION - Verbose, commented, inefficient code
+
+## 🔥 ELITE MINDSET - WORLD-CLASS EXCELLENCE
+
+### ZERO-TOLERANCE PRINCIPLES
+1. PERFECTION IS MINIMUM - Good enough is not enough
+2. SECURITY IS PARAMOUNT - Every line is a potential vulnerability
+3. PERFORMANCE IS CRITICAL - Slow code is broken code
+4. SIMPLICITY IS GENIUS - Complex solutions indicate poor understanding
+5. REUSABILITY IS MANDATORY - Write once, use everywhere
+6. TESTING IS NON-NEGOTIABLE - Untested code is broken code
+7. DOCUMENTATION IS CODE - Self-explaining implementations only
+
+### SUCCESS METRICS - MATHEMATICAL PRECISION
+- Code Quality Score: 10/10 (no exceptions)
+- Security Vulnerabilities: 0 (absolute zero)
+- Performance Score: 95+ (Lighthouse)
+- Test Coverage: 100% (complete coverage)
+- Technical Debt: 0% (zero tolerance)
+- Accessibility Score: 100% (WCAG 2.1 AA)
+
+## ⚡ ULTIMATE LAW: ELITE EXECUTION = FORTRESS STANDARDS + ZERO COMPROMISE
+
+Every line of code must represent the pinnacle of software engineering excellence. Mediocrity is not an option. Perfection is the minimum acceptable standard., 'position' => 'before'],
+        'tr' => ['symbol' => '₺', 'position' => 'after'],
+        'de' => ['symbol' => '€', 'position' => 'after'],
+        'fr' => ['symbol' => '€', 'position' => 'after'],
+        'es' => ['symbol' => '€', 'position' => 'after'],
+    ],
+];
+```
+```
+
+### ROUTES DIRECTORY - URL ORGANIZATION
+```
+routes/
+├── web.php           # Web routes (Blade views)
+├── api.php           # API routes (JSON responses)
+├── admin.php         # Admin panel routes
+├── auth.php          # Authentication routes
+├── console.php       # Artisan commands
+└── channels.php      # Broadcast channels
+```
+
+### TESTS DIRECTORY - COMPREHENSIVE TESTING
+```
+tests/
+├── Feature/          # Feature tests (full HTTP requests)
+│   ├── Auth/        # Authentication feature tests
+│   │   ├── LoginTest.php
+│   │   ├── RegisterTest.php
+│   │   ├── PasswordResetTest.php
+│   │   └── TwoFactorTest.php
+│   ├── User/        # User feature tests
+│   │   ├── UserManagementTest.php
+│   │   ├── ProfileTest.php
+│   │   └── PreferenceTest.php
+│   ├── Order/       # Order feature tests
+│   │   ├── OrderCreationTest.php
+│   │   ├── OrderProcessingTest.php
+│   │   └── OrderTrackingTest.php
+│   ├── Payment/     # Payment feature tests
+│   │   ├── PaymentProcessingTest.php
+│   │   ├── RefundTest.php
+│   │   └── InvoiceTest.php
+│   └── Admin/       # Admin feature tests
+│       ├── DashboardTest.php
+│       ├── UserManagementTest.php
+│       └── SystemSettingsTest.php
+├── Unit/            # Unit tests (isolated component testing)
+│   ├── Models/      # Model unit tests
+│   │   ├── UserTest.php
+│   │   ├── OrderTest.php
+│   │   └── PaymentTest.php
+│   ├── Services/    # Service unit tests
+│   │   ├── Auth/
+│   │   │   └── AuthServiceTest.php
+│   │   ├── User/
+│   │   │   └── UserServiceTest.php
+│   │   ├── Order/
+│   │   │   └── OrderServiceTest.php
+│   │   └── Payment/
+│   │       └── PaymentServiceTest.php
+│   ├── Rules/       # Validation rule tests
+│   │   ├── Auth/
+│   │   │   └── SecurePasswordRuleTest.php
+│   │   └── Payment/
+│   │       └── CreditCardRuleTest.php
+│   └── Helpers/     # Helper function tests
+│       ├── ValidationHelperTest.php
+│       └── FormatterHelperTest.php
+├── Browser/         # Browser tests (Laravel Dusk)
+│   ├── Auth/
+│   │   ├── LoginTest.php
+│   │   └── RegisterTest.php
+│   ├── User/
+│   │   └── DashboardTest.php
+│   └── Order/
+│       └── CheckoutTest.php
+├── CreatesApplication.php  # Test application bootstrap
+└── TestCase.php           # Base test case
+```
+
+### NAMING - MATHEMATICAL PRECISION
+# ✅ FORTRESS STANDARD - Self-documenting perfection
+class User extends Model
+{
+    public function isActive(): bool
+    {
+        return $this->status === UserStatus::ACTIVE;
+    }
+    
+    public function getFullNameAttribute(): string
+    {
+        return "{$this->first_name} {$this->last_name}";
+    }
+}
+
+enum UserStatus: string
+{
+    case ACTIVE = 'active';
+    case INACTIVE = 'inactive';
+    case SUSPENDED = 'suspended';
+}
+
+# ❌ INSTANT REJECTION - Unclear names like UserUtils with generic methods
+
+## 🧪 TESTING - ZERO DEFECTS TOLERANCE
+
+### COMPREHENSIVE COVERAGE
+# ✅ FORTRESS STANDARD - Complete test coverage
+class UserServiceTest extends TestCase
+{
+    public function test_creates_user_successfully(): void
+    {
+        $userData = ['name' => 'John Doe', 'email' => 'john@example.com'];
+        $user = $this->userService->create($userData);
+        
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertDatabaseHas('users', $userData);
+    }
+    
+    public function test_throws_exception_for_duplicate_email(): void
+    {
+        User::factory()->create(['email' => 'john@example.com']);
+        
+        $this->expectException(ValidationException::class);
+        $this->userService->create(['name' => 'Jane', 'email' => 'john@example.com']);
+    }
+}
+
+# ❌ INSTANT REJECTION - Incomplete or meaningless tests
+
+## 🚫 BANNED TECHNOLOGIES - AUTOMATIC REJECTION
+
+### FORBIDDEN IMPORTS
+# ❌ BANNED - Will cause immediate rejection
+use Livewire\Component;
+use Inertia\Inertia;
+use React\React;
+use Vue\Vue;
+import jQuery from 'jquery';
+import React from 'react';
+import Vue from 'vue';
+import Stimulus from 'stimulus';
+
+### FORBIDDEN COMPONENTS
+# ❌ BANNED - Will cause immediate rejection
+<x-livewire-component />
+<x-bootstrap-card />
+<x-blade-ui-kit />
+
+## ⚖️ QUALITY GATES - FORTRESS STANDARDS
+
+### PRE-MERGE CHECKLIST - ALL MUST PASS
+- ✅ Uses ONLY approved technology stack
+- ✅ ZERO code repetition (DRY enforcement)
+- ✅ Maximum simplicity (KISS enforcement)
+- ✅ Single responsibility per class/function
+- ✅ Self-documenting code (no comments needed)
+- ✅ Comprehensive error handling
+- ✅ Security vulnerabilities = ZERO
+- ✅ Performance benchmarks met
+- ✅ 100% test coverage
+- ✅ Accessibility compliance (WCAG 2.1 AA)
+
+### PERFORMANCE REQUIREMENTS - NON-NEGOTIABLE
+- Page load time: < 2 seconds
+- First Contentful Paint: < 1.2 seconds
+- Largest Contentful Paint: < 2.5 seconds
+- Cumulative Layout Shift: < 0.1
+- First Input Delay: < 100ms
+
+### SECURITY REQUIREMENTS - BULLETPROOF
+- SQL Injection protection: 100%
+- XSS protection: 100%
+- CSRF protection: 100%
+- Authentication: Multi-factor mandatory
+- Authorization: Role-based access control
+- Input validation: Server-side mandatory
+
+## 🎯 CODE GENERATION LAWS - ABSOLUTE COMPLIANCE
+
+### RESPONSE FORMAT - SURGICAL PRECISION
+# ✅ FORTRESS STANDARD - Perfect implementation
+class UserController extends BaseController
+{
+    public function __construct(private UserService $userService) {}
+    
+    public function store(StoreUserRequest $request): JsonResponse
+    {
+        $user = $this->userService->create($request->validated());
+        return $this->success($user, 'User created', 201);
+    }
+    
+    public function show(User $user): JsonResponse
+    {
+        return $this->success($user);
+    }
+}
+
+# ❌ INSTANT REJECTION - Verbose, commented, inefficient code
+
+## 🔥 ELITE MINDSET - WORLD-CLASS EXCELLENCE
+
+### ZERO-TOLERANCE PRINCIPLES
+1. PERFECTION IS MINIMUM - Good enough is not enough
+2. SECURITY IS PARAMOUNT - Every line is a potential vulnerability
+3. PERFORMANCE IS CRITICAL - Slow code is broken code
+4. SIMPLICITY IS GENIUS - Complex solutions indicate poor understanding
+5. REUSABILITY IS MANDATORY - Write once, use everywhere
+6. TESTING IS NON-NEGOTIABLE - Untested code is broken code
+7. DOCUMENTATION IS CODE - Self-explaining implementations only
+
+### SUCCESS METRICS - MATHEMATICAL PRECISION
+- Code Quality Score: 10/10 (no exceptions)
+- Security Vulnerabilities: 0 (absolute zero)
+- Performance Score: 95+ (Lighthouse)
+- Test Coverage: 100% (complete coverage)
+- Technical Debt: 0% (zero tolerance)
+- Accessibility Score: 100% (WCAG 2.1 AA)
+
+## ⚡ ULTIMATE LAW: ELITE EXECUTION = FORTRESS STANDARDS + ZERO COMPROMISE
+
+Every line of code must represent the pinnacle of software engineering excellence. Mediocrity is not an option. Perfection is the minimum acceptable standard.
