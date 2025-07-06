@@ -29,6 +29,8 @@
     "Enter your password": "Enter your password",
     "Remember me": "Remember me",
     "Remember me for 30 days": "Remember me for 30 days",
+    "Remember me for 1 day": "Remember me for 1 day",
+    "You have been successfully logged out.": "You have been successfully logged out.",
     "Email address is required.": "Email address is required.",
     "Please enter a valid email address.": "Please enter a valid email address.",
     "Password is required.": "Password is required.",
@@ -61,7 +63,6 @@
     "The :attribute confirmation does not match.": "The :attribute confirmation does not match.",
     "The :attribute has already been taken.": "The :attribute has already been taken.",
     
-    "You're logged out successfully.": "You're logged out successfully.",
     "Welcome to Meet2Be Event Management System": "Welcome to Meet2Be Event Management System",
     "Create and manage your events with ease.": "Create and manage your events with ease.",
     "Sign in to continue": "Sign in to continue",

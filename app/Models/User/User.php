@@ -163,4 +163,14 @@ class User extends Authenticatable
     {
         return UserFactory::new();
     }
+
+    /**
+     * Get the number of minutes the remember me cookie should be valid for.
+     *
+     * @return int
+     */
+    public function getRememberTokenDuration(): int
+    {
+        return 1440; // 1 gün (dakika cinsinden)
+    }
 }

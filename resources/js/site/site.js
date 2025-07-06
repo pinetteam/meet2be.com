@@ -1,4 +1,8 @@
+import Alpine from 'alpinejs';
 import axios from 'axios';
+
+// Alpine'i window objesine ekle
+window.Alpine = Alpine;
 
 // Configure axios
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -30,4 +34,7 @@ window.site = {
     // Add site-specific methods here
 };
 
-console.log('Site JS loaded'); 
+console.log('Site JS loaded');
+
+// Alpine'i başlat
+Alpine.start(); 

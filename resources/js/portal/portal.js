@@ -1,4 +1,8 @@
+import Alpine from 'alpinejs';
 import axios from 'axios';
+
+// Alpine'i window objesine ekle
+window.Alpine = Alpine;
 
 // Configure axios
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -61,4 +65,7 @@ window.portal = {
     }
 };
 
-console.log('Portal JS loaded'); 
+console.log('Portal JS loaded');
+
+// Alpine'i başlat
+Alpine.start(); 

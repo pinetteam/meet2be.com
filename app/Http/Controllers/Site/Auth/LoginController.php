@@ -32,7 +32,7 @@ class LoginController extends Controller
 
             Auth::user()->updateLoginInfo(
                 $request->ip(),
-                $request->userAgent()
+                substr($request->userAgent(), 0, 250)
             );
 
             $user = Auth::user();

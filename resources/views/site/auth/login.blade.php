@@ -27,7 +27,23 @@
                     </a>
                 </div>
                 
-                <flux:heading class="text-center text-white" size="xl">{{ __('Welcome back!') }}</flux:heading>
+                <h1 class="text-center text-white text-2xl font-semibold">{{ __('Welcome back!') }}</h1>
+                
+                <!-- Success Alert -->
+                @if(session('success'))
+                    <div class="rounded-lg border border-green-500/20 bg-green-500/10 p-4" role="alert">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fa-solid fa-circle-check text-green-400"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-green-400">
+                                    {{ session('success') }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
                 
                 <!-- General Error Alert -->
                 @if($errors->any())
@@ -52,58 +68,103 @@
                     </div>
                 @endif
                 
-                <form method="POST" action="{{ route('site.auth.login.store') }}" class="flex flex-col gap-6">
+                <form method="POST" action="{{ route('site.auth.login.store') }}" class="flex flex-col gap-6" x-data="loginForm()">
                     @csrf
                     
-                    <flux:field>
-                        <flux:label class="text-stone-200">{{ __('Email Address') }}</flux:label>
-                        <flux:input 
+                    <!-- Email Field -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-stone-200 mb-1">
+                            {{ __('Email Address') }}
+                        </label>
+                        <input 
+                            id="email"
                             name="email"
-                            type="email" 
+                            type="email"
                             placeholder="email@example.com"
                             value="{{ old('email') }}"
                             required
                             autofocus
-                            class="bg-stone-800 text-white border-stone-700 focus:border-indigo-500 @error('email') border-red-500 focus:border-red-500 @enderror"
+                            autocomplete="email"
+                            class="w-full rounded-lg bg-stone-800 border @error('email') border-red-500 @else border-stone-700 @enderror px-4 py-2 text-white placeholder-stone-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                         />
                         @error('email')
-                            <div class="mt-1 flex items-center gap-1.5 text-sm text-red-400">
-                                <i class="fa-solid fa-circle-exclamation text-xs"></i>
-                                <span>{{ $message }}</span>
-                            </div>
+                            <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                         @enderror
-                    </flux:field>
+                    </div>
                     
-                    <flux:field>
-                        <div class="mb-3 flex justify-between">
-                            <flux:label class="text-stone-200">{{ __('Password') }}</flux:label>
-                            <flux:link href="#" variant="subtle" class="text-sm text-indigo-400 hover:text-indigo-300">{{ __('Forgot password?') }}</flux:link>
+                    <!-- Password Field -->
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label for="password" class="block text-sm font-medium text-stone-200">
+                                {{ __('Password') }}
+                            </label>
+                            <a href="#" class="text-sm text-indigo-400 hover:text-indigo-300">
+                                {{ __('Forgot password?') }}
+                            </a>
                         </div>
-                        <flux:input 
-                            name="password"
-                            type="password" 
-                            placeholder="{{ __('Enter your password') }}"
-                            required
-                            class="bg-stone-800 text-white border-stone-700 focus:border-indigo-500 @error('password') border-red-500 focus:border-red-500 @enderror"
-                        />
+                        <div class="relative">
+                            <input 
+                                id="password"
+                                name="password"
+                                :type="showPassword ? 'text' : 'password'"
+                                placeholder="{{ __('Enter your password') }}"
+                                required
+                                autocomplete="current-password"
+                                class="w-full rounded-lg bg-stone-800 border @error('password') border-red-500 @else border-stone-700 @enderror px-4 py-2 pr-10 text-white placeholder-stone-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            />
+                            <button 
+                                type="button"
+                                @click="showPassword = !showPassword"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-stone-400 hover:text-stone-200"
+                            >
+                                <i class="fa-solid" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                            </button>
+                        </div>
                         @error('password')
-                            <div class="mt-1 flex items-center gap-1.5 text-sm text-red-400">
-                                <i class="fa-solid fa-circle-exclamation text-xs"></i>
-                                <span>{{ $message }}</span>
-                            </div>
+                            <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                         @enderror
-                    </flux:field>
+                    </div>
                     
-                    <flux:checkbox name="remember" label="{{ __('Remember me for 30 days') }}" class="text-stone-200" />
+                    <!-- Remember Me -->
+                    <div class="flex items-center">
+                        <input 
+                            id="remember"
+                            name="remember"
+                            type="checkbox"
+                            class="h-4 w-4 rounded border-stone-700 bg-stone-800 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0"
+                        />
+                        <label for="remember" class="ml-2 block text-sm text-stone-200">
+                            {{ __('Remember me for 1 day') }}
+                        </label>
+                    </div>
                     
-                    <flux:button type="submit" variant="primary" class="w-full bg-indigo-600 hover:bg-indigo-700">{{ __('Login') }}</flux:button>
+                    <!-- Submit Button -->
+                    <button 
+                        type="submit"
+                        class="w-full rounded-lg bg-indigo-600 px-4 py-2 text-white font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-stone-900 transition-colors"
+                        :disabled="isSubmitting"
+                    >
+                        <span x-show="!isSubmitting">{{ __('Login') }}</span>
+                        <span x-show="isSubmitting" class="flex items-center justify-center">
+                            <i class="fa-solid fa-spinner fa-spin mr-2"></i>
+                            {{ __('Loading...') }}
+                        </span>
+                    </button>
                 </form>
                 
-                <flux:separator class="border-stone-700" />
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-stone-700"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-stone-900 text-stone-400">{{ __('or') }}</span>
+                    </div>
+                </div>
                 
-                <flux:subheading class="text-center text-stone-300">
-                    {{ __("First time around here?") }} <flux:link href="#" class="text-indigo-400 hover:text-indigo-300">{{ __('Sign up for free') }}</flux:link>
-                </flux:subheading>
+                <p class="text-center text-stone-300 text-sm">
+                    {{ __("First time around here?") }} 
+                    <a href="#" class="text-indigo-400 hover:text-indigo-300">{{ __('Sign up for free') }}</a>
+                </p>
             </div>
         </div>
         
@@ -124,7 +185,7 @@
                         {{ __('Meet2Be has enabled me to design, build, and manage events faster than ever before.') }}
                     </div>
                     <div class="flex gap-4">
-                        <flux:avatar src="{{ asset('assets/images/site/ismail_celik.png') }}" size="xl" />
+                        <img src="{{ asset('assets/images/site/ismail_celik.png') }}" alt="Prof. Dr. İsmail Çelik" class="h-14 w-14 rounded-full">
                         <div class="flex flex-col justify-center font-medium">
                             <div class="text-lg">Prof. Dr. İsmail Çelik</div>
                             <div class="text-stone-300">{{ __('President of Turkish Medical Oncology Association') }}</div>
@@ -134,5 +195,20 @@
             </div>
         </div>
     </div>
+    
+    <script>
+        function loginForm() {
+            return {
+                showPassword: false,
+                isSubmitting: false,
+                
+                init() {
+                    this.$el.addEventListener('submit', () => {
+                        this.isSubmitting = true;
+                    });
+                }
+            }
+        }
+    </script>
 </body>
 </html> 

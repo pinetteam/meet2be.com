@@ -1,9 +1,9 @@
 {
     "Login": "Giriş Yap",
-    "Logout": "Çıkış",
+    "Logout": "Çıkış Yap",
     "Dashboard": "Panel",
     "Home": "Ana Sayfa",
-    "Welcome": "Hoş geldiniz",
+    "Welcome": "Hoş Geldiniz",
     "Profile": "Profil",
     "Settings": "Ayarlar",
     "Save": "Kaydet",
@@ -29,6 +29,8 @@
     "Enter your password": "Şifrenizi girin",
     "Remember me": "Beni hatırla",
     "Remember me for 30 days": "30 gün boyunca beni hatırla",
+    "Remember me for 1 day": "1 gün boyunca beni hatırla",
+    "You have been successfully logged out.": "Başarıyla çıkış yaptınız.",
     "Email address is required.": "E-posta adresi zorunludur.",
     "Please enter a valid email address.": "Geçerli bir e-posta adresi girin.",
     "Password is required.": "Şifre zorunludur.",
@@ -61,7 +63,6 @@
     "The :attribute confirmation does not match.": ":attribute onayı eşleşmiyor.",
     "The :attribute has already been taken.": ":attribute zaten kullanılmaktadır.",
     
-    "You're logged out successfully.": "Başarıyla çıkış yaptınız.",
     "Welcome to Meet2Be Event Management System": "Meet2Be Etkinlik Yönetim Sistemine Hoş Geldiniz",
     "Create and manage your events with ease.": "Etkinliklerinizi kolayca oluşturun ve yönetin.",
     "Sign in to continue": "Devam etmek için giriş yapın",

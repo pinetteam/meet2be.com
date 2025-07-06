@@ -19,6 +19,7 @@
         "vite": "^6.2.4"
     },
     "dependencies": {
-        "@fortawesome/fontawesome-pro": "^6.7.2"
+        "@fortawesome/fontawesome-pro": "^6.7.2",
+        "alpinejs": "^3.14.9"
     }
 }
