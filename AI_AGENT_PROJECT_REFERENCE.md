@@ -292,6 +292,7 @@ php artisan lang:publish
    - Social login buttons removed from login page
    - FluxUI stone theme implemented
    - Removed unnecessary Livewire/Flux directives (auto-loaded in v3)
+   - Fixed email validation to allow test domains
 
 2. **Active Routes**:
    - `/` - Site homepage
@@ -299,8 +300,9 @@ php artisan lang:publish
    - `/portal` - Portal dashboard (auth required)
 
 3. **Test Users**:
-   - admin@meet2be.com / password (admin)
-   - user@meet2be.com / password (user)
+   - admin@example.com / password (admin)
+   - Users are created for each tenant
+   - Password for all test users: password
 
 ### 🔴 CRITICAL REMINDERS
 

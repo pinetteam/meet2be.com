@@ -29,6 +29,29 @@
                 
                 <flux:heading class="text-center text-white" size="xl">{{ __('Welcome back!') }}</flux:heading>
                 
+                <!-- General Error Alert -->
+                @if($errors->any())
+                    <div class="rounded-lg border border-red-500/20 bg-red-500/10 p-4" role="alert">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fa-solid fa-circle-exclamation text-red-400"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-red-400">
+                                    {{ __('There were problems with your input.') }}
+                                </h3>
+                                <div class="mt-2 text-sm text-red-300">
+                                    <ul class="list-disc space-y-1 pl-5">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+                
                 <form method="POST" action="{{ route('site.auth.login.store') }}" class="flex flex-col gap-6">
                     @csrf
                     
@@ -41,10 +64,13 @@
                             value="{{ old('email') }}"
                             required
                             autofocus
-                            class="bg-stone-800 text-white border-stone-700 focus:border-indigo-500"
+                            class="bg-stone-800 text-white border-stone-700 focus:border-indigo-500 @error('email') border-red-500 focus:border-red-500 @enderror"
                         />
                         @error('email')
-                            <flux:error>{{ $message }}</flux:error>
+                            <div class="mt-1 flex items-center gap-1.5 text-sm text-red-400">
+                                <i class="fa-solid fa-circle-exclamation text-xs"></i>
+                                <span>{{ $message }}</span>
+                            </div>
                         @enderror
                     </flux:field>
                     
@@ -58,10 +84,13 @@
                             type="password" 
                             placeholder="{{ __('Enter your password') }}"
                             required
-                            class="bg-stone-800 text-white border-stone-700 focus:border-indigo-500"
+                            class="bg-stone-800 text-white border-stone-700 focus:border-indigo-500 @error('password') border-red-500 focus:border-red-500 @enderror"
                         />
                         @error('password')
-                            <flux:error>{{ $message }}</flux:error>
+                            <div class="mt-1 flex items-center gap-1.5 text-sm text-red-400">
+                                <i class="fa-solid fa-circle-exclamation text-xs"></i>
+                                <span>{{ $message }}</span>
+                            </div>
                         @enderror
                     </flux:field>
                     

@@ -130,7 +130,7 @@ class User extends Authenticatable
         $this->update([
             'last_login_at' => now(),
             'last_ip_address' => $ipAddress,
-            'last_user_agent' => $userAgent,
+            'last_user_agent' => $userAgent ? substr($userAgent, 0, 250) : null,
         ]);
     }
 

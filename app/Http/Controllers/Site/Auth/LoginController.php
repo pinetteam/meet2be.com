@@ -30,7 +30,10 @@ class LoginController extends Controller
                 ])->onlyInput('email');
             }
 
-            Auth::user()->updateLoginInfo($request);
+            Auth::user()->updateLoginInfo(
+                $request->ip(),
+                $request->userAgent()
+            );
 
             $user = Auth::user();
             
