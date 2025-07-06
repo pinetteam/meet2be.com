@@ -8,7 +8,7 @@ alwaysApply: true
 ## 🚨 ABSOLUTE TECHNOLOGY STACK - BREACH = IMMEDIATE REJECTION
 MANDATORY STACK - NO EXCEPTIONS:
 - Laravel 12 ONLY (No Symfony/CodeIgniter/CakePHP)
-- FluxUI Pro + Alpine.js ONLY (ZERO React/Vue/Livewire/Inertia)
+- Tailwind CSS + Alpine.js ONLY (ZERO React/Vue/Livewire/Inertia)
 - Alpine.js 3.x ONLY (No jQuery/Stimulus/Vanilla JS for interactions)
 - FontAwesome Pro ONLY (No Heroicons/Lucide/Tabler)
 - Tailwind CSS ONLY (No Bootstrap/Bulma/Foundation/Custom CSS)
@@ -102,7 +102,7 @@ class UserService
 
 # ❌ INSTANT REJECTION - Unnecessary complexity like UserManagementFactoryServiceProviderInterface
 
-## 🎨 FLUXUI + ALPINE.JS - SURGICAL PRECISION
+## 🎨 TAILWIND CSS + ALPINE.JS - SURGICAL PRECISION
 
 ### COMPONENT ARCHITECTURE - MILITARY PRECISION
 # ✅ FORTRESS STANDARD - Minimal, reusable, perfect
@@ -113,15 +113,15 @@ class UserService
 </x-form-wrapper>
 
 # Component: form-wrapper.blade.php
-<flux:card>
-    <flux:header>
-        <flux:heading>{{ $title }}</flux:heading>
-    </flux:header>
-    <flux:form action="{{ $action }}" method="POST" class="space-y-4">
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ $title }}</h3>
+    </div>
+    <form action="{{ $action }}" method="POST" class="p-6 space-y-4">
         @csrf
         {{ $slot }}
-    </flux:form>
-</flux:card>
+    </form>
+</div>
 
 # ❌ INSTANT REJECTION - Repeated markup, no reusability
 
@@ -1333,30 +1333,37 @@ return [
 ### BLADE TEMPLATE USAGE
 ```blade
 {{-- ✅ FORTRESS STANDARD - Proper localization usage --}}
-<flux:card>
-    <flux:header>
-        <flux:heading>{{ __('user.dashboard.title') }}</flux:heading>
-        <flux:subheading>{{ __('user.dashboard.subtitle') }}</flux:subheading>
-    </flux:header>
-    <flux:form>
-        <flux:input 
-            name="email" 
-            label="{{ __('user.profile.email_label') }}" 
-            placeholder="{{ __('user.profile.email_placeholder') }}"
-        />
-        <flux:button type="submit">
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ __('user.dashboard.title') }}</h2>
+        <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('user.dashboard.subtitle') }}</p>
+    </div>
+    <form class="p-6 space-y-4">
+        <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {{ __('user.profile.email_label') }}
+            </label>
+            <input 
+                type="email"
+                name="email" 
+                id="email"
+                placeholder="{{ __('user.profile.email_placeholder') }}"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
+            />
+        </div>
+        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
             {{ __('common.actions.save') }}
-        </flux:button>
-    </flux:form>
-</flux:card>
+        </button>
+    </form>
+</div>
 
 {{-- ❌ INSTANT REJECTION - Hardcoded text --}}
-<flux:card>
-    <flux:header>
-        <flux:heading>User Dashboard</flux:heading>
-        <flux:subheading>Manage your account</flux:subheading>
-    </flux:header>
-</flux:card>
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white">User Dashboard</h2>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Manage your account</p>
+    </div>
+</div>
 ```
 
 ### CONTROLLER LOCALIZATION
