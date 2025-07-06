@@ -12,7 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->name('site.')
                 ->group(base_path('routes/site.php'));
                 
-            Route::middleware('web')
+            Route::middleware(['web', 'auth', 'tenant'])
                 ->name('portal.')
                 ->prefix('portal')
                 ->group(base_path('routes/portal.php'));
