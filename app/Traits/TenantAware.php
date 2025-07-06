@@ -45,6 +45,20 @@ trait TenantAware
             return false;
         }
         
+        // Skip in authentication context to prevent infinite loop
+        if ($this instanceof \Illuminate\Contracts\Auth\Authenticatable) {
+            // Check if we're in auth process
+            $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10);
+            foreach ($backtrace as $trace) {
+                if (isset($trace['class']) && (
+                    str_contains($trace['class'], 'Auth') ||
+                    str_contains($trace['class'], 'SessionGuard')
+                )) {
+                    return false;
+                }
+            }
+        }
+        
         // Allow disabling tenant filter
         if (property_exists($this, 'disableTenantFilter') && $this->disableTenantFilter) {
             return false;

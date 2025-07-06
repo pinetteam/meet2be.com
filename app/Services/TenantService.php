@@ -21,6 +21,16 @@ class TenantService
             return self::$currentTenantId;
         }
         
+        // Prevent infinite loop - check if we're in a login/public context
+        $currentRoute = request()->route();
+        if ($currentRoute) {
+            $routeName = $currentRoute->getName();
+            $publicRoutes = ['site.auth.login', 'site.auth.logout', 'site.home.index'];
+            if (in_array($routeName, $publicRoutes)) {
+                return null;
+            }
+        }
+        
         // Session cache
         $sessionTenantId = Session::get('current_tenant_id');
         if ($sessionTenantId) {

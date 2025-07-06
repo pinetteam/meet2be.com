@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full" x-data="{ darkMode: true }" :class="{ 'dark': darkMode }">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-white dark:bg-gray-950" x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }" x-init="$watch('darkMode', val => localStorage.setItem('darkMode', val))" :class="{ 'dark': darkMode }">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,273 +13,451 @@
 
     <!-- Scripts -->
     @vite(['resources/css/portal/portal.css', 'resources/js/portal/portal.js'])
-
 </head>
-<body class="font-sans antialiased min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100" x-data="portalLayout()">
-    <!-- Header -->
-    <header class="z-10 min-h-14 bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700" :class="{ 'lg:pl-64': sidebarOpen }">
-        <div class="mx-auto w-full h-full px-6 lg:px-8 flex items-center">
-            <!-- Mobile menu button -->
-            <button type="button" @click="toggleMobileSidebar()" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap h-10 text-sm rounded-lg w-10 inline-flex bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white shrink-0 lg:hidden">
-                <i class="fas fa-bars text-lg"></i>
-            </button>
+<body class="h-full">
+<div x-data="portalLayout()">
+    <!-- Mobile sidebar -->
+    <div x-show="mobileMenuOpen" class="relative z-50 lg:hidden" role="dialog" aria-modal="true">
+        <!-- Backdrop with blur -->
+        <div x-show="mobileMenuOpen" 
+             x-transition:enter="transition-opacity ease-linear duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition-opacity ease-linear duration-300"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             @click="mobileMenuOpen = false"
+             class="fixed inset-0 bg-gray-900/80 dark:bg-gray-950/90 backdrop-blur-sm"></div>
 
-            <!-- Logo (visible on mobile when sidebar is closed) -->
-            <a href="/portal/dashboard" class="h-10 flex items-center me-4 gap-2 lg:hidden">
-                <span class="text-xl font-bold text-amber-500">Meet2Be</span>
-            </a>
+        <div class="fixed inset-0 flex">
+            <!-- Mobile sidebar -->
+            <div x-show="mobileMenuOpen"
+                 x-transition:enter="transition ease-in-out duration-300 transform"
+                 x-transition:enter-start="-translate-x-full"
+                 x-transition:enter-end="translate-x-0"
+                 x-transition:leave="transition ease-in-out duration-300 transform"
+                 x-transition:leave-start="translate-x-0"
+                 x-transition:leave-end="-translate-x-full"
+                 class="relative flex w-full max-w-[280px] flex-1">
 
-            <!-- Top Navigation -->
-            <nav class="flex items-center gap-1 py-3 -mb-px max-lg:hidden">
-                <template x-for="item in topNavigation" :key="item.name">
-                    <a :href="item.href" 
-                       @click="currentTopNav = item.name"
-                       :class="[
-                           currentTopNav === item.name ? 'text-amber-600 dark:text-amber-500 after:absolute after:-bottom-3 after:inset-x-0 after:h-[2px] after:bg-amber-600 dark:after:bg-amber-500' : 'text-zinc-500 dark:text-white/80',
-                           'px-3 h-8 flex items-center rounded-lg relative text-sm font-medium hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-800/5 dark:hover:bg-white/10'
-                       ]">
-                        <span x-html="item.icon" class="size-5 mr-2"></span>
-                        <span x-text="item.name"></span>
-                        <span x-show="item.badge" x-text="item.badge" class="ml-2 text-xs font-medium rounded-sm px-1 py-0.5 text-zinc-700 dark:text-zinc-200 bg-zinc-400/15 dark:bg-white/10"></span>
-                    </a>
-                </template>
-            </nav>
-
-            <div class="flex-1"></div>
-
-            <!-- Right side navigation -->
-            <nav class="flex items-center gap-1 py-3 mr-4">
-                <button type="button" class="px-3 h-8 flex items-center rounded-lg relative text-zinc-500 dark:text-white/80 hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-800/5 dark:hover:bg-white/10">
-                    <i class="fas fa-search text-lg"></i>
-                </button>
-                <button type="button" class="px-3 h-8 flex items-center rounded-lg relative text-zinc-500 dark:text-white/80 hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-800/5 dark:hover:bg-white/10 max-lg:hidden">
-                    <i class="fas fa-bell text-lg"></i>
-                </button>
-            </nav>
-
-            <!-- User dropdown -->
-            <div class="relative" x-data="{ open: false }">
-                <button type="button" @click="open = !open" class="group flex items-center rounded-lg p-1 hover:bg-zinc-800/5 dark:hover:bg-white/10">
-                    <div class="size-8 rounded-full bg-amber-600 flex items-center justify-center">
-                        <span class="text-sm font-medium text-white">{{ substr(auth()->user()->name ?? 'K', 0, 1) }}</span>
-                    </div>
-                    <i class="fas fa-chevron-down text-xs ml-2 text-zinc-400 dark:text-white/80 group-hover:text-zinc-800 dark:group-hover:text-white"></i>
-                </button>
-
-                <div x-show="open" @click.outside="open = false" x-transition class="absolute right-0 z-10 mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-zinc-700 ring-1 ring-black ring-opacity-5">
-                    <div class="py-1">
-                        <div class="px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300">
-                            <div class="font-medium">{{ auth()->user()->name ?? 'Kullanıcı' }}</div>
-                            <div class="text-xs text-zinc-500 dark:text-zinc-400">{{ auth()->user()->email ?? '' }}</div>
-                        </div>
-                        <hr class="my-1 border-zinc-200 dark:border-zinc-600">
-                        <a href="#" class="block px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-600">Profil</a>
-                        <a href="#" class="block px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-600">Ayarlar</a>
-                        <hr class="my-1 border-zinc-200 dark:border-zinc-600">
-                        <form method="POST" action="{{ route('site.auth.logout') }}">
-                            @csrf
-                            <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-600">
-                                Çıkış Yap
+                <!-- Sidebar content -->
+                <div class="flex grow flex-col overflow-y-auto bg-white dark:bg-gray-900 custom-scrollbar w-full shadow-2xl">
+                    <!-- Header with logo and close button -->
+                    <div class="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+                        <div class="flex h-16 items-center justify-between px-6">
+                            <span class="text-2xl font-bold text-brand">Meet2Be</span>
+                            <!-- Close button -->
+                            <button type="button" @click="mobileMenuOpen = false" 
+                                    class="rounded-full p-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 hover:rotate-90">
+                                <span class="sr-only">Menüyü kapat</span>
+                                <i class="fa-regular fa-xmark text-xl text-gray-600 dark:text-gray-300"></i>
                             </button>
-                        </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Navigation content -->
+                    <div class="flex flex-col gap-y-5 px-6 py-4 pb-6 flex-1">
+                    <nav class="flex flex-1 flex-col">
+                        <ul role="list" class="flex flex-1 flex-col gap-y-7">
+                            <li>
+                                <ul role="list" class="-mx-2 space-y-1">
+                                    <template x-for="item in navigation" :key="item.name">
+                                        <li>
+                                            <template x-if="!item.children">
+                                                <a :href="item.href"
+                                                   @click="if(!item.children) currentPage = item.name"
+                                                   :class="[
+                                                       currentPage === item.name 
+                                                         ? 'bg-gray-50 dark:bg-gray-800 text-brand' 
+                                                         : 'text-gray-700 dark:text-gray-300 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800',
+                                                       'group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                                                   ]">
+                                                    <i :class="[
+                                                        item.icon,
+                                                        currentPage === item.name ? 'text-brand' : 'text-gray-400 dark:text-gray-500 group-hover:text-brand',
+                                                        'sidebar-icon'
+                                                    ]"></i>
+                                                    <span x-text="item.name"></span>
+                                                </a>
+                                            </template>
+                                            <template x-if="item.children">
+                                                <div>
+                                                    <button type="button"
+                                                            @click="toggleSubmenu(item.name)"
+                                                            class="w-full text-left text-gray-700 dark:text-gray-300 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800 group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                                                        <i :class="[
+                                                            item.icon,
+                                                            'text-gray-400 dark:text-gray-500 group-hover:text-brand',
+                                                            'sidebar-icon'
+                                                        ]"></i>
+                                                        <span class="flex-1" x-text="item.name"></span>
+                                                        <i :class="[
+                                                            'fa-light fa-chevron-down text-xs transition-transform duration-200',
+                                                            openSubmenus.includes(item.name) ? 'rotate-180' : ''
+                                                        ]"></i>
+                                                    </button>
+                                                    <ul x-show="openSubmenus.includes(item.name)" 
+                                                        x-collapse 
+                                                        class="mt-1 px-2">
+                                                        <template x-for="child in item.children" :key="child.name">
+                                                            <li>
+                                                                <a :href="child.href"
+                                                                   @click="currentPage = child.name"
+                                                                   :class="[
+                                                                       currentPage === child.name 
+                                                                         ? 'bg-gray-50 dark:bg-gray-800 text-brand' 
+                                                                         : 'text-gray-700 dark:text-gray-400 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800',
+                                                                       'group flex items-center gap-x-3 rounded-md py-2 pl-9 pr-2 text-sm leading-6'
+                                                                   ]">
+                                                                    <span x-text="child.name"></span>
+                                                                </a>
+                                                            </li>
+                                                        </template>
+                                                    </ul>
+                                                </div>
+                                            </template>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </li>
+                            <li class="mt-auto">
+                                <ul role="list" class="-mx-2 space-y-1 border-t border-gray-200 dark:border-gray-700 pt-2">
+                                    <li>
+                                        <a href="/portal/user" 
+                                           @click="currentPage = 'Kullanıcılar'"
+                                           :class="[
+                                               currentPage === 'Kullanıcılar' 
+                                                 ? 'bg-gray-50 dark:bg-gray-800 text-brand' 
+                                                 : 'text-gray-700 dark:text-gray-300 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800',
+                                               'group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                                           ]">
+                                            <i :class="[
+                                                'fa-light fa-users',
+                                                currentPage === 'Kullanıcılar' ? 'text-brand' : 'text-gray-400 dark:text-gray-500 group-hover:text-brand',
+                                                'sidebar-icon'
+                                            ]"></i>
+                                            Kullanıcılar
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-brand">
+                                            <i class="fa-light fa-gear sidebar-icon text-gray-400 dark:text-gray-500 group-hover:text-brand"></i>
+                                            Ayarlar
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </nav>
                     </div>
                 </div>
             </div>
         </div>
-    </header>
-
-    <!-- Mobile sidebar backdrop -->
-    <div x-show="mobileSidebarOpen" 
-         @click="mobileSidebarOpen = false"
-         x-transition:enter="transition-opacity ease-linear duration-300"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition-opacity ease-linear duration-300"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
-         class="fixed inset-0 bg-black/10 z-40 lg:hidden"></div>
-
-    <!-- Sidebar -->
-    <div class="fixed inset-y-0 left-0 z-50 flex flex-col gap-4 w-64 p-4 bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700 transform transition-transform duration-300"
-         :class="{ '-translate-x-full': !mobileSidebarOpen, 'translate-x-0': mobileSidebarOpen, 'lg:translate-x-0': sidebarOpen, 'lg:-translate-x-full': !sidebarOpen }">
-        
-        <!-- Close button (mobile only) -->
-        <button type="button" @click="mobileSidebarOpen = false" class="absolute top-4 right-4 lg:hidden">
-            <i class="fas fa-times text-lg text-zinc-500 dark:text-zinc-400"></i>
-        </button>
-
-        <!-- Logo -->
-        <a href="/portal/dashboard" class="h-10 flex items-center gap-2 px-2">
-            <span class="text-xl font-bold text-amber-500">Meet2Be</span>
-        </a>
-
-        <!-- Navigation -->
-        <nav class="flex flex-col overflow-visible min-h-auto">
-            <template x-for="item in sidebarNavigation" :key="item.name">
-                <div>
-                    <template x-if="!item.children">
-                        <a :href="item.href"
-                           @click="currentSideNav = item.name"
-                           :class="[
-                               currentSideNav === item.name ? 'bg-white dark:bg-white/[7%] text-amber-600 dark:text-amber-500 border-zinc-200 dark:border-transparent' : 'text-zinc-500 dark:text-white/80 hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-800/5 dark:hover:bg-white/[7%] border-transparent',
-                               'h-10 lg:h-8 relative flex items-center gap-3 rounded-lg py-0 text-start w-full px-3 my-px border'
-                           ]">
-                            <span x-html="item.icon" class="size-4"></span>
-                            <span class="flex-1 text-sm font-medium" x-text="item.name"></span>
-                            <span x-show="item.badge" x-text="item.badge" class="text-xs font-medium rounded-sm px-1 py-0.5 text-zinc-700 dark:text-zinc-200 bg-zinc-400/15 dark:bg-white/10"></span>
-                        </a>
-                    </template>
-                    <template x-if="item.children">
-                        <div>
-                            <button type="button"
-                                    @click="toggleSubmenu(item.name)"
-                                    class="w-full h-10 lg:h-8 flex items-center rounded-lg hover:bg-zinc-800/5 dark:hover:bg-white/[7%] text-zinc-500 hover:text-zinc-800 dark:text-white/80 dark:hover:text-white">
-                                <div class="ps-3 pe-4">
-                                    <i x-show="isSubmenuOpen(item.name)" class="fas fa-chevron-down text-xs"></i>
-                                    <i x-show="!isSubmenuOpen(item.name)" class="fas fa-chevron-right text-xs"></i>
-                                </div>
-                                <span class="text-sm font-medium" x-text="item.name"></span>
-                            </button>
-                            <div x-show="isSubmenuOpen(item.name)" x-collapse class="relative space-y-[2px] ps-7">
-                                <div class="absolute inset-y-[3px] w-px bg-zinc-200 dark:bg-white/30 start-0 ms-4"></div>
-                                <template x-for="child in item.children" :key="child.name">
-                                    <a :href="child.href"
-                                       @click="currentSideNav = child.name"
-                                       :class="[
-                                           currentSideNav === child.name ? 'bg-white dark:bg-white/[7%] text-amber-600 dark:text-amber-500 border-zinc-200 dark:border-transparent' : 'text-zinc-500 dark:text-white/80 hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-800/5 dark:hover:bg-white/[7%] border-transparent',
-                                           'h-10 lg:h-8 relative flex items-center gap-3 rounded-lg py-0 text-start w-full px-3 my-px border'
-                                       ]">
-                                        <span class="text-sm font-medium" x-text="child.name"></span>
-                                    </a>
-                                </template>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-            </template>
-        </nav>
-
-        <div class="flex-1"></div>
-
-        <!-- Bottom navigation -->
-        <nav class="flex flex-col overflow-visible min-h-auto">
-            <a href="#" class="h-10 lg:h-8 relative flex items-center gap-3 rounded-lg py-0 text-start w-full px-3 my-px text-zinc-500 dark:text-white/80 hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-800/5 dark:hover:bg-white/[7%] border border-transparent">
-                <i class="fas fa-cog"></i>
-                <span class="flex-1 text-sm font-medium">Ayarlar</span>
-            </a>
-            <a href="#" class="h-10 lg:h-8 relative flex items-center gap-3 rounded-lg py-0 text-start w-full px-3 my-px text-zinc-500 dark:text-white/80 hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-800/5 dark:hover:bg-white/[7%] border border-transparent">
-                <i class="fas fa-question-circle"></i>
-                <span class="flex-1 text-sm font-medium">Yardım</span>
-            </a>
-        </nav>
     </div>
 
-    <!-- Main content -->
-    <main :class="{ 'lg:pl-64': sidebarOpen }">
-        <div class="p-6 lg:p-8">
-            @yield('content')
+    <!-- Desktop sidebar -->
+    <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+        <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-6 pb-4 custom-scrollbar">
+            <div class="flex h-16 shrink-0 items-center">
+                <span class="text-2xl font-bold text-brand">Meet2Be</span>
+            </div>
+            <nav class="flex flex-1 flex-col">
+                <ul role="list" class="flex flex-1 flex-col gap-y-7">
+                    <li>
+                        <ul role="list" class="-mx-2 space-y-1">
+                            <template x-for="item in navigation" :key="item.name">
+                                <li>
+                                    <template x-if="!item.children">
+                                        <a :href="item.href"
+                                           @click="if(!item.children) currentPage = item.name"
+                                           :class="[
+                                               currentPage === item.name 
+                                                 ? 'bg-gray-50 dark:bg-gray-800 text-brand' 
+                                                 : 'text-gray-700 dark:text-gray-300 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800',
+                                               'group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                                           ]">
+                                            <i :class="[
+                                                item.icon,
+                                                currentPage === item.name ? 'text-brand' : 'text-gray-400 dark:text-gray-500 group-hover:text-brand',
+                                                'sidebar-icon'
+                                            ]"></i>
+                                            <span x-text="item.name"></span>
+                                        </a>
+                                    </template>
+                                    <template x-if="item.children">
+                                        <div>
+                                            <button type="button"
+                                                    @click="toggleSubmenu(item.name)"
+                                                    class="w-full text-left text-gray-700 dark:text-gray-300 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800 group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                                                <i :class="[
+                                                    item.icon,
+                                                    'text-gray-400 dark:text-gray-500 group-hover:text-brand',
+                                                    'sidebar-icon'
+                                                ]"></i>
+                                                <span class="flex-1" x-text="item.name"></span>
+                                                <i :class="[
+                                                    'fa-light fa-chevron-down text-xs transition-transform duration-200',
+                                                    openSubmenus.includes(item.name) ? 'rotate-180' : ''
+                                                ]"></i>
+                                            </button>
+                                            <ul x-show="openSubmenus.includes(item.name)" 
+                                                x-collapse 
+                                                class="mt-1 px-2">
+                                                <template x-for="child in item.children" :key="child.name">
+                                                    <li>
+                                                        <a :href="child.href"
+                                                           @click="currentPage = child.name"
+                                                           :class="[
+                                                               currentPage === child.name 
+                                                                 ? 'bg-gray-50 dark:bg-gray-800 text-brand' 
+                                                                 : 'text-gray-700 dark:text-gray-400 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800',
+                                                               'group flex items-center gap-x-3 rounded-md py-2 pl-9 pr-2 text-sm leading-6'
+                                                           ]">
+                                                            <span x-text="child.name"></span>
+                                                        </a>
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </div>
+                                    </template>
+                                </li>
+                            </template>
+                        </ul>
+                    </li>
+                    <li class="mt-auto">
+                        <ul role="list" class="-mx-2 space-y-1 border-t border-gray-200 dark:border-gray-700 pt-2">
+                            <li>
+                                <a href="/portal/user" 
+                                   @click="currentPage = 'Kullanıcılar'"
+                                   :class="[
+                                       currentPage === 'Kullanıcılar' 
+                                         ? 'bg-gray-50 dark:bg-gray-800 text-brand' 
+                                         : 'text-gray-700 dark:text-gray-300 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800',
+                                       'group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                                   ]">
+                                    <i :class="[
+                                        'fa-light fa-users',
+                                        currentPage === 'Kullanıcılar' ? 'text-brand' : 'text-gray-400 dark:text-gray-500 group-hover:text-brand',
+                                        'sidebar-icon'
+                                    ]"></i>
+                                    Kullanıcılar
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-brand">
+                                    <i class="fa-light fa-gear sidebar-icon text-gray-400 dark:text-gray-500 group-hover:text-brand"></i>
+                                    Ayarlar
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
         </div>
-    </main>
+    </div>
 
-    <script>
-        function portalLayout() {
-            return {
-                sidebarOpen: true,
-                mobileSidebarOpen: false,
-                currentTopNav: 'Dashboard',
-                currentSideNav: 'Dashboard',
-                openSubmenus: ['Kullanıcı Yönetimi', 'Hazırlık'],
-                
-                topNavigation: [
-                    {
-                        name: 'Dashboard',
-                        href: '/portal',
-                        icon: '<i class="fas fa-home"></i>'
-                    },
-                    {
-                        name: 'Etkinlikler',
-                        href: '/portal/events',
-                        icon: '<i class="fas fa-calendar-alt"></i>'
-                    },
-                    {
-                        name: 'Raporlar',
-                        href: '/portal/reports',
-                        icon: '<i class="fas fa-chart-pie"></i>',
-                        badge: '3'
-                    }
-                ],
-                
-                sidebarNavigation: [
-                    {
-                        name: 'Dashboard',
-                        href: '/portal',
-                        icon: '<i class="fas fa-home"></i>'
-                    },
-                    {
-                        name: 'Kullanıcı Yönetimi',
-                        icon: '<i class="fas fa-users-cog"></i>',
-                        children: [
-                            { name: 'Kullanıcılar', href: '/portal/user' },
-                            { name: 'Roller', href: '/portal/roles' },
-                            { name: 'İzinler', href: '/portal/permissions' }
-                        ]
-                    },
-                    {
-                        name: 'Hazırlık',
-                        icon: '<i class="fas fa-clipboard-list"></i>',
-                        children: [
-                            { name: 'Dökümanlar', href: '/portal/documents' },
-                            { name: 'Katılımcılar', href: '/portal/participants' }
-                        ]
-                    },
-                    {
-                        name: 'Etkinlik & Aktivite',
-                        icon: '<i class="fas fa-calendar-check"></i>',
-                        children: [
-                            { name: 'Duyurular', href: '/portal/announcements' },
-                            { name: 'Puan Oyunları', href: '/portal/score-games' },
-                            { name: 'Anketler', href: '/portal/surveys' }
-                        ]
-                    },
-                    {
-                        name: 'Ortam',
-                        icon: '<i class="fas fa-building"></i>',
-                        children: [
-                            { name: 'Salonlar', href: '/portal/halls' },
-                            { name: 'Sanal Stantlar', href: '/portal/virtual-stands' }
-                        ]
-                    },
-                    {
-                        name: 'Sistem Yönetimi',
-                        icon: '<i class="fas fa-cogs"></i>',
-                        children: [
-                            { name: 'Tenant\'ler', href: '/portal/tenants' },
-                            { name: 'Ülkeler', href: '/portal/countries' },
-                            { name: 'Diller', href: '/portal/languages' },
-                            { name: 'Para Birimleri', href: '/portal/currencies' },
-                            { name: 'Saat Dilimleri', href: '/portal/timezones' }
-                        ]
-                    }
-                ],
-                
-                toggleMobileSidebar() {
-                    this.mobileSidebarOpen = !this.mobileSidebarOpen;
-                },
-                
-                toggleSubmenu(name) {
-                    const index = this.openSubmenus.indexOf(name);
-                    if (index > -1) {
-                        this.openSubmenus.splice(index, 1);
-                    } else {
-                        this.openSubmenus.push(name);
-                    }
-                },
-                
-                isSubmenuOpen(name) {
-                    return this.openSubmenus.includes(name);
-                }
+    <!-- Main content area -->
+    <div class="lg:pl-72">
+        <!-- Top header -->
+        <div class="sticky top-0 z-40 lg:mx-auto">
+            <div class="flex h-16 items-center gap-x-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+                <!-- Mobile menu button -->
+                <button type="button" @click="mobileMenuOpen = true" class="-m-2.5 p-2.5 text-gray-700 dark:text-gray-300 lg:hidden">
+                    <span class="sr-only">Menüyü aç</span>
+                    <i class="fa-light fa-bars text-xl"></i>
+                </button>
+
+                <!-- Separator -->
+                <div class="h-6 w-px bg-gray-200 dark:bg-gray-700 lg:hidden" aria-hidden="true"></div>
+
+                <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
+                    <!-- Search -->
+                    <form class="relative flex flex-1" action="#" method="GET">
+                        <label for="search-field" class="sr-only">Ara</label>
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                            <i class="fa-light fa-magnifying-glass text-gray-400 dark:text-gray-500"></i>
+                        </div>
+                        <input id="search-field"
+                               class="block h-full w-full border-0 py-0 pl-10 pr-0 text-gray-900 dark:text-gray-100 bg-transparent placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-0 sm:text-sm"
+                               placeholder="Ara..."
+                               type="search"
+                               name="search">
+                    </form>
+                    
+                    <!-- Right side items -->
+                    <div class="flex items-center gap-x-4 lg:gap-x-6">
+                        <!-- Dark mode toggle -->
+                        <button type="button" 
+                                @click="darkMode = !darkMode"
+                                class="-m-2.5 p-2.5 text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400">
+                            <span class="sr-only">Tema değiştir</span>
+                            <i x-show="!darkMode" class="fa-light fa-moon text-xl"></i>
+                            <i x-show="darkMode" class="fa-light fa-sun-bright text-xl"></i>
+                        </button>
+
+                        <!-- Notifications -->
+                        <button type="button" class="-m-2.5 p-2.5 text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400">
+                            <span class="sr-only">Bildirimleri görüntüle</span>
+                            <i class="fa-light fa-bell text-xl"></i>
+                        </button>
+
+                        <!-- Separator -->
+                        <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200 dark:lg:bg-gray-700" aria-hidden="true"></div>
+
+                        <!-- Profile dropdown -->
+                        <div class="relative" x-data="{ open: false }">
+                            <button type="button" 
+                                    @click="open = !open"
+                                    class="-m-1.5 flex items-center p-1.5"
+                                    id="user-menu-button"
+                                    aria-expanded="false"
+                                    aria-haspopup="true">
+                                <span class="sr-only">Kullanıcı menüsünü aç</span>
+                                <div class="h-8 w-8 rounded-full bg-brand flex items-center justify-center">
+                                    <span class="text-sm font-medium text-white">{{ substr(auth()->user()->name ?? 'K', 0, 1) }}</span>
+                                </div>
+                                <span class="hidden lg:flex lg:items-center">
+                                    <span class="ml-4 text-sm/6 font-semibold text-gray-900 dark:text-gray-100" aria-hidden="true">{{ auth()->user()->name ?? 'Kullanıcı' }}</span>
+                                    <i class="fa-light fa-chevron-down ml-2 text-xs text-gray-400 dark:text-gray-500"></i>
+                                </span>
+                            </button>
+
+                            <!-- Dropdown menu -->
+                            <div x-show="open"
+                                 @click.outside="open = false"
+                                 x-transition:enter="transition ease-out duration-100"
+                                 x-transition:enter-start="transform opacity-0 scale-95"
+                                 x-transition:enter-end="transform opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-75"
+                                 x-transition:leave-start="transform opacity-100 scale-100"
+                                 x-transition:leave-end="transform opacity-0 scale-95"
+                                 class="absolute right-0 z-10 mt-2.5 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 py-2 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-700 focus:outline-none"
+                                 role="menu"
+                                 aria-orientation="vertical"
+                                 aria-labelledby="user-menu-button">
+                                <a href="#" class="block px-3 py-1 text-sm/6 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700" role="menuitem">Profilim</a>
+                                <a href="#" class="block px-3 py-1 text-sm/6 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700" role="menuitem">Ayarlar</a>
+                                <hr class="my-1 border-gray-200 dark:border-gray-700">
+                                <form method="POST" action="{{ route('site.auth.logout') }}">
+                                    @csrf
+                                    <button type="submit" class="block w-full text-left px-3 py-1 text-sm/6 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700" role="menuitem">
+                                        Çıkış Yap
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <main class="py-10">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                @yield('content')
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+function portalLayout() {
+    return {
+        mobileMenuOpen: false,
+        darkMode: localStorage.getItem('darkMode') === 'true',
+        currentPage: 'Dashboard',
+        openSubmenus: [],
+        
+        navigation: [
+            {
+                name: 'Dashboard',
+                href: '/portal',
+                icon: 'fa-light fa-house'
+            },
+            {
+                name: 'Hazırlık',
+                icon: 'fa-light fa-clipboard-list-check',
+                children: [
+                    { name: 'Dökümanlar', href: '/portal/documents' },
+                    { name: 'Katılımcılar', href: '/portal/participants' }
+                ]
+            },
+            {
+                name: 'Etkinlik & Aktivite',
+                icon: 'fa-light fa-calendar-days',
+                children: [
+                    { name: 'Duyurular', href: '/portal/announcements' },
+                    { name: 'Puan Oyunları', href: '/portal/score-games' },
+                    { name: 'Anketler', href: '/portal/surveys' }
+                ]
+            },
+            {
+                name: 'Ortam',
+                icon: 'fa-light fa-building-columns',
+                children: [
+                    { name: 'Salonlar', href: '/portal/halls' },
+                    { name: 'Sanal Stantlar', href: '/portal/virtual-stands' }
+                ]
+            },
+            {
+                name: 'Sistem Yönetimi',
+                icon: 'fa-light fa-gear',
+                children: [
+                    { name: 'Tenant\'ler', href: '/portal/tenants' },
+                    { name: 'Ülkeler', href: '/portal/countries' },
+                    { name: 'Diller', href: '/portal/languages' },
+                    { name: 'Para Birimleri', href: '/portal/currencies' },
+                    { name: 'Saat Dilimleri', href: '/portal/timezones' }
+                ]
+            },
+            {
+                name: 'Raporlar',
+                href: '/portal/reports',
+                icon: 'fa-light fa-chart-mixed'
             }
+        ],
+        
+        toggleSubmenu(name) {
+            const index = this.openSubmenus.indexOf(name);
+            if (index > -1) {
+                this.openSubmenus.splice(index, 1);
+            } else {
+                this.openSubmenus.push(name);
+            }
+        },
+        
+        init() {
+            // Set current page based on URL
+            const path = window.location.pathname;
+            
+            // Check bottom menu items
+            if (path === '/portal/user') {
+                this.currentPage = 'Kullanıcılar';
+            } else {
+                // Check main navigation
+                this.navigation.forEach(item => {
+                    if (item.href === path) {
+                        this.currentPage = item.name;
+                    } else if (item.children) {
+                        item.children.forEach(child => {
+                            if (child.href === path) {
+                                this.currentPage = child.name;
+                                if (!this.openSubmenus.includes(item.name)) {
+                                    this.openSubmenus.push(item.name);
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+            
+            // Watch dark mode changes
+            this.$watch('darkMode', value => {
+                localStorage.setItem('darkMode', value);
+            });
         }
-    </script>
+    }
+}
+</script>
 </body>
 </html> 

@@ -1,95 +1,119 @@
 @import 'tailwindcss';
 @import '~fontawesome/css/all.css';
 
-/* Portal specific styles */
+/* Portal specific source files */
 @source '../../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../../storage/framework/views/*.php';
 @source '../../views/portal/**/*.blade.php';
 @source '../../views/layouts/portal.blade.php';
 @source '../../js/portal/portal.js';
 
+/* Theme configuration */
 @theme {
+    /* Font family */
     --font-sans: Inter, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-    --color-zinc-50: var(--color-stone-50);
-    --color-zinc-100: var(--color-stone-100);
-    --color-zinc-200: var(--color-stone-200);
-    --color-zinc-300: var(--color-stone-300);
-    --color-zinc-400: var(--color-stone-400);
-    --color-zinc-500: var(--color-stone-500);
-    --color-zinc-600: var(--color-stone-600);
-    --color-zinc-700: var(--color-stone-700);
-    --color-zinc-800: var(--color-stone-800);
-    --color-zinc-900: var(--color-stone-900);
-    --color-zinc-950: var(--color-stone-950);
+    
+    /* Brand color palette - Easy to customize */
+    --color-brand-50: #fef3c7;
+    --color-brand-100: #fee68a;
+    --color-brand-200: #fcd44d;
+    --color-brand-300: #fbbf24;
+    --color-brand-400: #f59e0b;
+    --color-brand-500: #d97706;
+    --color-brand-600: #b45309;
+    --color-brand-700: #92400e;
+    --color-brand-800: #78350f;
+    --color-brand-900: #451a03;
+    --color-brand-950: #2d1001;
 }
 
-@theme {
-    --color-accent: var(--color-blue-500);
-    --color-accent-content: var(--color-blue-600);
-    --color-accent-foreground: var(--color-white);
-}
-@layer theme {
-    .dark {
-        --color-accent: var(--color-blue-500);
-        --color-accent-content: var(--color-blue-400);
-        --color-accent-foreground: var(--color-white);
-    }
+/* Dark mode variant */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Portal specific components */
+
+/* Sidebar icon alignment */
+.sidebar-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 1.125rem;
+    line-height: 1;
 }
 
-/* Base dark mode colors */
-:root {
-    --color-bg: theme('colors.zinc.50');
-    --color-text: theme('colors.zinc.900');
+/* Navigation base styles */
+nav a,
+nav button {
+    display: flex;
+    align-items: center;
 }
 
-.dark {
-    --color-bg: theme('colors.zinc.950');
-    --color-text: theme('colors.zinc.100');
+nav i[class*="fa-"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 1.125rem;
 }
 
-/* Scrollbar styles */
-::-webkit-scrollbar {
+nav span {
+    line-height: 1.5rem;
+}
+
+/* Custom scrollbar styling */
+.custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #e5e7eb transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
     width: 8px;
-    height: 8px;
 }
 
-::-webkit-scrollbar-track {
-    @apply bg-zinc-100 dark:bg-zinc-800;
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
 }
 
-::-webkit-scrollbar-thumb {
-    @apply bg-zinc-400 dark:bg-zinc-600 rounded;
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #e5e7eb;
+    border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    @apply bg-zinc-500 dark:bg-zinc-500;
+/* Dark mode scrollbar */
+.dark .custom-scrollbar {
+    scrollbar-color: #374151 transparent;
 }
 
-/* Custom focus styles */
-.portal-focus {
-    @apply focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-zinc-50 dark:focus:ring-offset-zinc-900;
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #374151;
 }
 
-/* Sidebar transitions */
-.sidebar-link {
-    @apply transition-all duration-200 ease-in-out;
+/* Brand color utilities */
+.text-brand {
+    color: var(--color-brand-600);
 }
 
-/* Alpine.js x-cloak */
-[x-cloak] {
-    display: none !important;
+.bg-brand {
+    background-color: var(--color-brand-600);
 }
 
-/* Smooth transitions */
-* {
-    @apply transition-colors duration-200;
+.hover\:bg-brand:hover {
+    background-color: var(--color-brand-700);
 }
 
-/* Custom shadow for cards */
-.card-shadow {
-    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+/* Dark mode brand colors */
+.dark .text-brand {
+    color: var(--color-brand-400);
 }
 
-.dark .card-shadow {
-    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+.dark .bg-brand {
+    background-color: var(--color-brand-500);
+}
+
+.dark .hover\:bg-brand:hover {
+    background-color: var(--color-brand-600);
 }
