@@ -158,6 +158,42 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
+      '/portal/profile' => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'portal.profile.index',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'GET' => 0,
+            'HEAD' => 1,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+        1 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'portal.profile.update',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'PUT' => 0,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+      ),
     ),
     2 => 
     array (
@@ -343,8 +379,8 @@ app('router')->setCompiledRoutes(
           0 => 'web',
           1 => 'guest',
         ),
-        'uses' => 'App\\Http\\Controllers\\Site\\Auth\\LoginController@create',
-        'controller' => 'App\\Http\\Controllers\\Site\\Auth\\LoginController@create',
+        'uses' => 'App\\Http\\Controllers\\Site\\Auth\\LoginController@index',
+        'controller' => 'App\\Http\\Controllers\\Site\\Auth\\LoginController@index',
         'as' => 'site.auth.login',
         'namespace' => NULL,
         'prefix' => '/auth',
@@ -730,6 +766,83 @@ app('router')->setCompiledRoutes(
         'as' => 'portal.user.destroy',
         'uses' => 'App\\Http\\Controllers\\Portal\\User\\UserController@destroy',
         'controller' => 'App\\Http\\Controllers\\Portal\\User\\UserController@destroy',
+        'namespace' => NULL,
+        'prefix' => 'portal',
+        'where' => 
+        array (
+        ),
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'portal.profile.index' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'GET',
+        1 => 'HEAD',
+      ),
+      'uri' => 'portal/profile',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+          2 => 'tenant',
+        ),
+        'uses' => 'App\\Http\\Controllers\\Portal\\Profile\\ProfileController@index',
+        'controller' => 'App\\Http\\Controllers\\Portal\\Profile\\ProfileController@index',
+        'as' => 'portal.profile.index',
+        'namespace' => NULL,
+        'prefix' => 'portal',
+        'where' => 
+        array (
+        ),
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'portal.profile.update' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'PUT',
+      ),
+      'uri' => 'portal/profile',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+          2 => 'tenant',
+        ),
+        'uses' => 'App\\Http\\Controllers\\Portal\\Profile\\ProfileController@update',
+        'controller' => 'App\\Http\\Controllers\\Portal\\Profile\\ProfileController@update',
+        'as' => 'portal.profile.update',
         'namespace' => NULL,
         'prefix' => 'portal',
         'where' => 

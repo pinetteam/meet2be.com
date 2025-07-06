@@ -51,7 +51,7 @@
                                     class="rounded-full p-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 hover:rotate-90">
                                 <span class="sr-only">Menüyü kapat</span>
                                 <i class="fa-regular fa-xmark text-xl text-gray-600 dark:text-gray-300"></i>
-                            </button>
+            </button>
                         </div>
                     </div>
                     
@@ -64,9 +64,9 @@
                                     <template x-for="item in navigation" :key="item.name">
                                         <li>
                                             <template x-if="!item.children">
-                                                <a :href="item.href"
+                    <a :href="item.href" 
                                                    @click="if(!item.children) currentPage = item.name"
-                                                   :class="[
+                       :class="[
                                                        currentPage === item.name 
                                                          ? 'bg-gray-50 dark:bg-gray-800 text-brand' 
                                                          : 'text-gray-700 dark:text-gray-300 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800',
@@ -77,9 +77,9 @@
                                                         currentPage === item.name ? 'text-brand' : 'text-gray-400 dark:text-gray-500 group-hover:text-brand',
                                                         'sidebar-icon'
                                                     ]"></i>
-                                                    <span x-text="item.name"></span>
-                                                </a>
-                                            </template>
+                        <span x-text="item.name"></span>
+                    </a>
+                </template>
                                             <template x-if="item.children">
                                                 <div>
                                                     <button type="button"
@@ -95,7 +95,7 @@
                                                             'fa-light fa-chevron-down text-xs transition-transform duration-200',
                                                             openSubmenus.includes(item.name) ? 'rotate-180' : ''
                                                         ]"></i>
-                                                    </button>
+                </button>
                                                     <ul x-show="openSubmenus.includes(item.name)" 
                                                         x-collapse 
                                                         class="mt-1 px-2">
@@ -148,7 +148,7 @@
                                 </ul>
                             </li>
                         </ul>
-                    </nav>
+            </nav>
                     </div>
                 </div>
             </div>
@@ -167,10 +167,10 @@
                         <ul role="list" class="-mx-2 space-y-1">
                             <template x-for="item in navigation" :key="item.name">
                                 <li>
-                                    <template x-if="!item.children">
-                                        <a :href="item.href"
+                    <template x-if="!item.children">
+                        <a :href="item.href"
                                            @click="if(!item.children) currentPage = item.name"
-                                           :class="[
+                           :class="[
                                                currentPage === item.name 
                                                  ? 'bg-gray-50 dark:bg-gray-800 text-brand' 
                                                  : 'text-gray-700 dark:text-gray-300 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800',
@@ -182,12 +182,12 @@
                                                 'sidebar-icon'
                                             ]"></i>
                                             <span x-text="item.name"></span>
-                                        </a>
-                                    </template>
-                                    <template x-if="item.children">
-                                        <div>
-                                            <button type="button"
-                                                    @click="toggleSubmenu(item.name)"
+                        </a>
+                    </template>
+                    <template x-if="item.children">
+                        <div>
+                            <button type="button"
+                                    @click="toggleSubmenu(item.name)"
                                                     class="w-full text-left text-gray-700 dark:text-gray-300 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800 group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
                                                 <i :class="[
                                                     item.icon,
@@ -314,10 +314,10 @@
                                     aria-haspopup="true">
                                 <span class="sr-only">Kullanıcı menüsünü aç</span>
                                 <div class="h-8 w-8 rounded-full bg-brand flex items-center justify-center">
-                                    <span class="text-sm font-medium text-white">{{ substr(auth()->user()->name ?? 'K', 0, 1) }}</span>
+                                    <span class="text-sm font-medium text-white">{{ substr(auth()->user()->full_name ?? auth()->user()->first_name ?? 'K', 0, 1) }}</span>
                                 </div>
                                 <span class="hidden lg:flex lg:items-center">
-                                    <span class="ml-4 text-sm/6 font-semibold text-gray-900 dark:text-gray-100" aria-hidden="true">{{ auth()->user()->name ?? 'Kullanıcı' }}</span>
+                                    <span class="ml-4 text-sm/6 font-semibold text-gray-900 dark:text-gray-100" aria-hidden="true">{{ auth()->user()->full_name ?? 'Kullanıcı' }}</span>
                                     <i class="fa-light fa-chevron-down ml-2 text-xs text-gray-400 dark:text-gray-500"></i>
                                 </span>
                             </button>
@@ -335,12 +335,15 @@
                                  role="menu"
                                  aria-orientation="vertical"
                                  aria-labelledby="user-menu-button">
-                                <a href="#" class="block px-3 py-1 text-sm/6 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700" role="menuitem">Profilim</a>
-                                <a href="#" class="block px-3 py-1 text-sm/6 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700" role="menuitem">Ayarlar</a>
+                                <a href="{{ route('portal.profile.index') }}" class="flex items-center gap-x-3 px-3 py-1 text-sm/6 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700" role="menuitem">
+                                    <i class="fa-light fa-user text-gray-400 dark:text-gray-500 w-4"></i>
+                                    Profilim
+                                </a>
                                 <hr class="my-1 border-gray-200 dark:border-gray-700">
                                 <form method="POST" action="{{ route('site.auth.logout') }}">
                                     @csrf
-                                    <button type="submit" class="block w-full text-left px-3 py-1 text-sm/6 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700" role="menuitem">
+                                    <button type="submit" class="flex items-center gap-x-3 w-full text-left px-3 py-1 text-sm/6 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700" role="menuitem">
+                                        <i class="fa-light fa-right-from-bracket text-gray-400 dark:text-gray-500 w-4"></i>
                                         Çıkış Yap
                                     </button>
                                 </form>
@@ -349,55 +352,55 @@
                     </div>
                 </div>
             </div>
-        </div>
+    </div>
 
-        <!-- Main content -->
+    <!-- Main content -->
         <main class="py-10">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                @yield('content')
-            </div>
-        </main>
+            @yield('content')
+        </div>
+    </main>
     </div>
 </div>
 
-<script>
-function portalLayout() {
-    return {
+    <script>
+        function portalLayout() {
+            return {
         mobileMenuOpen: false,
         darkMode: false,
         currentPage: 'Dashboard',
         openSubmenus: [],
         
         navigation: [
-            {
-                name: 'Dashboard',
+                    {
+                        name: 'Dashboard',
                 href: '/portal',
                 icon: 'fa-light fa-house'
-            },
-            {
-                name: 'Hazırlık',
+                    },
+                    {
+                        name: 'Hazırlık',
                 icon: 'fa-light fa-clipboard-list-check',
-                children: [
-                    { name: 'Dökümanlar', href: '/portal/documents' },
-                    { name: 'Katılımcılar', href: '/portal/participants' }
-                ]
-            },
-            {
-                name: 'Etkinlik & Aktivite',
+                        children: [
+                            { name: 'Dökümanlar', href: '/portal/documents' },
+                            { name: 'Katılımcılar', href: '/portal/participants' }
+                        ]
+                    },
+                    {
+                        name: 'Etkinlik & Aktivite',
                 icon: 'fa-light fa-calendar-days',
-                children: [
-                    { name: 'Duyurular', href: '/portal/announcements' },
-                    { name: 'Puan Oyunları', href: '/portal/score-games' },
-                    { name: 'Anketler', href: '/portal/surveys' }
-                ]
-            },
-            {
-                name: 'Ortam',
+                        children: [
+                            { name: 'Duyurular', href: '/portal/announcements' },
+                            { name: 'Puan Oyunları', href: '/portal/score-games' },
+                            { name: 'Anketler', href: '/portal/surveys' }
+                        ]
+                    },
+                    {
+                        name: 'Ortam',
                 icon: 'fa-light fa-building-columns',
-                children: [
-                    { name: 'Salonlar', href: '/portal/halls' },
-                    { name: 'Sanal Stantlar', href: '/portal/virtual-stands' }
-                ]
+                        children: [
+                            { name: 'Salonlar', href: '/portal/halls' },
+                            { name: 'Sanal Stantlar', href: '/portal/virtual-stands' }
+                        ]
             },
             {
                 name: 'Sistem Yönetimi',
@@ -416,16 +419,16 @@ function portalLayout() {
                 icon: 'fa-light fa-chart-mixed'
             }
         ],
-        
-        toggleSubmenu(name) {
-            const index = this.openSubmenus.indexOf(name);
-            if (index > -1) {
-                this.openSubmenus.splice(index, 1);
-            } else {
-                this.openSubmenus.push(name);
-            }
-        },
-        
+                
+                toggleSubmenu(name) {
+                    const index = this.openSubmenus.indexOf(name);
+                    if (index > -1) {
+                        this.openSubmenus.splice(index, 1);
+                    } else {
+                        this.openSubmenus.push(name);
+                    }
+                },
+                
         init() {
             // Set current page based on URL
             const path = window.location.pathname;
@@ -471,8 +474,8 @@ function portalLayout() {
                 }
             });
         }
-    }
-}
-</script>
+            }
+        }
+    </script>
 </body>
 </html> 
