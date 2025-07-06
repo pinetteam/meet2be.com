@@ -1,5 +1,8 @@
 import Alpine from 'alpinejs';
+import collapse from '@alpinejs/collapse'
 import axios from 'axios';
+ 
+Alpine.plugin(collapse)
 
 // Alpine'i window objesine ekle
 window.Alpine = Alpine;
@@ -12,22 +15,11 @@ axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[nam
 document.addEventListener('alpine:init', () => {
     // Alpine.js global stores for portal
     Alpine.store('portal', {
-        user: null,
         sidebarOpen: true,
         notifications: [],
         
         init() {
             // Initialize portal-specific data
-            this.loadUser();
-        },
-        
-        async loadUser() {
-            try {
-                const response = await axios.get('/api/user');
-                this.user = response.data;
-            } catch (error) {
-                console.error('Failed to load user:', error);
-            }
         },
         
         toggleSidebar() {

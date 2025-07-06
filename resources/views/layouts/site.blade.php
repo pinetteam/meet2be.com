@@ -40,16 +40,16 @@
                             <span class="text-stone-300">{{ Auth::user()->getFullNameAttribute() }}</span>
                             <form method="POST" action="{{ route('site.auth.logout') }}" class="inline">
                                 @csrf
-                                <flux:button type="submit" variant="ghost" size="sm" class="text-stone-300 hover:text-white">
+                                <button type="submit" class="px-3 py-1.5 text-sm text-stone-300 hover:text-white rounded-md hover:bg-stone-700 transition-colors">
                                     <i class="fa-solid fa-sign-out-alt mr-2"></i>
                                     {{ __('site.common.logout') }}
-                                </flux:button>
+                                </button>
                             </form>
                         @else
-                            <flux:button href="{{ route('site.auth.login') }}" variant="primary" size="sm" class="bg-indigo-600 hover:bg-indigo-700">
+                            <a href="{{ route('site.auth.login') }}" class="px-4 py-2 text-sm text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors">
                                 <i class="fa-solid fa-sign-in-alt mr-2"></i>
                                 {{ __('site.common.login') }}
-                            </flux:button>
+                            </a>
                         @endauth
                     </div>
                 </div>

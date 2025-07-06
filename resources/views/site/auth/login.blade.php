@@ -131,6 +131,7 @@
                             id="remember"
                             name="remember"
                             type="checkbox"
+                            value="1"
                             class="h-4 w-4 rounded border-stone-700 bg-stone-800 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0"
                         />
                         <label for="remember" class="ml-2 block text-sm text-stone-200">

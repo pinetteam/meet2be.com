@@ -3,7 +3,7 @@
 
 ### 📌 PROJECT OVERVIEW
 - **Project**: Meet2Be Event Management System
-- **Technology**: Laravel 12, FluxUI Pro v2, Alpine.js, Tailwind CSS v4
+- **Technology**: Laravel 12, Alpine.js, Tailwind CSS v4
 - **Database**: MySQL/PostgreSQL (UUID primary keys mandatory)
 - **Architecture**: Multi-tenant (Site + Portal structure)
 
@@ -13,10 +13,9 @@
 ```
 ✅ MANDATORY:
 - Laravel 12 (Symfony/CodeIgniter forbidden)
-- FluxUI Pro v2 (React/Vue/Livewire forbidden)
-- Alpine.js (jQuery/Vanilla JS forbidden)
+- Alpine.js 3.x (React/Vue/Livewire/jQuery forbidden)
+- Tailwind CSS v4 (Bootstrap/Bulma/FluxUI forbidden)
 - FontAwesome Pro (Heroicons/Lucide forbidden)
-- Tailwind CSS (Bootstrap/Bulma forbidden)
 - Vite (Webpack/Mix forbidden)
 ```
 
@@ -39,11 +38,11 @@ $table->bigIncrements('id'); // FORBIDDEN
 
 #### 3. DIRECTORY STRUCTURE - HIERARCHICAL MANDATORY
 ```
-Controllers:     Site/Auth/LoginController
-Views:          site/auth/login.blade.php
-Requests:       Site/Auth/LoginRequest
-Routes:         site.auth.login
-JS/CSS:         resources/js/site/auth.js
+Controllers:     Panel/User/UserController
+Views:          portal/user/index.blade.php
+Requests:       Panel/User/StoreUserRequest
+Routes:         panel.users.index
+JS/CSS:         resources/js/portal/user.js
 ```
 
 ### 🏗️ PROJECT ARCHITECTURE
@@ -68,9 +67,10 @@ Route::get('/login', [Site\Auth\LoginController::class, 'create'])->name('auth.l
 Route::post('/login', [Site\Auth\LoginController::class, 'store']);
 Route::post('/logout', [Site\Auth\LogoutController::class, 'destroy'])->name('auth.logout');
 
-// routes/portal.php  
+// routes/panel.php  
 Route::middleware(['auth'])->group(function () {
-    Route::get('/', [Portal\Dashboard\DashboardController::class, 'index'])->name('dashboard.index');
+    Route::get('/', [Panel\Dashboard\DashboardController::class, 'index'])->name('dashboard.index');
+    Route::resource('users', Panel\User\UserController::class);
 });
 ```
 
@@ -86,9 +86,9 @@ resources/css/
 
 resources/js/
 ├── site/
-│   └── site.js       # Site section JS
+│   └── site.js       # Site section JS + Alpine.js
 └── portal/
-    └── portal.js     # Portal section JS
+    └── portal.js     # Portal section JS + Alpine.js
 ```
 
 #### LANGUAGE FILES (Laravel 12 standard) - JSON FORMAT
@@ -151,40 +151,93 @@ class LoginController extends Controller
 }
 ```
 
-### 🎨 FLUXUI V2 USAGE
+### 🎨 FRONTEND STACK - TAILWIND + ALPINE.JS
 
-#### CORRECT USAGE
+#### HTML STRUCTURE
 ```blade
-{{-- ✅ CORRECT --}}
-<flux:input name="email" :label="__('auth.email')" />
-<flux:button type="submit">{{ __('auth.login') }}</flux:button>
+{{-- ✅ CORRECT - Pure Tailwind + Alpine.js --}}
+<div class="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-6" x-data="{ open: false }">
+    <button @click="open = !open" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+        {{ __('Toggle') }}
+    </button>
+    <div x-show="open" x-transition class="mt-4">
+        <p class="text-gray-700 dark:text-gray-300">{{ __('Content') }}</p>
+    </div>
+</div>
 
-{{-- ❌ WRONG - Old version --}}
-<x-flux::input /> {{-- v1 syntax, don't use --}}
+{{-- ❌ WRONG - No FluxUI components --}}
+<flux:card>
+    <flux:button>Button</flux:button>
+</flux:card>
 ```
 
-#### DARK MODE CONFIGURATION
-```blade
-{{-- All layouts must have dark class --}}
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
-
-{{-- Body styling for dark mode --}}
-<body class="font-sans antialiased bg-stone-900 text-stone-100">
-
-{{-- Form elements dark mode styling --}}
-<flux:input class="bg-stone-800 text-white border-stone-700 focus:border-indigo-500" />
-
-{{-- NO NEED for these directives in Livewire 3 + Flux UI v2 --}}
-{{-- They are loaded automatically via composer --}}
-{{-- @livewireStyles --}}
-{{-- @fluxStyles --}}
-{{-- @livewireScripts --}}
-{{-- @fluxScripts --}}
+#### ALPINE.JS PATTERNS
+```javascript
+// ✅ CORRECT - Clean Alpine.js components
+Alpine.data('userForm', () => ({
+    form: {
+        name: '',
+        email: '',
+        password: ''
+    },
+    loading: false,
+    errors: {},
+    
+    async submit() {
+        this.loading = true;
+        this.errors = {};
+        
+        try {
+            const response = await fetch('/api/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify(this.form)
+            });
+            
+            if (!response.ok) {
+                const data = await response.json();
+                this.errors = data.errors || {};
+                return;
+            }
+            
+            // Success handling
+            this.form = { name: '', email: '', password: '' };
+            
+        } catch (error) {
+            console.error('Error:', error);
+        } finally {
+            this.loading = false;
+        }
+    }
+}));
 ```
 
-#### FLUX PUBLISH COMMAND
-```bash
-php artisan flux:publish
+#### FORM COMPONENTS
+```blade
+{{-- ✅ CORRECT - Custom Blade components with Tailwind --}}
+<div class="space-y-6">
+    <x-input 
+        name="name" 
+        :label="__('Name')" 
+        :value="old('name')"
+        :error="$errors->first('name')"
+    />
+    
+    <x-input 
+        name="email" 
+        type="email"
+        :label="__('Email')" 
+        :value="old('email')"
+        :error="$errors->first('email')"
+    />
+    
+    <x-button type="submit" class="w-full">
+        {{ __('Save') }}
+    </x-button>
+</div>
 ```
 
 ### 🌍 MULTI-LANGUAGE STRUCTURE - JSON FORMAT
@@ -208,7 +261,11 @@ php artisan flux:publish
     "Sign In": "Sign In",
     "Email Address": "Email Address",
     "Password": "Password",
-    "Remember me": "Remember me"
+    "Remember me": "Remember me",
+    "Save": "Save",
+    "Edit": "Edit",
+    "Delete": "Delete",
+    "Create": "Create"
 }
 
 // lang/tr.json
@@ -217,7 +274,11 @@ php artisan flux:publish
     "Sign In": "Giriş Yap",
     "Email Address": "E-posta Adresi",
     "Password": "Şifre",
-    "Remember me": "Beni hatırla"
+    "Remember me": "Beni hatırla",
+    "Save": "Kaydet",
+    "Edit": "Düzenle",
+    "Delete": "Sil",
+    "Create": "Oluştur"
 }
 ```
 
@@ -252,6 +313,7 @@ php artisan flux:publish
 4. **USE LANGUAGE VARIABLES**: Don't write hardcoded text
 5. **HIERARCHICAL NAMESPACE**: Don't use flat controller/model structure
 6. **USE JSON TRANSLATIONS**: Laravel 12 recommends JSON format for translations
+7. **NO LIVEWIRE/FLUXUI**: Only Tailwind CSS + Alpine.js for frontend
 
 ### 🚀 QUICK START COMMANDS
 
@@ -270,9 +332,6 @@ php artisan db:seed
 npm install @tailwindcss/postcss autoprefixer --save-dev
 npm run dev
 
-# FluxUI setup
-php artisan flux:publish
-
 # Language files (if needed)
 php artisan lang:publish
 ```
@@ -286,13 +345,10 @@ php artisan lang:publish
    - Authentication system set up
    - Language files prepared in TR/EN (JSON format)
    - Laravel default language files translated to Turkish
-   - FluxUI v2 integration completed
-   - Login page redesigned as standalone (no site layout)
    - Dark mode forced across all pages
    - Social login buttons removed from login page
-   - FluxUI stone theme implemented
-   - Removed unnecessary Livewire/Flux directives (auto-loaded in v3)
-   - Fixed email validation to allow test domains
+   - Livewire/FluxUI completely removed
+   - Pure Tailwind CSS + Alpine.js setup
 
 2. **Active Routes**:
    - `/` - Site homepage
@@ -309,27 +365,26 @@ php artisan lang:publish
 1. **Laravel 12 Differences**:
    - `lang/` directory (not under resources)
    - Middleware defined in route files
-   - Livewire comes automatically (includes Alpine.js)
    - JSON format recommended for translations
 
-2. **FluxUI v2 Differences**:
-   - `<flux:` prefix usage
-   - `flux:publish` command required
-   - Old `x-flux::` syntax not used
+2. **Frontend Stack**:
+   - ONLY Tailwind CSS for styling
+   - ONLY Alpine.js for interactivity
+   - NO FluxUI, NO Livewire, NO React/Vue
 
 3. **Project Standards**:
-   - Every change must comply with @pinet-standards.md
+   - Every change must comply with PINET standards
    - KISS and DRY principles are absolute
    - Comments FORBIDDEN (code must be self-explanatory)
 
 ### 🎯 SUGGESTIONS FOR NEXT STEPS
 
-1. Event CRUD operations can be added
-2. Tenant switching mechanism can be set up
-3. API endpoints can be added
-4. Role/Permission system can be expanded
-5. Notification system can be added
-6. Social login integration (Google, GitHub)
+1. User CRUD operations with Tailwind + Alpine.js
+2. Event CRUD operations can be added
+3. Tenant switching mechanism can be set up
+4. API endpoints can be added
+5. Role/Permission system can be expanded
+6. Notification system can be added
 
 ---
 **NOTE**: This document is prepared for AI agents. Use and update this reference when continuing the project. 

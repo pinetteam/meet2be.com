@@ -1,11 +1,8 @@
 @import 'tailwindcss';
-@import '../../../vendor/livewire/flux/dist/flux.css';
 
 /* Portal specific styles */
 @source '../../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../../storage/framework/views/*.php';
-@source '../../../vendor/livewire/flux-pro/stubs/**/*.blade.php';
-@source '../../../vendor/livewire/flux/stubs/**/*.blade.php';
 @source '../../views/portal/**/*.blade.php';
 @source '../../views/layouts/portal.blade.php';
 @source '../../js/portal/portal.js';
@@ -36,4 +33,62 @@
         --color-accent-content: var(--color-blue-400);
         --color-accent-foreground: var(--color-white);
     }
+}
+
+/* Base dark mode colors */
+:root {
+    --color-bg: theme('colors.zinc.50');
+    --color-text: theme('colors.zinc.900');
+}
+
+.dark {
+    --color-bg: theme('colors.zinc.950');
+    --color-text: theme('colors.zinc.100');
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-zinc-100 dark:bg-zinc-800;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-zinc-400 dark:bg-zinc-600 rounded;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-zinc-500 dark:bg-zinc-500;
+}
+
+/* Custom focus styles */
+.portal-focus {
+    @apply focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-zinc-50 dark:focus:ring-offset-zinc-900;
+}
+
+/* Sidebar transitions */
+.sidebar-link {
+    @apply transition-all duration-200 ease-in-out;
+}
+
+/* Alpine.js x-cloak */
+[x-cloak] {
+    display: none !important;
+}
+
+/* Smooth transitions */
+* {
+    @apply transition-colors duration-200;
+}
+
+/* Custom shadow for cards */
+.card-shadow {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.dark .card-shadow {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
 }
