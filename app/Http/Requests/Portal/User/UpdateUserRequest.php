@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Portal\User;
 
 use App\Models\User\User;
+use App\Services\TenantService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -16,11 +17,23 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         $user = $this->route('user');
+        $tenantId = TenantService::getCurrentTenantId();
         
         return [
-            'tenant_id' => ['required', 'uuid', 'exists:tenants,id'],
-            'username' => ['required', 'string', 'min:3', 'max:50', 'regex:/^[a-zA-Z0-9_-]+$/', Rule::unique('users', 'username')->ignore($user->id)],
-            'email' => ['required', 'email:rfc,dns', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
+            'username' => [
+                'required', 
+                'string', 
+                'min:3', 
+                'max:50', 
+                'regex:/^[a-zA-Z0-9_-]+$/', 
+                Rule::unique('users', 'username')->ignore($user->id)->where('tenant_id', $tenantId)
+            ],
+            'email' => [
+                'required', 
+                'email:rfc,dns', 
+                'max:255', 
+                Rule::unique('users', 'email')->ignore($user->id)->where('tenant_id', $tenantId)
+            ],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'first_name' => ['required', 'string', 'min:2', 'max:50', 'regex:/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/'],
             'last_name' => ['required', 'string', 'min:2', 'max:50', 'regex:/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/'],

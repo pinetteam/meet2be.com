@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Event\Event;
+use App\Traits\TenantAware;
 
 class Venue extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes;
+    use HasFactory, HasUuids, SoftDeletes, TenantAware;
 
     protected $table = 'event_venues';
     protected $keyType = 'string';

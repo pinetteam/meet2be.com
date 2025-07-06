@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Portal\User;
 
 use App\Models\User\User;
+use App\Services\TenantService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -15,10 +16,23 @@ class StoreUserRequest extends FormRequest
 
     public function rules(): array
     {
+        $tenantId = TenantService::getCurrentTenantId();
+        
         return [
-            'tenant_id' => ['required', 'uuid', 'exists:tenants,id'],
-            'username' => ['required', 'string', 'min:3', 'max:50', 'unique:users,username', 'regex:/^[a-zA-Z0-9_-]+$/'],
-            'email' => ['required', 'email:rfc,dns', 'max:255', 'unique:users,email'],
+            'username' => [
+                'required', 
+                'string', 
+                'min:3', 
+                'max:50', 
+                'regex:/^[a-zA-Z0-9_-]+$/',
+                Rule::unique('users', 'username')->where('tenant_id', $tenantId)
+            ],
+            'email' => [
+                'required', 
+                'email:rfc,dns', 
+                'max:255', 
+                Rule::unique('users', 'email')->where('tenant_id', $tenantId)
+            ],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'first_name' => ['required', 'string', 'min:2', 'max:50', 'regex:/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/'],
             'last_name' => ['required', 'string', 'min:2', 'max:50', 'regex:/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/'],

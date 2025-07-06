@@ -5,11 +5,8 @@ namespace App\Http\Controllers\Portal\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Portal\User\StoreUserRequest;
 use App\Http\Requests\Portal\User\UpdateUserRequest;
-use App\Http\Resources\Portal\User\UserResource;
 use App\Models\User\User;
-use App\Models\Tenant\Tenant;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -19,10 +16,12 @@ class UserController extends Controller
     {
         $users = User::with('tenant')
             ->when($request->search, function ($query, $search) {
-                $query->where('first_name', 'like', "%{$search}%")
-                    ->orWhere('last_name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('username', 'like', "%{$search}%");
+                $query->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                      ->orWhere('last_name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhere('username', 'like', "%{$search}%");
+                });
             })
             ->when($request->type, function ($query, $type) {
                 $query->byType($type);
@@ -31,15 +30,15 @@ class UserController extends Controller
                 $query->where('status', $status);
             })
             ->orderBy('created_at', 'desc')
-            ->paginate(15);
+            ->paginate(15)
+            ->withQueryString();
 
         return view('portal.user.index', compact('users'));
     }
 
     public function create(): View
     {
-        $tenants = Tenant::orderBy('name')->get();
-        return view('portal.user.create', compact('tenants'));
+        return view('portal.user.create');
     }
 
     public function store(StoreUserRequest $request): RedirectResponse
@@ -58,8 +57,7 @@ class UserController extends Controller
 
     public function edit(User $user): View
     {
-        $tenants = Tenant::orderBy('name')->get();
-        return view('portal.user.edit', compact('user', 'tenants'));
+        return view('portal.user.edit', compact('user'));
     }
 
     public function update(UpdateUserRequest $request, User $user): RedirectResponse

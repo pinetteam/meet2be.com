@@ -93,26 +93,6 @@
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
                     </div>
-
-                    <!-- Tenant -->
-                    <div>
-                        <label for="tenant_id" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-                            {{ __('Tenant') }} <span class="text-red-500">*</span>
-                        </label>
-                        <select name="tenant_id" id="tenant_id" required
-                                class="w-full px-3 py-2 border rounded-lg bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                                @error('tenant_id') border-red-500 dark:border-red-500 @else border-zinc-300 dark:border-zinc-600 @enderror">
-                            <option value="">{{ __('Select a tenant') }}</option>
-                            @foreach($tenants as $tenant)
-                                <option value="{{ $tenant->id }}" {{ old('tenant_id') === $tenant->id ? 'selected' : '' }}>
-                                    {{ $tenant->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('tenant_id')
-                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
                 </div>
             </div>
 

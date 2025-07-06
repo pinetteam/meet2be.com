@@ -9,10 +9,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Tenant\Tenant;
 use App\Models\System\Timezone;
 use App\Models\System\Language;
+use App\Traits\TenantAware;
 
 class Event extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes;
+    use HasFactory, HasUuids, SoftDeletes, TenantAware;
 
     protected $keyType = 'string';
     public $incrementing = false;

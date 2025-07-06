@@ -193,7 +193,7 @@
                 topNavigation: [
                     {
                         name: 'Dashboard',
-                        href: '/portal/dashboard',
+                        href: '/portal',
                         icon: '<i class="fas fa-home"></i>'
                     },
                     {
@@ -212,7 +212,7 @@
                 sidebarNavigation: [
                     {
                         name: 'Dashboard',
-                        href: '/portal/dashboard',
+                        href: '/portal',
                         icon: '<i class="fas fa-home"></i>'
                     },
                     {

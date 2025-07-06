@@ -62,10 +62,7 @@
                                 <span class="text-zinc-900 dark:text-white">{{ $user->phone }}</span>
                             </div>
                         @endif
-                        <div class="flex items-center justify-between">
-                            <span class="text-zinc-500 dark:text-zinc-400">{{ __('Tenant') }}:</span>
-                            <span class="text-zinc-900 dark:text-white">{{ $user->tenant?->name ?? __('No Tenant') }}</span>
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -106,10 +103,6 @@
                     <div>
                         <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ __('Status') }}</label>
                         <p class="text-zinc-900 dark:text-white">{{ __(\App\Models\User\User::STATUSES[$user->status]) }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ __('Tenant') }}</label>
-                        <p class="text-zinc-900 dark:text-white">{{ $user->tenant?->name ?? __('No Tenant') }}</p>
                     </div>
                 </div>
             </div>
@@ -160,12 +153,6 @@
                         <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ __('User ID') }}</label>
                         <p class="text-zinc-900 dark:text-white font-mono text-sm">{{ $user->id }}</p>
                     </div>
-                    @if($user->tenant)
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ __('Tenant ID') }}</label>
-                            <p class="text-zinc-900 dark:text-white font-mono text-sm">{{ $user->tenant_id }}</p>
-                        </div>
-                    @endif
                 </div>
                 
                 @if($user->settings && count($user->settings) > 0)
