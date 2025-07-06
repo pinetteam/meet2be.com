@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,23 +19,17 @@
 
     <!-- Scripts -->
     @vite(['resources/css/site/site.css', 'resources/js/site/site.js'])
-
-    <!-- Livewire Styles -->
-    @livewireStyles
-    
-    <!-- FluxUI Appearance -->
-    @fluxAppearance
 </head>
-<body class="font-sans antialiased">
-    <div class="min-h-screen bg-gray-100">
+<body class="font-sans antialiased bg-stone-900 text-stone-100">
+    <div class="min-h-screen bg-stone-900">
         <!-- Navigation -->
-        <nav class="bg-white shadow">
+        <nav class="bg-stone-800 shadow-lg border-b border-stone-700">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
                     <div class="flex">
                         <!-- Logo -->
                         <div class="flex-shrink-0 flex items-center">
-                            <a href="/" class="text-xl font-bold text-gray-800">
+                            <a href="/" class="text-xl font-bold text-white">
                                 {{ config('app.name', 'Meet2Be') }}
                             </a>
                         </div>
@@ -43,16 +37,16 @@
                     
                     <div class="flex items-center space-x-4">
                         @auth
-                            <span class="text-gray-700">{{ Auth::user()->getFullNameAttribute() }}</span>
+                            <span class="text-stone-300">{{ Auth::user()->getFullNameAttribute() }}</span>
                             <form method="POST" action="{{ route('site.auth.logout') }}" class="inline">
                                 @csrf
-                                <flux:button type="submit" variant="ghost" size="sm">
+                                <flux:button type="submit" variant="ghost" size="sm" class="text-stone-300 hover:text-white">
                                     <i class="fa-solid fa-sign-out-alt mr-2"></i>
                                     {{ __('site.common.logout') }}
                                 </flux:button>
                             </form>
                         @else
-                            <flux:button href="{{ route('site.auth.login') }}" variant="primary" size="sm">
+                            <flux:button href="{{ route('site.auth.login') }}" variant="primary" size="sm" class="bg-indigo-600 hover:bg-indigo-700">
                                 <i class="fa-solid fa-sign-in-alt mr-2"></i>
                                 {{ __('site.common.login') }}
                             </flux:button>
@@ -67,11 +61,5 @@
             @yield('content')
         </main>
     </div>
-
-    <!-- Livewire Scripts -->
-    @livewireScripts
-    
-    <!-- FluxUI Scripts -->
-    @fluxScripts
 </body>
 </html> 

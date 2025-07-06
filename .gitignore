@@ -18,8 +18,3 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
-.env
-.env.backup
-.env.production
-.env.meet2be
-auth.json

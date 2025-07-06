@@ -1,20 +1,23 @@
 <?php
 
 return [
+
     /*
     |--------------------------------------------------------------------------
-    | Password Reset Language Lines
+    | Şifre Sıfırlama Dil Satırları
     |--------------------------------------------------------------------------
     |
-    | The following language lines are the default lines which match reasons
-    | that are given by the password broker for a password update attempt
-    | has failed, such as for an invalid token or invalid new password.
+    | Aşağıdaki dil satırları, şifre güncelleme denemesi sırasında şifre
+    | yöneticisi tarafından verilen geçersiz token veya geçersiz yeni şifre
+    | gibi nedenlerle oluşan hata mesajları için kullanılan varsayılan
+    | satırlardır.
     |
     */
 
-    'reset' => 'Şifreniz sıfırlandı!',
-    'sent' => 'Şifre sıfırlama bağlantınız e-posta ile gönderildi!',
-    'throttled' => 'Tekrar denemeden önce lütfen bekleyin.',
-    'token' => 'Şifre sıfırlama anahtarı geçersiz.',
-    'user' => 'Bu e-posta adresi ile kayıtlı bir kullanıcı bulunamadı.',
+    'reset' => 'Şifreniz başarıyla sıfırlandı.',
+    'sent' => 'Şifre sıfırlama bağlantınız e-posta ile gönderildi.',
+    'throttled' => 'Lütfen tekrar denemeden önce bekleyin.',
+    'token' => 'Bu şifre sıfırlama kodu geçersiz.',
+    'user' => "Bu e-posta adresine sahip bir kullanıcı bulunamadı.",
+
 ]; 

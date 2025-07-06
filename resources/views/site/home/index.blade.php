@@ -7,11 +7,11 @@
             <div class="p-6 text-gray-900">
                 <h1 class="text-3xl font-bold mb-4">
                     <i class="fa-solid fa-house-chimney mr-2"></i>
-                    Welcome to {{ config('app.name', 'Laravel') }}
+                    {{ __('Welcome to Meet2Be Event Management System') }}
                 </h1>
                 
                 <p class="text-lg text-gray-600 mb-6">
-                    This is a simple home page using Tailwind CSS, Alpine.js, FontAwesome Pro and FluxUI Pro.
+                    {{ __('Create and manage your events with ease.') }}
                 </p>
 
                 <!-- Alpine.js Example -->
@@ -27,25 +27,25 @@
                     <flux:card class="space-y-4">
                         <flux:heading size="lg">
                             <i class="fa-solid fa-chart-line mr-2"></i>
-                            Analytics
+                            {{ __('Analytics') }}
                         </flux:heading>
-                        <flux:text>View your analytics dashboard</flux:text>
+                        <flux:text>{{ __('View') }} {{ __('Analytics') }}</flux:text>
                     </flux:card>
 
                     <flux:card class="space-y-4">
                         <flux:heading size="lg">
                             <i class="fa-solid fa-users mr-2"></i>
-                            Users
+                            {{ __('Users') }}
                         </flux:heading>
-                        <flux:text>Manage your users</flux:text>
+                        <flux:text>{{ __('Management') }} {{ __('Users') }}</flux:text>
                     </flux:card>
 
                     <flux:card class="space-y-4">
                         <flux:heading size="lg">
                             <i class="fa-solid fa-calendar-days mr-2"></i>
-                            Events
+                            {{ __('Events') }}
                         </flux:heading>
-                        <flux:text>Browse upcoming events</flux:text>
+                        <flux:text>{{ __('View') }} {{ __('Events') }}</flux:text>
                     </flux:card>
                 </div>
             </div>

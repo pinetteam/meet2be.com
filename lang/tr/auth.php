@@ -1,18 +1,20 @@
 <?php
 
 return [
+
     /*
     |--------------------------------------------------------------------------
-    | Authentication Language Lines
+    | Kimlik Doğrulama Dil Satırları
     |--------------------------------------------------------------------------
     |
-    | The following language lines are used during authentication for various
-    | messages that we need to display to the user. You are free to modify
-    | these language lines according to your application's requirements.
+    | Aşağıdaki dil satırları kimlik doğrulama sırasında kullanıcıya göstermemiz
+    | gereken çeşitli mesajlar için kullanılır. Bu dil satırlarını uygulamanızın
+    | gereksinimlerine göre değiştirmekte özgürsünüz.
     |
     */
 
     'failed' => 'Bu kimlik bilgileri kayıtlarımızla eşleşmiyor.',
-    'password' => 'Girilen şifre hatalı.',
+    'password' => 'Girilen şifre yanlış.',
     'throttle' => 'Çok fazla giriş denemesi. Lütfen :seconds saniye sonra tekrar deneyin.',
+
 ]; 

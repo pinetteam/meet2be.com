@@ -7,11 +7,11 @@
             <div class="p-6 text-gray-900">
                 <h1 class="text-3xl font-bold mb-4">
                     <i class="fa-solid fa-gauge-high mr-2"></i>
-                    {{ __('portal.common.dashboard') }}
+                    {{ __('Admin Dashboard') }}
                 </h1>
                 
                 <p class="text-lg text-gray-600">
-                    {{ __('portal.common.welcome') }}, {{ Auth::user()->getFullNameAttribute() }}! Portal yönetim paneline başarıyla giriş yaptınız.
+                    {{ __('Welcome') }}, {{ Auth::user()->getFullNameAttribute() }}!
                 </p>
             </div>
         </div>

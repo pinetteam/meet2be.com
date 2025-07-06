@@ -26,7 +26,7 @@ class LoginController extends Controller
             if (Auth::user()->status !== 'active') {
                 Auth::logout();
                 return back()->withErrors([
-                    'email' => __('site.common.account_inactive'),
+                    'email' => __('Your account is inactive. Please contact support.'),
                 ])->onlyInput('email');
             }
 
@@ -42,7 +42,7 @@ class LoginController extends Controller
         }
 
         return back()->withErrors([
-            'email' => __('site.common.login_failed'),
+            'email' => __('These credentials do not match our records.'),
         ])->onlyInput('email');
     }
 } 

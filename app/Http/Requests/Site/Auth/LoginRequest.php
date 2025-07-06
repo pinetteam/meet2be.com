@@ -23,10 +23,10 @@ class LoginRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.required' => __('site.common.email_required'),
-            'email.email' => __('site.common.email_invalid'),
-            'password.required' => __('site.common.password_required'),
-            'password.min' => __('site.common.password_min')
+            'email.required' => __('Email address is required.'),
+            'email.email' => __('Please enter a valid email address.'),
+            'password.required' => __('Password is required.'),
+            'password.min' => __('Password must be at least 8 characters.')
         ];
     }
 } 
