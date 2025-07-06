@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-white dark:bg-gray-950" x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }" x-init="$watch('darkMode', val => localStorage.setItem('darkMode', val))" :class="{ 'dark': darkMode }">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-white dark:bg-gray-950">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,7 +15,7 @@
     @vite(['resources/css/portal/portal.css', 'resources/js/portal/portal.js'])
 </head>
 <body class="h-full">
-<div x-data="portalLayout()">
+<div x-data="portalLayout()" x-init="init()">
     <!-- Mobile sidebar -->
     <div x-show="mobileMenuOpen" class="relative z-50 lg:hidden" role="dialog" aria-modal="true">
         <!-- Backdrop with blur -->
@@ -364,7 +364,7 @@
 function portalLayout() {
     return {
         mobileMenuOpen: false,
-        darkMode: localStorage.getItem('darkMode') === 'true',
+        darkMode: false,
         currentPage: 'Dashboard',
         openSubmenus: [],
         
@@ -451,9 +451,24 @@ function portalLayout() {
                 });
             }
             
+            // Initialize dark mode from localStorage
+            this.darkMode = localStorage.getItem('darkMode') === 'true';
+            
+            // Apply dark class to html element
+            if (this.darkMode) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            
             // Watch dark mode changes
             this.$watch('darkMode', value => {
                 localStorage.setItem('darkMode', value);
+                if (value) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
             });
         }
     }
