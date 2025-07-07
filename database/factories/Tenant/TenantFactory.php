@@ -9,6 +9,7 @@ use App\Models\System\Language;
 use App\Models\System\Currency;
 use App\Models\System\Timezone;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class TenantFactory extends Factory
 {
@@ -50,11 +51,11 @@ class TenantFactory extends Factory
             'plan' => fake()->randomElement(['basic', 'pro', 'enterprise']),
             'status' => fake()->randomElement(['active', 'active', 'active', 'trial', 'inactive']),
             'trial_ends_at' => function (array $attributes) {
-                return $attributes['status'] === 'trial' ? now()->addDays(fake()->numberBetween(1, 30)) : null;
+                return $attributes['status'] === 'trial' ? Carbon::now('UTC')->addDays(fake()->numberBetween(1, 30)) : null;
             },
             'subscription_ends_at' => function (array $attributes) {
                 return in_array($attributes['status'], ['active', 'trial']) 
-                    ? now()->addMonths(fake()->numberBetween(1, 12)) 
+                    ? Carbon::now('UTC')->addMonths(fake()->numberBetween(1, 12)) 
                     : null;
             },
             'max_users' => function (array $attributes) {
@@ -145,7 +146,7 @@ class TenantFactory extends Factory
             return [
                 'status' => 'trial',
                 'plan' => 'basic',
-                'trial_ends_at' => now()->addDays(14),
+                'trial_ends_at' => Carbon::now('UTC')->addDays(14),
                 'subscription_ends_at' => null,
             ];
         });
@@ -156,7 +157,7 @@ class TenantFactory extends Factory
         return $this->state(function (array $attributes) {
             return [
                 'status' => 'active',
-                'subscription_ends_at' => now()->addYear(),
+                'subscription_ends_at' => Carbon::now('UTC')->addYear(),
             ];
         });
     }
@@ -166,7 +167,7 @@ class TenantFactory extends Factory
         return $this->state(function (array $attributes) {
             return [
                 'status' => 'suspended',
-                'subscription_ends_at' => now()->subDays(fake()->numberBetween(1, 30)),
+                'subscription_ends_at' => Carbon::now('UTC')->subDays(fake()->numberBetween(1, 30)),
             ];
         });
     }
@@ -176,7 +177,7 @@ class TenantFactory extends Factory
         return $this->state(function (array $attributes) {
             return [
                 'status' => 'expired',
-                'subscription_ends_at' => now()->subDays(fake()->numberBetween(31, 365)),
+                'subscription_ends_at' => Carbon::now('UTC')->subDays(fake()->numberBetween(31, 365)),
             ];
         });
     }

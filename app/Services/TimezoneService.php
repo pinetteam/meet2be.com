@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\System\Timezone;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 
 class TimezoneService
 {
@@ -14,33 +13,34 @@ class TimezoneService
     
     public function __construct()
     {
-        $this->loadUserTimezone();
+        // Constructor'da yükleme yapmıyoruz
     }
     
     protected function loadUserTimezone(): void
     {
+        // Her çağrıda güncel timezone'u al
+        $this->timezone = null;
+        
         if (Auth::check() && Auth::user()->tenant) {
             $tenant = Auth::user()->tenant;
             
             if ($tenant->timezone_id) {
-                // Cache ile performans optimizasyonu
-                $this->timezone = Cache::remember(
-                    "tenant_timezone_{$tenant->id}",
-                    3600, // 1 saat cache
-                    fn() => Timezone::find($tenant->timezone_id)
-                );
+                // Cache kullanmadan direkt timezone'u al
+                $this->timezone = $tenant->timezone;
             }
         }
     }
     
     public function getTimezone(): ?Timezone
     {
+        // Her seferinde güncel timezone'u yükle
+        $this->loadUserTimezone();
         return $this->timezone;
     }
     
     public function getTimezoneName(): string
     {
-        return $this->timezone?->name ?? $this->defaultTimezone;
+        return $this->getTimezone()?->name ?? $this->defaultTimezone;
     }
     
     public function convertToUserTimezone(?Carbon $date): ?Carbon
@@ -59,6 +59,48 @@ class TimezoneService
         }
         
         return $date->copy()->setTimezone($this->defaultTimezone);
+    }
+    
+    /**
+     * Parse a date string in user's timezone and convert to UTC
+     * 
+     * @param string|null $dateString
+     * @param string $format
+     * @return Carbon|null
+     */
+    public function parseFromUserTimezone(?string $dateString, string $format = 'Y-m-d H:i:s'): ?Carbon
+    {
+        if (!$dateString) {
+            return null;
+        }
+        
+        // Parse the date in user's timezone
+        $date = Carbon::createFromFormat($format, $dateString, $this->getTimezoneName());
+        
+        // Convert to UTC
+        return $date ? $date->setTimezone('UTC') : null;
+    }
+    
+    /**
+     * Parse a date input (Y-m-d) in user's timezone and convert to UTC
+     * 
+     * @param string|null $dateString
+     * @return Carbon|null
+     */
+    public function parseDateFromUserTimezone(?string $dateString): ?Carbon
+    {
+        return $this->parseFromUserTimezone($dateString, 'Y-m-d');
+    }
+    
+    /**
+     * Parse a datetime input (Y-m-d H:i) in user's timezone and convert to UTC
+     * 
+     * @param string|null $dateTimeString
+     * @return Carbon|null
+     */
+    public function parseDateTimeFromUserTimezone(?string $dateTimeString): ?Carbon
+    {
+        return $this->parseFromUserTimezone($dateTimeString, 'Y-m-d H:i');
     }
     
     public function now(): Carbon
@@ -118,8 +160,16 @@ class TimezoneService
     
     public function clearCache(): void
     {
-        if (Auth::check() && Auth::user()->tenant) {
-            Cache::forget("tenant_timezone_" . Auth::user()->tenant->id);
-        }
+        // Cache kullanmıyoruz artık
+        $this->timezone = null;
+    }
+    
+    /**
+     * Force reload timezone from database
+     */
+    public function refresh(): void
+    {
+        $this->timezone = null;
+        $this->loadUserTimezone();
     }
 } 

@@ -419,5 +419,139 @@
     "Next Month": "Gelecek Ay",
     "This Year": "Bu Yıl",
     "Last Year": "Geçen Yıl",
-    "Next Year": "Gelecek Yıl"
+    "Next Year": "Gelecek Yıl",
+    "common": {
+        "actions": {
+            "save": "Kaydet",
+            "delete": "Sil",
+            "cancel": "İptal",
+            "edit": "Düzenle",
+            "create": "Oluştur",
+            "update": "Güncelle",
+            "view": "Görüntüle",
+            "search": "Ara",
+            "filter": "Filtrele",
+            "view_all": "Tümünü Görüntüle",
+            "save_changes": "Değişiklikleri Kaydet"
+        },
+        "select": "Seçiniz",
+        "created_at": "Oluşturulma Tarihi",
+        "updated_at": "Güncellenme Tarihi"
+    },
+    "user": {
+        "title": "Kullanıcılar",
+        "fields": {
+            "username": "Kullanıcı Adı",
+            "email": "E-posta",
+            "password": "Şifre",
+            "first_name": "Ad",
+            "last_name": "Soyad",
+            "phone": "Telefon",
+            "status": "Durum",
+            "type": "Tip"
+        },
+        "messages": {
+            "created_successfully": "Kullanıcı başarıyla oluşturuldu",
+            "updated_successfully": "Kullanıcı başarıyla güncellendi",
+            "deleted_successfully": "Kullanıcı başarıyla silindi"
+        }
+    },
+    "profile": {
+        "title": "Profil Bilgileri",
+        "subtitle": "Hesap bilgilerinizi görüntüleyin ve güncelleyin",
+        "personal_info": "Kişisel Bilgiler",
+        "change_password": "Şifre Değiştir",
+        "fields": {
+            "current_password": "Mevcut Şifre",
+            "new_password": "Yeni Şifre",
+            "confirm_password": "Yeni Şifre (Tekrar)"
+        },
+        "password_hint": "En az 8 karakter, büyük/küçük harf, rakam ve özel karakter içermelidir.",
+        "messages": {
+            "updated_successfully": "Profil bilgileriniz başarıyla güncellendi"
+        }
+    },
+    "validation": {
+        "errors_occurred": "Bazı hatalar oluştu"
+    },
+    "site": {
+        "common": {
+            "login": "Giriş Yap",
+            "logout": "Çıkış Yap"
+        }
+    },
+    "errors": {
+        "tenant_access_denied": "Bu kiracıya erişim izniniz yok."
+    },
+    "dashboard": {
+        "welcome": "Hoş geldiniz, :name!",
+        "subtitle": "Dashboard'unuzdan sisteminizdeki tüm aktiviteleri yönetebilirsiniz.",
+        "timezone": "Saat Dilimi",
+        "current_time": "Şu Anki Saat",
+        "stats": {
+            "total_users": "Toplam Kullanıcı",
+            "active_users": "Aktif Kullanıcı",
+            "total_events": "Toplam Etkinlik",
+            "upcoming_events": "Yaklaşan Etkinlik"
+        },
+        "recent_users": "Son Eklenen Kullanıcılar",
+        "upcoming_events": "Yaklaşan Etkinlikler",
+        "no_recent_users": "Henüz kullanıcı eklenmemiş.",
+        "no_upcoming_events": "Yaklaşan etkinlik bulunmuyor."
+    },
+    "settings": {
+        "title": "Ayarlar",
+        "subtitle": "Tenant bilgilerini ve sistem ayarlarını yönetin",
+        "tabs": {
+            "general": "Genel Bilgiler",
+            "contact": "İletişim Bilgileri",
+            "system": "Sistem Ayarları"
+        },
+        "fields": {
+            "tenant_name": "Tenant Adı",
+            "company_name": "Şirket Adı",
+            "website": "Website",
+            "email": "E-posta Adresi",
+            "phone": "Telefon",
+            "address": "Adres",
+            "city": "Şehir",
+            "state": "Eyalet/İl",
+            "postal_code": "Posta Kodu",
+            "country": "Ülke",
+            "currency": "Para Birimi",
+            "default_language": "Varsayılan Dil",
+            "timezone": "Saat Dilimi"
+        },
+        "search_country": "Ülke ara...",
+        "regions": {
+            "africa": "Afrika",
+            "america": "Amerika",
+            "antarctica": "Antarktika",
+            "arctic": "Arktik",
+            "asia": "Asya",
+            "atlantic": "Atlantik",
+            "australia": "Avustralya",
+            "europe": "Avrupa",
+            "indian": "Hint Okyanusu",
+            "pacific": "Pasifik",
+            "other": "Diğer"
+        },
+        "tenant_info": {
+            "title": "Tenant Bilgileri",
+            "tenant_id": "Tenant ID",
+            "status": "Durum"
+        },
+        "messages": {
+            "updated_successfully": "Ayarlar başarıyla güncellendi."
+        }
+    },
+    "tenant": {
+        "statuses": {
+            "active": "Aktif",
+            "inactive": "Pasif",
+            "suspended": "Askıda",
+            "expired": "Süresi Dolmuş",
+            "trial": "Deneme"
+        }
+    }
 } 

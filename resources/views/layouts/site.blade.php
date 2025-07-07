@@ -9,7 +9,7 @@
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=inter:400,500,600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
     <!-- FontAwesome Pro -->
     <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.5.1/css/all.css">
@@ -37,7 +37,7 @@
                     
                     <div class="flex items-center space-x-4">
                         @auth
-                            <span class="text-stone-300">{{ Auth::user()->getFullNameAttribute() }}</span>
+                            <span class="text-stone-300">{{ Auth::user()->full_name }}</span>
                             <form method="POST" action="{{ route('site.auth.logout') }}" class="inline">
                                 @csrf
                                 <button type="submit" class="px-3 py-1.5 text-sm text-stone-300 hover:text-white rounded-md hover:bg-stone-700 transition-colors">

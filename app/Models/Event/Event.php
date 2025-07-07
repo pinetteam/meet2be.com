@@ -134,14 +134,14 @@ class Event extends Model
 
     public function isOngoing(): bool
     {
-        $now = $this->getCurrentTime();
+        $now = Carbon::now('UTC');
         return $this->status === 'ongoing' || 
                ($this->status === 'published' && $now->between($this->start_date, $this->end_date));
     }
 
     public function isCompleted(): bool
     {
-        $now = $this->getCurrentTime();
+        $now = Carbon::now('UTC');
         return $this->status === 'completed' || 
                ($this->status === 'published' && $now->isAfter($this->end_date));
     }
@@ -153,7 +153,7 @@ class Event extends Model
 
     public function isUpcoming(): bool
     {
-        $now = $this->getCurrentTime();
+        $now = Carbon::now('UTC');
         return $this->status === 'published' && $now->isBefore($this->start_date);
     }
 
@@ -343,7 +343,7 @@ class Event extends Model
             // Auto-update status based on dates
             if ($event->isDirty(['start_date', 'end_date', 'status'])) {
                 if ($event->status === 'published') {
-                    $now = $event->getCurrentTime();
+                    $now = Carbon::now('UTC');
                     if ($now->between($event->start_date, $event->end_date)) {
                         $event->status = 'ongoing';
                     } elseif ($now->isAfter($event->end_date)) {
@@ -385,20 +385,16 @@ class Event extends Model
 
     public function scopeUpcoming($query)
     {
-        // Get current tenant's timezone
-        $tenant = auth()->user()?->tenant;
-        $timezone = $tenant?->timezone?->name ?? config('app.timezone');
-        $now = Carbon::now($timezone);
+        // Use UTC for database comparison
+        $now = Carbon::now('UTC');
         
         return $query->published()->where('start_date', '>', $now);
     }
 
     public function scopeOngoing($query)
     {
-        // Get current tenant's timezone
-        $tenant = auth()->user()?->tenant;
-        $timezone = $tenant?->timezone?->name ?? config('app.timezone');
-        $now = Carbon::now($timezone);
+        // Use UTC for database comparison
+        $now = Carbon::now('UTC');
         
         return $query->where(function ($q) use ($now) {
             $q->where('status', 'ongoing')
@@ -412,10 +408,8 @@ class Event extends Model
 
     public function scopePast($query)
     {
-        // Get current tenant's timezone
-        $tenant = auth()->user()?->tenant;
-        $timezone = $tenant?->timezone?->name ?? config('app.timezone');
-        $now = Carbon::now($timezone);
+        // Use UTC for database comparison
+        $now = Carbon::now('UTC');
         
         return $query->where(function ($q) use ($now) {
             $q->where('status', 'completed')

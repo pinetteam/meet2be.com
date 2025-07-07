@@ -14,7 +14,7 @@ class UserController extends Controller
 {
     public function index(Request $request): View
     {
-        $users = User::with('tenant')
+        $users = User::query()
             ->when($request->search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('first_name', 'like', "%{$search}%")
@@ -46,12 +46,11 @@ class UserController extends Controller
         $user = User::create($request->validated());
 
         return redirect()->route('portal.user.index')
-            ->with('success', __('User created successfully'));
+            ->with('success', __('user.messages.created_successfully'));
     }
 
     public function show(User $user): View
     {
-        $user->load('tenant');
         return view('portal.user.show', compact('user'));
     }
 
@@ -65,7 +64,7 @@ class UserController extends Controller
         $user->update($request->validated());
 
         return redirect()->route('portal.user.show', $user)
-            ->with('success', __('User updated successfully'));
+            ->with('success', __('user.messages.updated_successfully'));
     }
 
     public function destroy(User $user): RedirectResponse
@@ -73,6 +72,6 @@ class UserController extends Controller
         $user->delete();
 
         return redirect()->route('portal.user.index')
-            ->with('success', __('User deleted successfully'));
+            ->with('success', __('user.messages.deleted_successfully'));
     }
 } 

@@ -12,11 +12,33 @@ trait HasTimezone
         return app(TimezoneService::class);
     }
     
-    // Get current time in tenant's timezone
+    /**
+     * Get current time in UTC (for database storage)
+     */
     public function getCurrentTime(): Carbon
+    {
+        return Carbon::now('UTC');
+    }
+    
+    /**
+     * Get current time in tenant's timezone (for display)
+     */
+    public function getCurrentTimeInTenantTimezone(): Carbon
     {
         $timezone = $this->tenant?->timezone?->name ?? config('app.timezone');
         return Carbon::now($timezone);
+    }
+    
+    /**
+     * Convert a date from tenant timezone to UTC (for database storage)
+     */
+    public function toUTC(?Carbon $date): ?Carbon
+    {
+        if (!$date) {
+            return null;
+        }
+        
+        return $date->copy()->setTimezone('UTC');
     }
     
     // created_at accessor

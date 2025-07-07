@@ -10,6 +10,12 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
+    
+    <!-- FontAwesome Pro -->
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.5.1/css/all.css">
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.5.1/css/sharp-solid.css">
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.5.1/css/sharp-regular.css">
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.5.1/css/sharp-light.css">
 
     <!-- Scripts -->
     @vite(['resources/css/portal/portal.css', 'resources/js/portal/portal.js'])
@@ -54,7 +60,7 @@
             </button>
                         </div>
                     </div>
-                    
+
                     <!-- Navigation content -->
                     <div class="flex flex-col gap-y-5 px-6 py-4 pb-6 flex-1">
                     <nav class="flex flex-1 flex-col">
@@ -186,7 +192,7 @@
                                                  ? 'bg-gray-50 dark:bg-gray-800 text-brand' 
                                                  : 'text-gray-700 dark:text-gray-300 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800',
                                                'group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
-                                           ]">
+                           ]">
                                             <i :class="[
                                                 item.icon,
                                                 currentPage === item.name ? 'text-brand' : 'text-gray-400 dark:text-gray-500 group-hover:text-brand',
@@ -392,7 +398,7 @@
         darkMode: false,
         currentPage: 'Dashboard',
         openSubmenus: [],
-        
+                
         navigation: [
                     {
                         name: 'Dashboard',
@@ -497,7 +503,7 @@
                     document.documentElement.classList.remove('dark');
                 }
             });
-        }
+                }
             }
         }
     </script>

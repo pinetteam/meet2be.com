@@ -17,11 +17,16 @@ class SettingsController extends Controller
     public function index(Request $request): View
     {
         $tenant = Auth::user()->tenant;
+        $locale = app()->getLocale();
         
         // Sistem verilerini al
-        $countries = Country::where('is_active', true)->orderBy('name_en')->get();
+        $countries = Country::where('is_active', true)
+            ->orderBy($locale === 'tr' ? 'name_tr' : 'name_en')
+            ->get();
         $currencies = Currency::where('is_active', true)->orderBy('code')->get();
-        $languages = Language::where('is_active', true)->orderBy('name_en')->get();
+        $languages = Language::where('is_active', true)
+            ->orderBy($locale === 'tr' ? 'name_tr' : 'name_en')
+            ->get();
         
         // Timezone'ları bölgelere göre grupla
         $timezones = Timezone::orderBy('name')->get();
@@ -69,7 +74,7 @@ class SettingsController extends Controller
         
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'company_name' => 'nullable|string|max:255',
+            'legal_name' => 'nullable|string|max:255',
             'website' => 'nullable|url|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:50',
@@ -84,6 +89,12 @@ class SettingsController extends Controller
             'timezone_id' => 'nullable|exists:system_timezones,id',
         ]);
         
+        // address_line_1 için address'i kullan
+        if (isset($validated['address'])) {
+            $validated['address_line_1'] = $validated['address'];
+            unset($validated['address']);
+        }
+        
         // Telefon numarasını ülke koduyla birleştir
         if (!empty($validated['phone']) && !empty($validated['phone_country_id'])) {
             $country = Country::findOrFail($validated['phone_country_id']);
@@ -96,10 +107,23 @@ class SettingsController extends Controller
             unset($validated['phone_country_id']);
         }
         
+        // Timezone değişti mi kontrol et
+        $timezoneChanged = isset($validated['timezone_id']) && $tenant->timezone_id != $validated['timezone_id'];
+        
         $tenant->update($validated);
+        
+        // Timezone değiştiyse relationship'leri yenile
+        if ($timezoneChanged) {
+            // Tenant modelini ve ilişkilerini yenile
+            $tenant->refresh();
+            $tenant->load('timezone');
+            
+            // User modelindeki tenant'ı da yenile
+            Auth::user()->load('tenant.timezone');
+        }
         
         return redirect()
             ->route('portal.settings.index')
-            ->with('success', 'Ayarlar başarıyla güncellendi.');
+            ->with('success', __('settings.messages.updated_successfully'));
     }
 } 

@@ -7,6 +7,7 @@ use App\Models\System\Country;
 use App\Models\System\Language;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class CountryLanguageSeeder extends Seeder
 {
@@ -264,8 +265,8 @@ class CountryLanguageSeeder extends Seeder
                     'country_id' => $country->id,
                     'language_id' => $language->id,
                     'is_primary' => ($languageCode === $languageCodes[0]),
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'created_at' => Carbon::now('UTC'),
+                    'updated_at' => Carbon::now('UTC'),
                 ]);
                 
                 $inserted++;

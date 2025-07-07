@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Carbon\Carbon;
 
 class Tenant extends Model
 {
@@ -395,13 +396,13 @@ class Tenant extends Model
     public function scopeOnTrial($query)
     {
         return $query->where('status', self::STATUS_TRIAL)
-                    ->where('trial_ends_at', '>', now());
+                    ->where('trial_ends_at', '>', Carbon::now('UTC'));
     }
 
     public function scopeExpiredTrial($query)
     {
         return $query->where('status', self::STATUS_TRIAL)
-                    ->where('trial_ends_at', '<=', now());
+                    ->where('trial_ends_at', '<=', Carbon::now('UTC'));
     }
 
     public function scopeByType($query, string $type)

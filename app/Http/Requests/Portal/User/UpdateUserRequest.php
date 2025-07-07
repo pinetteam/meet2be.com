@@ -16,8 +16,8 @@ class UpdateUserRequest extends FormRequest
 
     public function rules(): array
     {
-        $user = $this->route('user');
         $tenantId = TenantService::getCurrentTenantId();
+        $userId = $this->route('user')->id;
         
         return [
             'username' => [
@@ -25,18 +25,22 @@ class UpdateUserRequest extends FormRequest
                 'string', 
                 'min:3', 
                 'max:50', 
-                'regex:/^[a-zA-Z0-9_-]+$/', 
-                Rule::unique('users', 'username')->ignore($user->id)->where('tenant_id', $tenantId)
+                'regex:/^[a-zA-Z0-9_-]+$/',
+                Rule::unique('users', 'username')
+                    ->where('tenant_id', $tenantId)
+                    ->ignore($userId)
             ],
             'email' => [
                 'required', 
                 'email:rfc,dns', 
                 'max:255', 
-                Rule::unique('users', 'email')->ignore($user->id)->where('tenant_id', $tenantId)
+                Rule::unique('users', 'email')
+                    ->where('tenant_id', $tenantId)
+                    ->ignore($userId)
             ],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-            'first_name' => ['required', 'string', 'min:2', 'max:50', 'regex:/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/'],
-            'last_name' => ['required', 'string', 'min:2', 'max:50', 'regex:/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/'],
+            'first_name' => ['required', 'string', 'min:2', 'max:50', 'regex:/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/u'],
+            'last_name' => ['required', 'string', 'min:2', 'max:50', 'regex:/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/u'],
             'phone' => ['nullable', 'string', 'max:20', 'regex:/^[\+]?[0-9\s\-\(\)]+$/'],
             'status' => ['required', Rule::in(array_keys(User::STATUSES))],
             'type' => ['required', Rule::in(array_keys(User::TYPES))],
@@ -49,25 +53,29 @@ class UpdateUserRequest extends FormRequest
         $data = [
             'username' => strtolower($this->username),
             'email' => strtolower($this->email),
-            'first_name' => ucwords(strtolower($this->first_name)),
-            'last_name' => ucwords(strtolower($this->last_name)),
         ];
 
-        if (empty($this->password)) {
+        if ($this->filled('password')) {
+            $data['password'] = $this->password;
+        } else {
             unset($data['password']);
         }
 
         $this->merge($data);
     }
-
-    public function validated($key = null, $default = null)
+    
+    public function messages(): array
     {
-        $validated = parent::validated($key, $default);
-        
-        if (empty($validated['password'])) {
-            unset($validated['password']);
-        }
-
-        return $validated;
+        return [
+            'username.required' => __('validation.required', ['attribute' => __('user.fields.username')]),
+            'username.unique' => __('validation.unique', ['attribute' => __('user.fields.username')]),
+            'email.required' => __('validation.required', ['attribute' => __('user.fields.email')]),
+            'email.email' => __('validation.email', ['attribute' => __('user.fields.email')]),
+            'email.unique' => __('validation.unique', ['attribute' => __('user.fields.email')]),
+            'first_name.required' => __('validation.required', ['attribute' => __('user.fields.first_name')]),
+            'last_name.required' => __('validation.required', ['attribute' => __('user.fields.last_name')]),
+            'password.min' => __('validation.min.string', ['attribute' => __('user.fields.password'), 'min' => 8]),
+            'password.confirmed' => __('validation.confirmed', ['attribute' => __('user.fields.password')]),
+        ];
     }
 } 

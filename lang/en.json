@@ -417,5 +417,136 @@
     "Next Month": "Next Month",
     "This Year": "This Year",
     "Last Year": "Last Year",
-    "Next Year": "Next Year"
+    "Next Year": "Next Year",
+    "common": {
+        "actions": {
+            "save": "Save",
+            "delete": "Delete",
+            "cancel": "Cancel",
+            "edit": "Edit",
+            "create": "Create",
+            "update": "Update",
+            "view": "View",
+            "search": "Search",
+            "filter": "Filter",
+            "view_all": "View All",
+            "save_changes": "Save Changes"
+        },
+        "select": "Select",
+        "created_at": "Created At",
+        "updated_at": "Updated At"
+    },
+    "user": {
+        "title": "Users",
+        "fields": {
+            "username": "Username",
+            "email": "Email",
+            "password": "Password",
+            "first_name": "First Name",
+            "last_name": "Last Name",
+            "phone": "Phone",
+            "status": "Status",
+            "type": "Type"
+        },
+        "messages": {
+            "created_successfully": "User created successfully",
+            "updated_successfully": "User updated successfully",
+            "deleted_successfully": "User deleted successfully"
+        }
+    },
+    "profile": {
+        "title": "Profile Information",
+        "subtitle": "View and update your account information",
+        "personal_info": "Personal Information",
+        "change_password": "Change Password",
+        "fields": {
+            "current_password": "Current Password",
+            "new_password": "New Password",
+            "confirm_password": "Confirm New Password"
+        },
+        "password_hint": "Must be at least 8 characters with uppercase, lowercase, numbers and symbols.",
+        "messages": {
+            "updated_successfully": "Profile updated successfully"
+        }
+    },
+    "validation": {
+        "errors_occurred": "Some errors occurred"
+    },
+    "site": {
+        "common": {
+            "login": "Login",
+            "logout": "Logout"
+        }
+    },
+    "dashboard": {
+        "welcome": "Welcome, :name!",
+        "subtitle": "Manage all activities in your system from your dashboard.",
+        "timezone": "Timezone",
+        "current_time": "Current Time",
+        "stats": {
+            "total_users": "Total Users",
+            "active_users": "Active Users",
+            "total_events": "Total Events",
+            "upcoming_events": "Upcoming Events"
+        },
+        "recent_users": "Recent Users",
+        "upcoming_events": "Upcoming Events",
+        "no_recent_users": "No users added yet.",
+        "no_upcoming_events": "No upcoming events found."
+    },
+    "settings": {
+        "title": "Settings",
+        "subtitle": "Manage tenant information and system settings",
+        "tabs": {
+            "general": "General Information",
+            "contact": "Contact Information",
+            "system": "System Settings"
+        },
+        "fields": {
+            "tenant_name": "Tenant Name",
+            "company_name": "Company Name",
+            "website": "Website",
+            "email": "Email Address",
+            "phone": "Phone",
+            "address": "Address",
+            "city": "City",
+            "state": "State/Province",
+            "postal_code": "Postal Code",
+            "country": "Country",
+            "currency": "Currency",
+            "default_language": "Default Language",
+            "timezone": "Timezone"
+        },
+        "search_country": "Search country...",
+        "regions": {
+            "africa": "Africa",
+            "america": "America",
+            "antarctica": "Antarctica",
+            "arctic": "Arctic",
+            "asia": "Asia",
+            "atlantic": "Atlantic",
+            "australia": "Australia",
+            "europe": "Europe",
+            "indian": "Indian",
+            "pacific": "Pacific",
+            "other": "Other"
+        },
+        "tenant_info": {
+            "title": "Tenant Information",
+            "tenant_id": "Tenant ID",
+            "status": "Status"
+        },
+        "messages": {
+            "updated_successfully": "Settings updated successfully."
+        }
+    },
+    "tenant": {
+        "statuses": {
+            "active": "Active",
+            "inactive": "Inactive",
+            "suspended": "Suspended",
+            "expired": "Expired",
+            "trial": "Trial"
+        }
+    }
 } 

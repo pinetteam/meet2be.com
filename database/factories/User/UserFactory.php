@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Models\Tenant\Tenant;
 use App\Models\User\User;
+use Carbon\Carbon;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -34,7 +35,7 @@ class UserFactory extends Factory
             'tenant_id' => Tenant::factory(),
             'username' => fake()->unique()->userName(),
             'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
+            'email_verified_at' => Carbon::now('UTC'),
             'password' => static::$password ??= Hash::make('password'),
             'first_name' => $firstName,
             'last_name' => $lastName,

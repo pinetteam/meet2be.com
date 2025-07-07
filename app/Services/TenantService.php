@@ -25,7 +25,17 @@ class TenantService
         $currentRoute = request()->route();
         if ($currentRoute) {
             $routeName = $currentRoute->getName();
-            $publicRoutes = ['site.auth.login', 'site.auth.logout', 'site.home.index'];
+            $publicRoutes = [
+                'site.auth.login', 
+                'site.auth.login.store',
+                'site.auth.logout', 
+                'site.home.index',
+                'site.auth.register',
+                'site.auth.password.request',
+                'site.auth.password.email',
+                'site.auth.password.reset',
+                'site.auth.password.update'
+            ];
             if (in_array($routeName, $publicRoutes)) {
                 return null;
             }
@@ -45,6 +55,7 @@ class TenantService
             // Direct DB query to avoid circular dependency
             $tenantId = DB::table('users')
                 ->where('id', $userId)
+                ->whereNull('deleted_at')
                 ->value('tenant_id');
             
             if ($tenantId) {
@@ -98,7 +109,7 @@ class TenantService
     public static function ensureTenantAccess($tenantId): void
     {
         if (!self::checkTenantAccess($tenantId)) {
-            abort(403, 'Access denied to this tenant.');
+            abort(403, __('errors.tenant_access_denied'));
         }
     }
     
@@ -112,5 +123,27 @@ class TenantService
             ->whereIn('status', ['active', 'trial'])
             ->whereNull('deleted_at')
             ->exists();
+    }
+    
+    /**
+     * Get current tenant model
+     */
+    public static function getCurrentTenant(): ?Tenant
+    {
+        $tenantId = self::getCurrentTenantId();
+        
+        if (!$tenantId) {
+            return null;
+        }
+        
+        return Tenant::find($tenantId);
+    }
+    
+    /**
+     * Check if current context has tenant
+     */
+    public static function hasTenant(): bool
+    {
+        return self::getCurrentTenantId() !== null;
     }
 } 

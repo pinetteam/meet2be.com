@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Event\Venue\Venue;
 use App\Models\Event\Event;
 use App\Models\Tenant\Tenant;
+use Carbon\Carbon;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Event\Venue>
@@ -175,12 +176,15 @@ class VenueFactory extends Factory
         ]);
     }
     
-    public function occupied()
+    public function used(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'status' => Venue::STATUS_OCCUPIED,
-            'last_used_at' => now(),
-        ]);
+        return $this->state(function (array $attributes) {
+            return [
+                'status' => Venue::STATUS_OCCUPIED,
+                'last_used_at' => Carbon::now('UTC'),
+                'usage_count' => fake()->numberBetween(10, 100),
+            ];
+        });
     }
     
     public function maintenance()

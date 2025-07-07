@@ -22,6 +22,13 @@ class User extends Authenticatable
     protected $keyType = 'string';
     public $incrementing = false;
 
+    /**
+     * The relationships that should always be loaded.
+     *
+     * @var array
+     */
+    protected $with = ['tenant'];
+
     const TYPE_ADMIN = 'admin';
     const TYPE_SCREENER = 'screener';
     const TYPE_OPERATOR = 'operator';

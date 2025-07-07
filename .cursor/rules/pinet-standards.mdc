@@ -1345,11 +1345,11 @@ return [
             </label>
             <input 
                 type="email"
-                name="email" 
+            name="email" 
                 id="email"
-                placeholder="{{ __('user.profile.email_placeholder') }}"
+            placeholder="{{ __('user.profile.email_placeholder') }}"
                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
-            />
+        />
         </div>
         <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
             {{ __('common.actions.save') }}

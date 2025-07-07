@@ -7,6 +7,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Event\Event;
 use App\Models\Event\Venue\Venue;
 use App\Models\Tenant\Tenant;
+use Carbon\Carbon;
 
 class EventsSeeder extends Seeder
 {
@@ -145,8 +146,8 @@ class EventsSeeder extends Seeder
             ->create([
                 'title' => '48-Hour AI Hackathon',
                 'description' => 'Build innovative AI solutions in 48 hours. Great prizes, mentorship, and networking opportunities.',
-                'start_date' => now()->addMonths(2),
-                'end_date' => now()->addMonths(2)->addDays(2),
+                'start_date' => Carbon::now('UTC')->addMonths(2),
+                'end_date' => Carbon::now('UTC')->addMonths(2)->addDays(2),
             ]);
             
         Venue::factory()
@@ -187,8 +188,8 @@ class EventsSeeder extends Seeder
             ->create([
                 'title' => 'Laravel Developers Meetup - January',
                 'description' => 'Monthly gathering of Laravel developers to share knowledge and network.',
-                'start_date' => now()->addWeeks(2),
-                'end_date' => now()->addWeeks(2)->addHours(3),
+                'start_date' => Carbon::now('UTC')->addWeeks(2),
+                'end_date' => Carbon::now('UTC')->addWeeks(2)->addHours(3),
             ]);
             
         Venue::factory()
