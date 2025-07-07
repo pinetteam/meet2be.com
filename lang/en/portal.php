@@ -69,6 +69,7 @@ return [
     'settings' => [
         'title' => 'Settings',
         'subtitle' => 'Manage your organization information and preferences',
+        'select_category' => 'Select Category',
         'description' => 'Manage your account settings and preferences',
         'tabs' => [
             'general' => 'General',

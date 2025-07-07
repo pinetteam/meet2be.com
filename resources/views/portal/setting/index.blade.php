@@ -3,51 +3,57 @@
 @section('title', __('portal.settings.title'))
 
 @section('content')
-<div x-data="settingsPage()">
+<div x-data="{ activeTab: 'general' }">
     {{-- Header --}}
-    <div class="mb-6" x-ref="header">
+    <div class="mb-6">
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('portal.settings.title') }}</h1>
         <p class="text-gray-600 dark:text-gray-400">{{ __('portal.settings.subtitle') }}</p>
     </div>
 
-    {{-- Tab Navigation --}}
-    <div class="mb-6" x-ref="tabContainer">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
-             :class="{'shadow-lg fixed top-14 sm:top-16 left-0 right-0 z-20 mx-4 sm:mx-6 lg:mx-8 lg:left-64': tabsFixed}">
-            {{-- Tab container with horizontal scroll on mobile --}}
-            <div class="relative overflow-x-auto">
-                <nav class="flex -mb-px min-w-max">
-                    <button @click="activeTab = 'general'" 
-                            :class="activeTab === 'general' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'"
-                            class="py-2 px-3 sm:px-6 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap flex-shrink-0">
-                        <i class="fas fa-info-circle mr-1 sm:mr-2"></i><span class="hidden sm:inline">{{ __('portal.settings.tabs.general') }}</span><span class="sm:hidden">{{ __('portal.general.general') }}</span>
-                    </button>
-                    <button @click="activeTab = 'contact'" 
-                            :class="activeTab === 'contact' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'"
-                            class="py-2 px-3 sm:px-6 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap flex-shrink-0">
-                        <i class="fas fa-address-book mr-1 sm:mr-2"></i><span class="hidden sm:inline">{{ __('portal.settings.tabs.contact') }}</span><span class="sm:hidden">{{ __('portal.general.contact') }}</span>
-                    </button>
-                    <button @click="activeTab = 'localization'" 
-                            :class="activeTab === 'localization' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'"
-                            class="py-2 px-3 sm:px-6 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap flex-shrink-0">
-                        <i class="fas fa-globe mr-1 sm:mr-2"></i><span class="hidden sm:inline">{{ __('portal.settings.tabs.localization') }}</span><span class="sm:hidden">{{ __('portal.general.localization') }}</span>
-                    </button>
-                    <button @click="activeTab = 'subscription'" 
-                            :class="activeTab === 'subscription' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'"
-                            class="py-2 px-3 sm:px-6 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap flex-shrink-0">
-                        <i class="fas fa-crown mr-1 sm:mr-2"></i><span class="hidden sm:inline">{{ __('portal.settings.tabs.subscription') }}</span><span class="sm:hidden">{{ __('portal.general.subscription') }}</span>
-                    </button>
-                </nav>
-                
-                {{-- Scroll indicator for mobile --}}
-                <div class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-gray-800 to-transparent pointer-events-none sm:hidden"
-                     x-show="!isScrolledToEnd"></div>
-            </div>
-        </div>
+    {{-- Mobile Tab Selector --}}
+    <div class="sm:hidden bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6 p-4">
+        <label for="mobile-tab-selector" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            {{ __('portal.settings.select_category') }}
+        </label>
+        <select id="mobile-tab-selector" 
+                x-model="activeTab" 
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+            <option value="general">{{ __('portal.settings.tabs.general') }}</option>
+            <option value="contact">{{ __('portal.settings.tabs.contact') }}</option>
+            <option value="localization">{{ __('portal.settings.tabs.localization') }}</option>
+            <option value="subscription">{{ __('portal.settings.tabs.subscription') }}</option>
+        </select>
     </div>
 
-    {{-- Spacer for fixed tabs --}}
-    <div x-show="tabsFixed" x-cloak class="h-14"></div>
+    {{-- Desktop Tab Navigation --}}
+    <div class="hidden sm:block bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
+        <div class="flex border-b border-gray-200 dark:border-gray-700">
+            <button @click="activeTab = 'general'" 
+                    :class="activeTab === 'general' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
+                    class="px-6 py-3 text-sm font-medium border-b-2 -mb-px transition-colors focus:outline-none">
+                <i class="fas fa-info-circle mr-2"></i>
+                {{ __('portal.settings.tabs.general') }}
+            </button>
+            <button @click="activeTab = 'contact'" 
+                    :class="activeTab === 'contact' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
+                    class="px-6 py-3 text-sm font-medium border-b-2 -mb-px transition-colors focus:outline-none">
+                <i class="fas fa-address-book mr-2"></i>
+                {{ __('portal.settings.tabs.contact') }}
+            </button>
+            <button @click="activeTab = 'localization'" 
+                    :class="activeTab === 'localization' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
+                    class="px-6 py-3 text-sm font-medium border-b-2 -mb-px transition-colors focus:outline-none">
+                <i class="fas fa-globe mr-2"></i>
+                {{ __('portal.settings.tabs.localization') }}
+            </button>
+            <button @click="activeTab = 'subscription'" 
+                    :class="activeTab === 'subscription' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
+                    class="px-6 py-3 text-sm font-medium border-b-2 -mb-px transition-colors focus:outline-none">
+                <i class="fas fa-crown mr-2"></i>
+                {{ __('portal.settings.tabs.subscription') }}
+            </button>
+        </div>
+    </div>
 
     {{-- Tab Content --}}
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
@@ -496,49 +502,6 @@
 </div>
 
 <script>
-function settingsPage() {
-    return {
-        activeTab: 'general',
-        tabsFixed: false,
-        isScrolledToEnd: false,
-        
-        init() {
-            // Setup intersection observer for header
-            const observer = new IntersectionObserver(
-                (entries) => {
-                    entries.forEach((entry) => {
-                        this.tabsFixed = !entry.isIntersecting;
-                    });
-                },
-                {
-                    rootMargin: '-60px 0px 0px 0px',
-                    threshold: [0, 1]
-                }
-            );
-            
-            observer.observe(this.$refs.header);
-            
-            // Check horizontal scroll position
-            const scrollContainer = this.$refs.tabContainer.querySelector('.overflow-x-auto');
-            if (scrollContainer) {
-                scrollContainer.addEventListener('scroll', () => {
-                    const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-                    this.isScrolledToEnd = scrollContainer.scrollLeft >= maxScroll - 5;
-                });
-                
-                // Initial check
-                const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-                this.isScrolledToEnd = scrollContainer.scrollLeft >= maxScroll - 5;
-            }
-            
-            // Clean up on destroy
-            this.$watch('$el', () => {
-                observer.disconnect();
-            });
-        }
-    }
-}
-
 function settingsForm() {
     return {
         loading: false,

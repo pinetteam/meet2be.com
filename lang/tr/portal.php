@@ -68,7 +68,8 @@ return [
     // Settings
     'settings' => [
         'title' => 'Ayarlar',
-        'subtitle' => 'Organizasyon bilgilerinizi ve tercihlerinizi yönetin',
+        'subtitle' => 'Hesap ve sistem ayarlarınızı yönetin',
+        'select_category' => 'Kategori Seçin',
         'description' => 'Hesap ayarlarınızı ve tercihlerinizi yönetin',
         'tabs' => [
             'general' => 'Genel',

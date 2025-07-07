@@ -60,29 +60,64 @@
     @apply ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-gray-800;
 }
 
-/* Sidebar Navigation Styles - Atlassian Pattern */
+/* Sidebar Navigation */
 .sidebar-nav-item {
-    @apply flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-150;
-}
-
-.sidebar-nav-item:not(:last-child) {
-    @apply mb-0.5;
+    @apply flex items-center px-3 py-2 rounded-md text-sm font-medium transition-all duration-150;
 }
 
 .sidebar-nav-item.active {
-    @apply bg-blue-50 dark:bg-white/10 text-blue-700 dark:text-blue-200;
+    @apply bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-200;
+}
+
+.sidebar-nav-item:not(.active):hover {
+    @apply bg-gray-50 dark:bg-gray-700/50 text-gray-900 dark:text-white;
 }
 
 .sidebar-submenu-item {
-    @apply flex items-center pl-11 pr-3 py-2 text-sm rounded-lg transition-colors duration-150;
-}
-
-.sidebar-submenu-item:not(:last-child) {
-    @apply mb-0.5;
+    @apply flex items-center pl-11 pr-3 py-2 text-sm transition-all duration-150 rounded-md;
 }
 
 .sidebar-submenu-item.active {
-    @apply bg-blue-50 dark:bg-white/10 text-blue-700 dark:text-blue-200;
+    @apply bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-200;
+}
+
+.sidebar-submenu-item:not(.active):hover {
+    @apply bg-gray-50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-200;
+}
+
+/* Form Elements - Consistent Styling */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+input[type="url"],
+textarea,
+select {
+    @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-150 text-sm;
+}
+
+/* Primary Button Style */
+.btn-primary {
+    @apply inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium text-sm transition-colors duration-150;
+}
+
+/* Secondary Button Style */
+.btn-secondary {
+    @apply inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-md font-medium text-sm transition-colors duration-150;
+}
+
+/* Card Component */
+.portal-card {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm;
+}
+
+.portal-card-header {
+    @apply px-6 py-4 border-b border-gray-200 dark:border-gray-700;
+}
+
+.portal-card-body {
+    @apply p-6;
 }
 
 /* Sidebar specific styles */
@@ -93,19 +128,6 @@ aside {
 aside nav {
     overflow-x: hidden;
     overflow-y: auto;
-}
-
-/* Card component */
-.card {
-    @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700;
-}
-
-.card-header {
-    @apply px-6 py-4 border-b border-gray-200 dark:border-gray-700;
-}
-
-.card-body {
-    @apply p-6;
 }
 
 /* Alert component */
@@ -164,55 +186,34 @@ footer {
     footer {
         padding: 0.5rem 1rem;
     }
-
-    .settings-sticky-tabs {
-        position: -webkit-sticky;
-        position: sticky;
-        top: 56px; /* Mobile header height */
-        z-index: 10;
-    }
-
-    /* Improve horizontal scrolling on mobile */
-    .overflow-x-auto {
-        -webkit-overflow-scrolling: touch;
-        scroll-behavior: smooth;
-        scrollbar-width: thin;
-    }
-    
-    /* Make scrollbar more visible */
-    .overflow-x-auto::-webkit-scrollbar {
-        height: 6px;
-    }
-    
-    .overflow-x-auto::-webkit-scrollbar-track {
-        background: #f3f4f6;
-        border-radius: 3px;
-    }
-    
-    .dark .overflow-x-auto::-webkit-scrollbar-track {
-        background: #374151;
-    }
-    
-    .overflow-x-auto::-webkit-scrollbar-thumb {
-        background: #9ca3af;
-        border-radius: 3px;
-    }
-    
-    .dark .overflow-x-auto::-webkit-scrollbar-thumb {
-        background: #6b7280;
-    }
-    
-    /* Add padding to prevent content cut-off */
-    .overflow-x-auto nav {
-        padding-bottom: 4px;
-    }
 }
 
-@media (min-width: 641px) {
-    .settings-sticky-tabs {
-        position: -webkit-sticky;
-        position: sticky;
-        top: 64px; /* Desktop header height */
-        z-index: 10;
-    }
+/* Table component */
+.table {
+    @apply w-full text-left text-sm text-gray-500 dark:text-gray-400;
+}
+
+.table thead {
+    @apply text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400;
+}
+
+.table tbody tr {
+    @apply bg-white border-b dark:bg-gray-800 dark:border-gray-700;
+}
+
+.table tbody tr:hover {
+    @apply bg-gray-50 dark:bg-gray-700;
+}
+
+.table th {
+    @apply px-6 py-3;
+}
+
+.table td {
+    @apply px-6 py-4;
+}
+
+/* Dark mode transitions */
+* {
+    @apply transition-colors duration-200;
 }

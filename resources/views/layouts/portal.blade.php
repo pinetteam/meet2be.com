@@ -162,18 +162,32 @@
 
                     <!-- Bottom navigation items -->
                     <div class="mt-auto pt-4 pb-2">
-                        <div class="px-3 border-t border-gray-200 dark:border-gray-700 pt-4">
+                        <div class="px-3 border-t border-gray-200 dark:border-gray-700 pt-4 space-y-1">
+                            <!-- Users -->
                             <a href="/portal/user" 
                                @click="currentPage = 'users'"
-                               class="sidebar-nav-item {{ request()->is('portal/user*') ? 'active text-blue-700 dark:text-blue-200' : 'text-gray-700 dark:text-gray-300' }}">
-                                <i class="{{ request()->is('portal/user*') ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500' }} fa-solid fa-users mr-3 text-base w-5 text-center"></i>
+                               :class="{
+                                   'sidebar-nav-item': true,
+                                   'active': window.location.pathname.includes('/portal/user'),
+                                   'text-gray-700 dark:text-gray-300': !window.location.pathname.includes('/portal/user'),
+                                   'text-blue-700 dark:text-blue-200': window.location.pathname.includes('/portal/user')
+                               }">
+                                <i :class="window.location.pathname.includes('/portal/user') ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'" 
+                                   class="fa-solid fa-users mr-3 text-base w-5 text-center"></i>
                                 {{ __('portal.navigation.users') }}
                             </a>
                             
                             <!-- Settings -->
                             <a href="{{ route('portal.setting.index') }}" 
-                               class="group flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('portal.setting.*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700' }}">
-                                <i class="fa-solid fa-gear mr-3 text-gray-400 group-hover:text-gray-600 transition-colors"></i>
+                               @click="currentPage = 'settings'"
+                               :class="{
+                                   'sidebar-nav-item': true,
+                                   'active': window.location.pathname.includes('/portal/setting'),
+                                   'text-gray-700 dark:text-gray-300': !window.location.pathname.includes('/portal/setting'),
+                                   'text-blue-700 dark:text-blue-200': window.location.pathname.includes('/portal/setting')
+                               }">
+                                <i :class="window.location.pathname.includes('/portal/setting') ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'" 
+                                   class="fa-solid fa-gear mr-3 text-base w-5 text-center"></i>
                                 {{ __('portal.navigation.settings') }}
                             </a>
                         </div>
@@ -183,19 +197,19 @@
         </aside>
 
         <!-- Main content -->
-        <div class="flex-1 flex flex-col min-w-0 relative">
+        <div class="flex-1 flex flex-col min-h-0">
             <!-- Top header -->
             <header class="sticky top-0 z-30 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                <div class="flex h-16 items-center justify-between px-4 sm:px-6">
+                <div class="flex h-16 items-center justify-between px-4 sm:px-6 gap-2">
                     <!-- Mobile menu button -->
                     <button @click="mobileMenuOpen = true" 
-                            class="lg:hidden p-2 rounded-lg transition-colors duration-150">
-                        <i class="fa-solid fa-bars text-xl text-gray-600 dark:text-gray-400"></i>
+                            class="lg:hidden p-2 rounded-lg transition-colors duration-150 flex-shrink-0">
+                        <i class="fa-solid fa-bars text-lg sm:text-xl text-gray-600 dark:text-gray-400"></i>
                     </button>
 
                     <!-- Search -->
-                    <div class="flex-1 flex items-center px-4 lg:px-0">
-                        <div class="w-full max-w-lg lg:max-w-xs">
+                    <div class="flex-1 flex items-center">
+                        <div class="w-full max-w-md lg:max-w-xs">
                             <label for="search" class="sr-only">{{ __('portal.header.search') }}</label>
                             <div class="relative">
                                 <div class="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
@@ -203,7 +217,7 @@
                                 </div>
                                 <input id="search"
                                        name="search"
-                                       class="block w-full rounded-lg border-0 bg-gray-50 dark:bg-gray-700 py-2 pl-10 pr-3 text-sm text-gray-900 dark:text-gray-100 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500"
+                                       class="block w-full rounded-lg border-0 bg-gray-50 dark:bg-gray-700 py-1.5 sm:py-2 pl-9 sm:pl-10 pr-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500"
                                        placeholder="{{ __('portal.header.search_placeholder') }}"
                                        type="search">
                             </div>
@@ -211,35 +225,35 @@
                     </div>
 
                     <!-- Right side buttons -->
-                    <div class="flex items-center space-x-2 sm:space-x-3">
+                    <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                         <!-- Theme toggle -->
                         <button @click="toggleTheme()"
-                                class="p-2 rounded-lg transition-colors duration-150"
+                                class="p-1.5 sm:p-2 rounded-lg transition-colors duration-150"
                                 aria-label="{{ __('portal.header.toggle_theme') }}">
-                            <i x-show="!darkMode" class="fa-solid fa-moon text-gray-600 dark:text-gray-400"></i>
-                            <i x-show="darkMode" class="fa-solid fa-sun text-gray-600 dark:text-gray-400"></i>
+                            <i x-show="!darkMode" class="fa-solid fa-moon text-base sm:text-lg text-gray-600 dark:text-gray-400"></i>
+                            <i x-show="darkMode" class="fa-solid fa-sun text-base sm:text-lg text-gray-600 dark:text-gray-400"></i>
                         </button>
 
                         <!-- Notifications -->
-                        <button class="relative p-2 rounded-lg transition-colors duration-150"
+                        <button class="relative p-1.5 sm:p-2 rounded-lg transition-colors duration-150"
                                 aria-label="{{ __('portal.header.notifications') }}">
-                            <i class="fa-solid fa-bell text-gray-600 dark:text-gray-400"></i>
-                            <span class="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 dark:bg-red-400 ring-2 ring-white dark:ring-gray-800"></span>
+                            <i class="fa-solid fa-bell text-base sm:text-lg text-gray-600 dark:text-gray-400"></i>
+                            <span class="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 h-2 w-2 rounded-full bg-red-500 dark:bg-red-400 ring-2 ring-white dark:ring-gray-800"></span>
                         </button>
 
                         <!-- Profile dropdown -->
                         <div x-data="{ open: false }" class="relative">
                             <button @click="open = !open"
-                                    class="flex items-center p-1.5 rounded-lg transition-colors duration-150"
+                                    class="flex items-center p-1 sm:p-1.5 rounded-lg transition-colors duration-150"
                                     :aria-expanded="open"
                                     aria-haspopup="true"
                                     aria-label="{{ __('portal.header.user_menu') }}">
-                                <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 dark:from-blue-500 dark:to-blue-600 flex items-center justify-center shadow-sm">
-                                    <span class="text-sm font-medium text-white">
+                                <div class="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 dark:from-blue-500 dark:to-blue-600 flex items-center justify-center shadow-sm">
+                                    <span class="text-xs sm:text-sm font-medium text-white">
                                         {{ substr(auth()->user()->full_name ?? auth()->user()->first_name ?? 'K', 0, 1) }}
                                     </span>
                                 </div>
-                                <span class="hidden ml-3 text-sm font-medium text-gray-700 dark:text-gray-200 lg:block">
+                                <span class="hidden ml-2 sm:ml-3 text-sm font-medium text-gray-700 dark:text-gray-200 lg:block">
                                     {{ auth()->user()->full_name ?? __('portal.header.default_user') }}
                                 </span>
                                 <i class="fa-solid fa-chevron-down hidden ml-1 text-xs text-gray-400 dark:text-gray-500 lg:block"></i>
@@ -259,7 +273,7 @@
                                  aria-orientation="vertical"
                                  aria-labelledby="user-menu-button">
                                 <a href="{{ route('portal.profile.index') }}" 
-                                   class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 transition-colors duration-150" 
+                                   class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150" 
                                    role="menuitem">
                                     <i class="fa-solid fa-user mr-3 text-gray-400 dark:text-gray-500"></i>
                                     {{ __('portal.profile_menu.profile') }}
@@ -270,7 +284,7 @@
                                 <form method="POST" action="{{ route('site.auth.logout') }}">
                                     @csrf
                                     <button type="submit" 
-                                            class="flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 transition-colors duration-150" 
+                                            class="flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150" 
                                             role="menuitem">
                                         <i class="fa-solid fa-right-from-bracket mr-3 text-gray-400 dark:text-gray-500"></i>
                                         {{ __('portal.profile_menu.logout') }}
@@ -283,11 +297,11 @@
             </header>
 
             <!-- Page content -->
-            <main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 pb-12 lg:pb-10">
-                <div class="p-4 sm:p-6 lg:p-8">
-            @yield('content')
-        </div>
-    </main>
+            <main class="flex-1 bg-gray-50 dark:bg-gray-900 overflow-hidden">
+                <div class="h-full overflow-y-auto p-4 sm:p-6 lg:p-8 pb-16">
+                    @yield('content')
+                </div>
+            </main>
 
             <!-- Fixed Footer -->
             <footer class="fixed bottom-0 left-0 right-0 z-20 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 lg:left-64">
