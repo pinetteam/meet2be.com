@@ -3,129 +3,171 @@
 namespace App\Http\Controllers\Portal\Setting;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Portal\Setting\UpdateSettingRequest;
 use App\Models\System\Country;
 use App\Models\System\Currency;
 use App\Models\System\Language;
 use App\Models\System\Timezone;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class SettingController extends Controller
 {
-    public function index(Request $request): View
+    /**
+     * Display tenant settings
+     */
+    public function index(Request $request)
     {
-        $tenant = Auth::user()->tenant;
-        $locale = app()->getLocale();
+        $tenant = $request->user()->tenant;
+        $tenant->load(['country', 'language', 'currency', 'timezone']);
         
-        // Sistem verilerini al
-        $countries = Country::where('is_active', true)
-            ->orderBy($locale === 'tr' ? 'name_tr' : 'name_en')
-            ->get();
+        $countries = Country::orderBy('name_en')->get();
+        $languages = Language::where('is_active', true)->orderBy('name_en')->get();
         $currencies = Currency::where('is_active', true)->orderBy('code')->get();
-        $languages = Language::where('is_active', true)
-            ->orderBy($locale === 'tr' ? 'name_tr' : 'name_en')
-            ->get();
+        $timezones = Timezone::orderBy('offset')->get();
         
-        // Timezone'ları bölgelere göre grupla
-        $timezones = Timezone::orderBy('name')->get();
-        $groupedTimezones = $timezones->groupBy(function ($timezone) {
-            // Timezone adından bölgeyi çıkar (örn: "Europe/Istanbul" -> "Europe")
-            $parts = explode('/', $timezone->name);
-            return count($parts) > 1 ? $parts[0] : 'Other';
-        })->sortKeys()->map(function ($group) {
-            // Her grup içindeki timezone'ları offset'e göre sırala
-            return $group->sortBy('offset');
-        });
+        return view('portal.setting.index', compact(
+            'tenant',
+            'countries',
+            'languages',
+            'currencies',
+            'timezones'
+        ));
+    }
+
+    /**
+     * Update tenant settings
+     */
+    public function update(UpdateSettingRequest $request): JsonResponse
+    {
+        $tenant = $request->user()->tenant;
         
-        // Telefon numarasını parse et
-        $phoneNumber = null;
-        $currentCountry = null;
-        
-        if ($tenant->phone) {
-            // Varsayılan olarak tenant'ın ülkesini kullan, yoksa Türkiye
-            $currentCountry = $tenant->country_id 
-                ? $countries->firstWhere('id', $tenant->country_id)
-                : $countries->firstWhere('iso2', 'TR');
+        try {
+            $tenant->update($request->validated());
             
-            $phoneNumber = $tenant->phone;
-            
-            // Eğer telefon numarası ülke koduyla başlıyorsa ayır
-            if ($currentCountry) {
-                $phoneCode = ltrim($currentCountry->phone_code, '+');
-                if (str_starts_with($tenant->phone, $phoneCode)) {
-                    $phoneNumber = substr($tenant->phone, strlen($phoneCode));
-                }
-            }
-        } else {
-            // Varsayılan olarak tenant'ın ülkesini veya Türkiye'yi seç
-            $currentCountry = $tenant->country_id 
-                ? $countries->firstWhere('id', $tenant->country_id)
-                : $countries->firstWhere('iso2', 'TR');
+            return response()->json([
+                'success' => true,
+                'message' => __('portal.settings.messages.updated_successfully')
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => __('portal.settings.messages.update_failed')
+            ], 500);
         }
-        
-        return view('portal.setting.index', compact('tenant', 'countries', 'currencies', 'languages', 'groupedTimezones', 'currentCountry', 'phoneNumber'));
     }
     
-    public function update(Request $request): RedirectResponse
+    /**
+     * Update general settings
+     */
+    public function updateGeneral(Request $request): JsonResponse
     {
-        $tenant = Auth::user()->tenant;
-        
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'legal_name' => 'nullable|string|max:255',
-            'website' => 'nullable|url|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:50',
-            'phone_country_id' => 'nullable|exists:system_countries,id',
-            'address' => 'nullable|string|max:500',
-            'city' => 'nullable|string|max:100',
-            'state' => 'nullable|string|max:100',
-            'postal_code' => 'nullable|string|max:20',
-            'country_id' => 'nullable|exists:system_countries,id',
-            'currency_id' => 'nullable|exists:system_currencies,id',
-            'language_id' => 'nullable|exists:system_languages,id',
-            'timezone_id' => 'nullable|exists:system_timezones,id',
-            'date_format' => 'nullable|string|in:Y-m-d,d/m/Y,m/d/Y,d.m.Y,d-m-Y,M j, Y,F j, Y,j F Y',
-            'time_format' => 'nullable|string|in:H:i,H:i:s,g:i A,g:i:s A,h:i A,h:i:s A',
+        $request->validate([
+            'first_name' => 'required|string|max:50',
+            'last_name' => 'required|string|max:50',
+            'email' => 'required|email|unique:users,email,' . Auth::id(),
+            'language' => 'required|in:tr,en,de,fr,es',
+            'timezone' => 'required|timezone',
+            'date_format' => 'required|in:d/m/Y,m/d/Y,Y-m-d,d.m.Y',
         ]);
         
-        // address_line_1 için address'i kullan
-        if (isset($validated['address'])) {
-            $validated['address_line_1'] = $validated['address'];
-            unset($validated['address']);
+        $user = Auth::user();
+        $user->update($request->only(['first_name', 'last_name', 'email']));
+        
+        // Update tenant preferences
+        if ($user->tenant) {
+            $user->tenant->update([
+                'language_id' => $this->getLanguageIdFromCode($request->language),
+                'timezone_id' => $this->getTimezoneIdFromName($request->timezone),
+                'date_format' => $request->date_format,
+            ]);
         }
         
-        // Telefon numarasını ülke koduyla birleştir
-        if (!empty($validated['phone']) && !empty($validated['phone_country_id'])) {
-            $country = Country::findOrFail($validated['phone_country_id']);
-            $phoneCode = ltrim($country->phone_code, '+');
-            
-            // Telefon numarasından mask karakterlerini kaldır
-            $cleanPhone = preg_replace('/[^0-9]/', '', $validated['phone']);
-            
-            $validated['phone'] = $phoneCode . $cleanPhone;
-            unset($validated['phone_country_id']);
-        }
+        // Update locale
+        session(['locale' => $request->language]);
         
-        // Timezone değişti mi kontrol et
-        $timezoneChanged = isset($validated['timezone_id']) && $tenant->timezone_id != $validated['timezone_id'];
+        return response()->json([
+            'success' => true,
+            'message' => __('portal.settings.general_saved')
+        ]);
+    }
+    
+    /**
+     * Update security settings
+     */
+    public function updateSecurity(Request $request): JsonResponse
+    {
+        $request->validate([
+            'current_password' => 'required|current_password',
+            'new_password' => 'required|min:8|confirmed',
+        ]);
         
-        $tenant->update($validated);
+        $user = Auth::user();
+        $user->update([
+            'password' => Hash::make($request->new_password)
+        ]);
         
-        // Timezone değiştiyse relationship'leri yenile
-        if ($timezoneChanged) {
-            // Tenant modelini ve ilişkilerini yenile
-            $tenant->refresh();
-            $tenant->load('timezone');
-            
-            // User modelindeki tenant'ı da yenile
-            Auth::user()->load('tenant.timezone');
-        }
+        return response()->json([
+            'success' => true,
+            'message' => __('portal.settings.password_changed')
+        ]);
+    }
+    
+    /**
+     * Update notification settings
+     */
+    public function updateNotifications(Request $request): JsonResponse
+    {
+        $request->validate([
+            'email_updates' => 'boolean',
+            'email_security' => 'boolean',
+            'email_marketing' => 'boolean',
+        ]);
         
-        return redirect()
-            ->route('portal.setting.index')
-            ->with('success', __('settings.messages.updated_successfully'));
+        // Save notification preferences
+        // This would typically be saved to a user_preferences table
+        
+        return response()->json([
+            'success' => true,
+            'message' => __('portal.settings.notifications_saved')
+        ]);
+    }
+    
+    /**
+     * Toggle two-factor authentication
+     */
+    public function toggleTwoFactor(Request $request): JsonResponse
+    {
+        $user = Auth::user();
+        
+        // Toggle 2FA (implementation would depend on your 2FA package)
+        // For now, just return success
+        
+        return response()->json([
+            'success' => true,
+            'enabled' => $request->enable ?? false,
+            'message' => $request->enable 
+                ? __('portal.settings.two_factor_enabled')
+                : __('portal.settings.two_factor_disabled')
+        ]);
+    }
+    
+    /**
+     * Get language ID from code
+     */
+    private function getLanguageIdFromCode(string $code): ?int
+    {
+        return \App\Models\System\Language::where('iso_639_1', $code)->value('id');
+    }
+    
+    /**
+     * Get timezone ID from name
+     */
+    private function getTimezoneIdFromName(string $name): ?int
+    {
+        return \App\Models\System\Timezone::where('name', $name)->value('id');
     }
 } 

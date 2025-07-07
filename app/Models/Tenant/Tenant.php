@@ -67,7 +67,6 @@ class Tenant extends Model
         // Contact Information
         'email',
         'phone',
-        'fax',
         'website',
         
         // Address Information

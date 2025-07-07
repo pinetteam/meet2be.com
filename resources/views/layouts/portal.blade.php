@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-white dark:bg-gray-950">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <!-- Current Locale -->
+    <meta name="current-locale" content="{{ app()->getLocale() }}">
 
     <!-- Tenant Date/Time Formats -->
     @auth
@@ -17,501 +20,310 @@
     <!-- Tenant DateTime Settings -->
     @auth
         @if(auth()->user()->tenant)
-            <meta name="tenant-datetime" content='@json(["timezone" => auth()->user()->tenant->timezone?->name ?? config("app.timezone"), "dateFormat" => auth()->user()->tenant->date_format ?? "Y-m-d", "timeFormat" => auth()->user()->tenant->time_format ?? "H:i", "locale" => auth()->user()->tenant->language?->iso_639_1 ?? app()->getLocale()])'>
+            @php
+                $tenantDateTime = [
+                    'timezone' => auth()->user()->tenant->timezone?->name ?? config('app.timezone'),
+                    'dateFormat' => auth()->user()->tenant->date_format ?? 'Y-m-d',
+                    'timeFormat' => auth()->user()->tenant->time_format ?? 'H:i',
+                    'locale' => auth()->user()->tenant->language?->iso_639_1 ?? app()->getLocale()
+                ];
+            @endphp
+            <meta name="tenant-datetime" content='{{ json_encode($tenantDateTime) }}'>
         @endif
     @endauth
 
-    <title>@yield('title', 'Portal') - {{ config('app.name', 'Laravel') }}</title>
+    <!-- Translations for JavaScript -->
+    <script>
+        window.translations = {
+            navigation: @json(__('portal.navigation')),
+            header: @json(__('portal.header')),
+            profile_menu: @json(__('portal.profile_menu')),
+            footer: @json(__('portal.footer')),
+            general: @json(__('portal.general'))
+        };
+        window.locale = '{{ app()->getLocale() }}';
+    </script>
+
+    <title>@yield('title', __('portal.title')) - {{ config('app.name', 'Meet2Be') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
-    
-    <!-- FontAwesome Pro -->
-    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.5.1/css/all.css">
-    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.5.1/css/sharp-solid.css">
-    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.5.1/css/sharp-regular.css">
-    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.5.1/css/sharp-light.css">
 
     <!-- Scripts -->
     @vite(['resources/css/portal/portal.css', 'resources/js/portal/portal.js'])
 </head>
-<body class="h-full">
-<div x-data="portalLayout()" x-init="init()">
-    <!-- Mobile sidebar -->
-    <div x-show="mobileMenuOpen" class="relative z-50 lg:hidden" role="dialog" aria-modal="true">
-        <!-- Backdrop with blur -->
+<body class="h-full font-inter antialiased bg-gray-50 dark:bg-gray-900">
+    <!-- Notification System -->
+    @include('components.portal.notification')
+    
+    <div x-data="portalApp()" @keydown.escape="closeMobileMenu" class="flex h-full">
+        <!-- Mobile menu backdrop -->
         <div x-show="mobileMenuOpen" 
-             x-transition:enter="transition-opacity ease-linear duration-300"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100"
-             x-transition:leave="transition-opacity ease-linear duration-300"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
+         x-transition:enter="transition-opacity ease-linear duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition-opacity ease-linear duration-300"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
              @click="mobileMenuOpen = false"
-             class="fixed inset-0 bg-gray-900/80 dark:bg-gray-950/90 backdrop-blur-sm"></div>
+             class="fixed inset-0 z-40 bg-gray-600/75 dark:bg-gray-900/75 backdrop-blur-sm lg:hidden"
+             aria-hidden="true"></div>
 
-        <div class="fixed inset-0 flex">
-            <!-- Mobile sidebar -->
-            <div x-show="mobileMenuOpen"
-                 x-transition:enter="transition ease-in-out duration-300 transform"
-                 x-transition:enter-start="-translate-x-full"
-                 x-transition:enter-end="translate-x-0"
-                 x-transition:leave="transition ease-in-out duration-300 transform"
-                 x-transition:leave-start="translate-x-0"
-                 x-transition:leave-end="-translate-x-full"
-                 class="relative flex w-full max-w-[280px] flex-1">
+    <!-- Sidebar -->
+        <aside :class="{'translate-x-0': mobileMenuOpen, '-translate-x-full': !mobileMenuOpen}"
+               class="fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto">
 
-                <!-- Sidebar content -->
-                <div class="flex grow flex-col overflow-y-auto bg-white dark:bg-gray-900 custom-scrollbar w-full shadow-2xl">
-                    <!-- Header with logo and close button -->
-                    <div class="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-                        <div class="flex h-16 items-center justify-between px-6">
-                            <span class="text-2xl font-bold text-brand">Meet2Be</span>
-                            <!-- Close button -->
-                            <button type="button" @click="mobileMenuOpen = false" 
-                                    class="rounded-full p-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 hover:rotate-90">
-                                <span class="sr-only">Menüyü kapat</span>
-                                <i class="fa-regular fa-xmark text-xl text-gray-600 dark:text-gray-300"></i>
-                            </button>
-                        </div>
+        <!-- Logo -->
+            <div class="flex h-16 items-center justify-between px-6 border-b border-gray-200 dark:border-gray-700">
+                <a href="/portal" class="flex items-center space-x-2">
+                    <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-600 to-blue-700 dark:from-blue-500 dark:to-blue-600 flex items-center justify-center shadow-sm">
+                        <span class="text-white font-bold text-sm">M2B</span>
                     </div>
-
-                    <!-- Navigation content -->
-                    <div class="flex flex-col gap-y-5 px-6 py-4 pb-6 flex-1">
-                    <nav class="flex flex-1 flex-col">
-                        <ul role="list" class="flex flex-1 flex-col gap-y-7">
-                            <li>
-                                <ul role="list" class="-mx-2 space-y-1">
-                                    <template x-for="item in navigation" :key="item.name">
-                                        <li>
-                                            <template x-if="!item.children">
-                    <a :href="item.href" 
-                                                   @click="if(!item.children) currentPage = item.name"
-                       :class="[
-                                                       currentPage === item.name 
-                                                         ? 'bg-gray-50 dark:bg-gray-800 text-brand' 
-                                                         : 'text-gray-700 dark:text-gray-300 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800',
-                                                       'group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
-                                                   ]">
-                                                    <i :class="[
-                                                        item.icon,
-                                                        currentPage === item.name ? 'text-brand' : 'text-gray-400 dark:text-gray-500 group-hover:text-brand',
-                                                        'sidebar-icon'
-                                                    ]"></i>
-                        <span x-text="item.name"></span>
-                    </a>
-                </template>
-                                            <template x-if="item.children">
-                                                <div>
-                                                    <button type="button"
-                                                            @click="toggleSubmenu(item.name)"
-                                                            class="w-full text-left text-gray-700 dark:text-gray-300 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800 group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
-                                                        <i :class="[
-                                                            item.icon,
-                                                            'text-gray-400 dark:text-gray-500 group-hover:text-brand',
-                                                            'sidebar-icon'
-                                                        ]"></i>
-                                                        <span class="flex-1" x-text="item.name"></span>
-                                                        <i :class="[
-                                                            'fa-light fa-chevron-down text-xs transition-transform duration-200',
-                                                            openSubmenus.includes(item.name) ? 'rotate-180' : ''
-                                                        ]"></i>
+                    <span class="text-xl font-semibold text-gray-900 dark:text-white">Meet2Be</span>
+                </a>
+                <button @click="mobileMenuOpen = false" class="lg:hidden p-2 rounded-lg transition-colors duration-150">
+                    <i class="fa-solid fa-xmark text-lg text-gray-500 dark:text-gray-400"></i>
                 </button>
-                                                    <ul x-show="openSubmenus.includes(item.name)" 
-                                                        x-collapse 
-                                                        class="mt-1 px-2">
-                                                        <template x-for="child in item.children" :key="child.name">
-                                                            <li>
-                                                                <a :href="child.href"
-                                                                   @click="currentPage = child.name"
-                                                                   :class="[
-                                                                       currentPage === child.name 
-                                                                         ? 'bg-gray-50 dark:bg-gray-800 text-brand' 
-                                                                         : 'text-gray-700 dark:text-gray-400 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800',
-                                                                       'group flex items-center gap-x-3 rounded-md py-2 pl-9 pr-2 text-sm leading-6'
-                                                                   ]">
-                                                                    <span x-text="child.name"></span>
-                                                                </a>
-                                                            </li>
-                                                        </template>
-                                                    </ul>
-                                                </div>
-                                            </template>
-                                        </li>
-                                    </template>
-                                </ul>
-                            </li>
-                            <li class="mt-auto">
-                                <ul role="list" class="-mx-2 space-y-1 border-t border-gray-200 dark:border-gray-700 pt-2">
-                                    <li>
-                                        <a href="/portal/user" 
-                                           @click="currentPage = 'Kullanıcılar'"
-                                           :class="[
-                                               currentPage === 'Kullanıcılar' 
-                                                 ? 'bg-gray-50 dark:bg-gray-800 text-brand' 
-                                                 : 'text-gray-700 dark:text-gray-300 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800',
-                                               'group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
-                                           ]">
-                                            <i :class="[
-                                                'fa-light fa-users',
-                                                currentPage === 'Kullanıcılar' ? 'text-brand' : 'text-gray-400 dark:text-gray-500 group-hover:text-brand',
-                                                'sidebar-icon'
-                                            ]"></i>
-                                            Kullanıcılar
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('portal.setting.index') }}"
-                                           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors duration-200
-                                           {{ request()->routeIs('portal.setting.*') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white' : 'text-zinc-600 dark:text-zinc-400' }}">
-                                            <i :class="[
-                                                'fa-light fa-gear',
-                                                currentPage === 'Ayarlar' ? 'text-brand' : 'text-gray-400 dark:text-gray-500 group-hover:text-brand',
-                                                'sidebar-icon'
-                                            ]"></i>
-                                            Ayarlar
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-            </nav>
-                    </div>
-                </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Desktop sidebar -->
-    <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-        <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-6 pb-4 custom-scrollbar">
-            <div class="flex h-16 shrink-0 items-center">
-                <span class="text-2xl font-bold text-brand">Meet2Be</span>
-            </div>
-            <nav class="flex flex-1 flex-col">
-                <ul role="list" class="flex flex-1 flex-col gap-y-7">
-                    <li>
-                        <ul role="list" class="-mx-2 space-y-1">
-                            <template x-for="item in navigation" :key="item.name">
-                                <li>
+        <!-- Navigation -->
+            <nav class="flex-1 overflow-y-auto">
+                <div class="py-4">
+                    <div class="px-3">
+                        <template x-for="(item, index) in navigation" :key="index">
+                <div>
+                                <!-- Single item without children -->
                     <template x-if="!item.children">
                         <a :href="item.href"
-                                           @click="if(!item.children) currentPage = item.name"
-                           :class="[
-                                               currentPage === item.name 
-                                                 ? 'bg-gray-50 dark:bg-gray-800 text-brand' 
-                                                 : 'text-gray-700 dark:text-gray-300 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800',
-                                               'group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
-                           ]">
-                                            <i :class="[
-                                                item.icon,
-                                                currentPage === item.name ? 'text-brand' : 'text-gray-400 dark:text-gray-500 group-hover:text-brand',
-                                                'sidebar-icon'
-                                            ]"></i>
-                                            <span x-text="item.name"></span>
+                                       @click="currentPage = item.name"
+                                       :class="{
+                                           'sidebar-nav-item': true,
+                                           'active': currentPage === item.name,
+                                           'text-gray-700 dark:text-gray-300': currentPage !== item.name,
+                                           'text-blue-700 dark:text-blue-200': currentPage === item.name
+                                       }">
+                                        <i :class="[item.icon, currentPage === item.name ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500']"
+                                           class="mr-3 text-base w-5 text-center"></i>
+                                        <span x-text="item.label"></span>
                         </a>
                     </template>
+
+                                <!-- Item with children -->
                     <template x-if="item.children">
                         <div>
-                            <button type="button"
-                                    @click="toggleSubmenu(item.name)"
-                                                    class="w-full text-left text-gray-700 dark:text-gray-300 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800 group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
-                                                <i :class="[
-                                                    item.icon,
-                                                    'text-gray-400 dark:text-gray-500 group-hover:text-brand',
-                                                    'sidebar-icon'
-                                                ]"></i>
-                                                <span class="flex-1" x-text="item.name"></span>
-                                                <i :class="[
-                                                    'fa-light fa-chevron-down text-xs transition-transform duration-200',
-                                                    openSubmenus.includes(item.name) ? 'rotate-180' : ''
-                                                ]"></i>
-                                            </button>
-                                            <ul x-show="openSubmenus.includes(item.name)" 
-                                                x-collapse 
-                                                class="mt-1 px-2">
-                                                <template x-for="child in item.children" :key="child.name">
-                                                    <li>
-                                                        <a :href="child.href"
-                                                           @click="currentPage = child.name"
-                                                           :class="[
-                                                               currentPage === child.name 
-                                                                 ? 'bg-gray-50 dark:bg-gray-800 text-brand' 
-                                                                 : 'text-gray-700 dark:text-gray-400 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800',
-                                                               'group flex items-center gap-x-3 rounded-md py-2 pl-9 pr-2 text-sm leading-6'
-                                                           ]">
-                                                            <span x-text="child.name"></span>
-                                                        </a>
-                                                    </li>
+                                        <button @click="toggleSubmenu(item.name)"
+                                                :class="{
+                                                    'sidebar-nav-item w-full justify-between': true,
+                                                    'active': isSubmenuOpen(item.name) || hasActiveChild(item),
+                                                    'text-gray-700 dark:text-gray-300': !(isSubmenuOpen(item.name) || hasActiveChild(item)),
+                                                    'text-gray-900 dark:text-white': isSubmenuOpen(item.name) || hasActiveChild(item)
+                                                }">
+                                            <div class="flex items-center">
+                                                <i :class="[item.icon, isSubmenuOpen(item.name) || hasActiveChild(item) ? 'text-gray-600 dark:text-gray-400' : 'text-gray-400 dark:text-gray-500']"
+                                                   class="mr-3 text-base w-5 text-center"></i>
+                                                <span x-text="item.label"></span>
+                                </div>
+                                            <i :class="{'rotate-90': isSubmenuOpen(item.name)}"
+                                               class="fa-solid fa-chevron-right text-xs text-gray-400 dark:text-gray-500 transition-transform duration-500 ease-in-out"></i>
+                            </button>
+                                        
+                                        <div x-show="isSubmenuOpen(item.name)"
+                                             x-transition:enter="transition ease-out duration-500"
+                                             x-transition:enter-start="opacity-0 max-h-0"
+                                             x-transition:enter-end="opacity-100 max-h-96"
+                                             x-transition:leave="transition ease-in duration-300"
+                                             x-transition:leave-start="opacity-100 max-h-96"
+                                             x-transition:leave-end="opacity-0 max-h-0"
+                                             class="overflow-hidden">
+                                            <div class="py-1">
+                                                <template x-for="(child, childIndex) in item.children" :key="childIndex">
+                                    <a :href="child.href"
+                                                       @click="currentPage = child.name"
+                                                       :class="{
+                                                           'sidebar-submenu-item': true,
+                                                           'active': currentPage === child.name,
+                                                           'text-gray-600 dark:text-gray-400': currentPage !== child.name,
+                                                           'text-blue-700 dark:text-blue-200': currentPage === child.name
+                                                       }">
+                                                        <i :class="[child.icon || 'fa-solid fa-circle', currentPage === child.name ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500']"
+                                                           class="mr-3 w-4 text-center"
+                                                           :style="!child.icon ? 'font-size: 6px;' : ''"></i>
+                                                        <span x-text="child.label"></span>
+                                                    </a>
                                                 </template>
-                                            </ul>
+                                            </div>
                                         </div>
-                                    </template>
-                                </li>
-                            </template>
-                        </ul>
-                    </li>
-                    <li class="mt-auto">
-                        <ul role="list" class="-mx-2 space-y-1 border-t border-gray-200 dark:border-gray-700 pt-2">
-                            <li>
-                                <a href="/portal/user" 
-                                   @click="currentPage = 'Kullanıcılar'"
-                                   :class="[
-                                       currentPage === 'Kullanıcılar' 
-                                         ? 'bg-gray-50 dark:bg-gray-800 text-brand' 
-                                         : 'text-gray-700 dark:text-gray-300 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800',
-                                       'group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
-                                   ]">
-                                    <i :class="[
-                                        'fa-light fa-users',
-                                        currentPage === 'Kullanıcılar' ? 'text-brand' : 'text-gray-400 dark:text-gray-500 group-hover:text-brand',
-                                        'sidebar-icon'
-                                    ]"></i>
-                                    Kullanıcılar
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('portal.setting.index') }}"
-                                   class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors duration-200
-                                   {{ request()->routeIs('portal.setting.*') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white' : 'text-zinc-600 dark:text-zinc-400' }}">
-                                    <i :class="[
-                                        'fa-light fa-gear',
-                                        currentPage === 'Ayarlar' ? 'text-brand' : 'text-gray-400 dark:text-gray-500 group-hover:text-brand',
-                                        'sidebar-icon'
-                                    ]"></i>
-                                    Ayarlar
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
 
-    <!-- Main content area -->
-    <div class="lg:pl-72">
-        <!-- Top header -->
-        <div class="sticky top-0 z-40 lg:mx-auto">
-            <div class="flex h-16 items-center gap-x-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
-                <!-- Mobile menu button -->
-                <button type="button" @click="mobileMenuOpen = true" class="-m-2.5 p-2.5 text-gray-700 dark:text-gray-300 lg:hidden">
-                    <span class="sr-only">Menüyü aç</span>
-                    <i class="fa-light fa-bars text-xl"></i>
-                </button>
-
-                <!-- Separator -->
-                <div class="h-6 w-px bg-gray-200 dark:bg-gray-700 lg:hidden" aria-hidden="true"></div>
-
-                <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-                    <!-- Search -->
-                    <form class="relative flex flex-1" action="#" method="GET">
-                        <label for="search-field" class="sr-only">Ara</label>
-                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                            <i class="fa-light fa-magnifying-glass text-gray-400 dark:text-gray-500"></i>
+                    <!-- Bottom navigation items -->
+                    <div class="mt-auto pt-4 pb-2">
+                        <div class="px-3 border-t border-gray-200 dark:border-gray-700 pt-4">
+                            <a href="/portal/user" 
+                               @click="currentPage = 'users'"
+                               class="sidebar-nav-item {{ request()->is('portal/user*') ? 'active text-blue-700 dark:text-blue-200' : 'text-gray-700 dark:text-gray-300' }}">
+                                <i class="{{ request()->is('portal/user*') ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500' }} fa-solid fa-users mr-3 text-base w-5 text-center"></i>
+                                {{ __('portal.navigation.users') }}
+                            </a>
+                            
+                            <!-- Settings -->
+                            <a href="{{ route('portal.setting.index') }}" 
+                               class="group flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('portal.setting.*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700' }}">
+                                <i class="fa-solid fa-gear mr-3 text-gray-400 group-hover:text-gray-600 transition-colors"></i>
+                                {{ __('portal.navigation.settings') }}
+                            </a>
                         </div>
-                        <input id="search-field"
-                               class="block h-full w-full border-0 py-0 pl-10 pr-0 text-gray-900 dark:text-gray-100 bg-transparent placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-0 sm:text-sm"
-                               placeholder="Ara..."
-                               type="search"
-                               name="search">
-                    </form>
-                    
-                    <!-- Right side items -->
-                    <div class="flex items-center gap-x-4 lg:gap-x-6">
-                        <!-- Dark mode toggle -->
-                        <button type="button" 
-                                @click="darkMode = !darkMode"
-                                class="-m-2.5 p-2.5 text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400">
-                            <span class="sr-only">Tema değiştir</span>
-                            <i x-show="!darkMode" class="fa-light fa-moon text-xl"></i>
-                            <i x-show="darkMode" class="fa-light fa-sun-bright text-xl"></i>
+                    </div>
+                </div>
+        </nav>
+        </aside>
+
+        <!-- Main content -->
+        <div class="flex-1 flex flex-col min-w-0 relative">
+            <!-- Top header -->
+            <header class="sticky top-0 z-30 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex h-16 items-center justify-between px-4 sm:px-6">
+                    <!-- Mobile menu button -->
+                    <button @click="mobileMenuOpen = true" 
+                            class="lg:hidden p-2 rounded-lg transition-colors duration-150">
+                        <i class="fa-solid fa-bars text-xl text-gray-600 dark:text-gray-400"></i>
+                    </button>
+
+                    <!-- Search -->
+                    <div class="flex-1 flex items-center px-4 lg:px-0">
+                        <div class="w-full max-w-lg lg:max-w-xs">
+                            <label for="search" class="sr-only">{{ __('portal.header.search') }}</label>
+                            <div class="relative">
+                                <div class="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
+                                    <i class="fa-solid fa-search text-gray-400 dark:text-gray-500"></i>
+                                </div>
+                                <input id="search"
+                                       name="search"
+                                       class="block w-full rounded-lg border-0 bg-gray-50 dark:bg-gray-700 py-2 pl-10 pr-3 text-sm text-gray-900 dark:text-gray-100 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500"
+                                       placeholder="{{ __('portal.header.search_placeholder') }}"
+                                       type="search">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right side buttons -->
+                    <div class="flex items-center space-x-2 sm:space-x-3">
+                        <!-- Theme toggle -->
+                        <button @click="toggleTheme()"
+                                class="p-2 rounded-lg transition-colors duration-150"
+                                aria-label="{{ __('portal.header.toggle_theme') }}">
+                            <i x-show="!darkMode" class="fa-solid fa-moon text-gray-600 dark:text-gray-400"></i>
+                            <i x-show="darkMode" class="fa-solid fa-sun text-gray-600 dark:text-gray-400"></i>
                         </button>
 
                         <!-- Notifications -->
-                        <button type="button" class="-m-2.5 p-2.5 text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400">
-                            <span class="sr-only">Bildirimleri görüntüle</span>
-                            <i class="fa-light fa-bell text-xl"></i>
+                        <button class="relative p-2 rounded-lg transition-colors duration-150"
+                                aria-label="{{ __('portal.header.notifications') }}">
+                            <i class="fa-solid fa-bell text-gray-600 dark:text-gray-400"></i>
+                            <span class="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 dark:bg-red-400 ring-2 ring-white dark:ring-gray-800"></span>
                         </button>
 
-                        <!-- Separator -->
-                        <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200 dark:lg:bg-gray-700" aria-hidden="true"></div>
-
                         <!-- Profile dropdown -->
-                        <div class="relative" x-data="{ open: false }">
-                            <button type="button" 
-                                    @click="open = !open"
-                                    class="-m-1.5 flex items-center p-1.5"
-                                    id="user-menu-button"
-                                    aria-expanded="false"
-                                    aria-haspopup="true">
-                                <span class="sr-only">Kullanıcı menüsünü aç</span>
-                                <div class="h-8 w-8 rounded-full bg-brand flex items-center justify-center">
-                                    <span class="text-sm font-medium text-white">{{ substr(auth()->user()->full_name ?? auth()->user()->first_name ?? 'K', 0, 1) }}</span>
+                        <div x-data="{ open: false }" class="relative">
+                            <button @click="open = !open"
+                                    class="flex items-center p-1.5 rounded-lg transition-colors duration-150"
+                                    :aria-expanded="open"
+                                    aria-haspopup="true"
+                                    aria-label="{{ __('portal.header.user_menu') }}">
+                                <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 dark:from-blue-500 dark:to-blue-600 flex items-center justify-center shadow-sm">
+                                    <span class="text-sm font-medium text-white">
+                                        {{ substr(auth()->user()->full_name ?? auth()->user()->first_name ?? 'K', 0, 1) }}
+                                    </span>
                                 </div>
-                                <span class="hidden lg:flex lg:items-center">
-                                    <span class="ml-4 text-sm/6 font-semibold text-gray-900 dark:text-gray-100" aria-hidden="true">{{ auth()->user()->full_name ?? 'Kullanıcı' }}</span>
-                                    <i class="fa-light fa-chevron-down ml-2 text-xs text-gray-400 dark:text-gray-500"></i>
+                                <span class="hidden ml-3 text-sm font-medium text-gray-700 dark:text-gray-200 lg:block">
+                                    {{ auth()->user()->full_name ?? __('portal.header.default_user') }}
                                 </span>
+                                <i class="fa-solid fa-chevron-down hidden ml-1 text-xs text-gray-400 dark:text-gray-500 lg:block"></i>
                             </button>
 
                             <!-- Dropdown menu -->
                             <div x-show="open"
-                                 @click.outside="open = false"
+                                 @click.away="open = false"
                                  x-transition:enter="transition ease-out duration-100"
                                  x-transition:enter-start="transform opacity-0 scale-95"
                                  x-transition:enter-end="transform opacity-100 scale-100"
                                  x-transition:leave="transition ease-in duration-75"
                                  x-transition:leave-start="transform opacity-100 scale-100"
                                  x-transition:leave-end="transform opacity-0 scale-95"
-                                 class="absolute right-0 z-10 mt-2.5 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 py-2 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-700 focus:outline-none"
+                                 class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-lg bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 dark:ring-gray-700 focus:outline-none"
                                  role="menu"
                                  aria-orientation="vertical"
                                  aria-labelledby="user-menu-button">
-                                <a href="{{ route('portal.profile.index') }}" class="flex items-center gap-x-3 px-3 py-1 text-sm/6 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700" role="menuitem">
-                                    <i class="fa-light fa-user text-gray-400 dark:text-gray-500 w-4"></i>
-                                    Profilim
+                                <a href="{{ route('portal.profile.index') }}" 
+                                   class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 transition-colors duration-150" 
+                                   role="menuitem">
+                                    <i class="fa-solid fa-user mr-3 text-gray-400 dark:text-gray-500"></i>
+                                    {{ __('portal.profile_menu.profile') }}
                                 </a>
+                                
                                 <hr class="my-1 border-gray-200 dark:border-gray-700">
+                                
                                 <form method="POST" action="{{ route('site.auth.logout') }}">
                                     @csrf
-                                    <button type="submit" class="flex items-center gap-x-3 w-full text-left px-3 py-1 text-sm/6 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700" role="menuitem">
-                                        <i class="fa-light fa-right-from-bracket text-gray-400 dark:text-gray-500 w-4"></i>
-                                        Çıkış Yap
+                                    <button type="submit" 
+                                            class="flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 transition-colors duration-150" 
+                                            role="menuitem">
+                                        <i class="fa-solid fa-right-from-bracket mr-3 text-gray-400 dark:text-gray-500"></i>
+                                        {{ __('portal.profile_menu.logout') }}
                                     </button>
                                 </form>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
     </div>
+            </header>
 
-    <!-- Main content -->
-        <main class="py-10">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <!-- Page content -->
+            <main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 pb-12 lg:pb-10">
+                <div class="p-4 sm:p-6 lg:p-8">
             @yield('content')
         </div>
     </main>
-    </div>
-</div>
 
-    <script>
-        function portalLayout() {
-            return {
-        mobileMenuOpen: false,
-        darkMode: false,
-        currentPage: 'Dashboard',
-        openSubmenus: [],
-                
-        navigation: [
-                    {
-                        name: 'Dashboard',
-                href: '/portal',
-                icon: 'fa-light fa-house'
-                    },
-                    {
-                        name: 'Hazırlık',
-                icon: 'fa-light fa-clipboard-list-check',
-                        children: [
-                            { name: 'Dökümanlar', href: '/portal/documents' },
-                            { name: 'Katılımcılar', href: '/portal/participants' }
-                        ]
-                    },
-                    {
-                        name: 'Etkinlik & Aktivite',
-                icon: 'fa-light fa-calendar-days',
-                        children: [
-                            { name: 'Duyurular', href: '/portal/announcements' },
-                            { name: 'Puan Oyunları', href: '/portal/score-games' },
-                            { name: 'Anketler', href: '/portal/surveys' }
-                        ]
-                    },
-                    {
-                        name: 'Ortam',
-                icon: 'fa-light fa-building-columns',
-                        children: [
-                            { name: 'Salonlar', href: '/portal/halls' },
-                            { name: 'Sanal Stantlar', href: '/portal/virtual-stands' }
-                        ]
-            },
-            {
-                name: 'Sistem Yönetimi',
-                icon: 'fa-light fa-gear',
-                children: [
-                    { name: 'Tenant\'ler', href: '/portal/tenants' },
-                    { name: 'Ülkeler', href: '/portal/countries' },
-                    { name: 'Diller', href: '/portal/languages' },
-                    { name: 'Para Birimleri', href: '/portal/currencies' },
-                    { name: 'Saat Dilimleri', href: '/portal/timezones' }
-                ]
-            },
-            {
-                name: 'Raporlar',
-                href: '/portal/reports',
-                icon: 'fa-light fa-chart-mixed'
-            }
-        ],
-                
-                toggleSubmenu(name) {
-                    const index = this.openSubmenus.indexOf(name);
-                    if (index > -1) {
-                        this.openSubmenus.splice(index, 1);
-                    } else {
-                        this.openSubmenus.push(name);
-                    }
-                },
-                
-        init() {
-            // Set current page based on URL
-            const path = window.location.pathname;
-            
-            // Check bottom menu items
-            if (path === '/portal/user') {
-                this.currentPage = 'Kullanıcılar';
-            } else if (path === '/portal/setting') {
-                this.currentPage = 'Ayarlar';
-            } else {
-                // Check main navigation
-                this.navigation.forEach(item => {
-                    if (item.href === path) {
-                        this.currentPage = item.name;
-                    } else if (item.children) {
-                        item.children.forEach(child => {
-                            if (child.href === path) {
-                                this.currentPage = child.name;
-                                if (!this.openSubmenus.includes(item.name)) {
-                                    this.openSubmenus.push(item.name);
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-            
-            // Initialize dark mode from localStorage
-            this.darkMode = localStorage.getItem('darkMode') === 'true';
-            
-            // Apply dark class to html element
-            if (this.darkMode) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-            
-            // Watch dark mode changes
-            this.$watch('darkMode', value => {
-                localStorage.setItem('darkMode', value);
-                if (value) {
-                    document.documentElement.classList.add('dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                }
-            });
-        }
-    }
-}
-    </script>
+            <!-- Fixed Footer -->
+            <footer class="fixed bottom-0 left-0 right-0 z-20 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 lg:left-64">
+                <div class="px-4 py-2 lg:py-3">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs sm:text-sm">
+                        <!-- Copyright -->
+                        <div class="text-gray-600 dark:text-gray-400">
+                            <span class="hidden sm:inline">
+                                {{ __('portal.footer.copyright', [
+                                    'year' => date('Y'),
+                                    'company' => config('app.name', 'Meet2Be')
+                                ]) }}
+                            </span>
+                            <span class="sm:hidden">
+                                © {{ date('Y') }} {{ config('app.name', 'Meet2Be') }}
+                            </span>
+                        </div>
+
+                        <!-- Right side info -->
+                        <div class="flex items-center gap-2 sm:gap-4 text-gray-600 dark:text-gray-400">
+                            <span>{{ __('portal.footer.version', ['version' => config('app.version', '1.0.0')]) }}</span>
+                            <span class="hidden sm:inline">•</span>
+                            <span class="hidden sm:inline">
+                                {{ __('portal.footer.made_with') }}
+                                <i class="fa-solid fa-heart text-red-500 mx-1"></i>
+                                {{ __('portal.footer.by') }}
+                                <span class="font-medium text-gray-700 dark:text-gray-300">Meet2Be</span>
+                            </span>
+                            <span class="sm:hidden">
+                                <i class="fa-solid fa-heart text-red-500"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
 </body>
 </html> 

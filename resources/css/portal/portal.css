@@ -8,24 +8,23 @@
 @source "../../views/portal/**/*.blade.php";
 @source "../../js/portal/**/*.js";
 
-
 /* Theme configuration */
 @theme {
     /* Font family */
     --font-sans: Inter, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
     
-    /* Brand color palette - Easy to customize */
-    --color-brand-50: #fef3c7;
-    --color-brand-100: #fee68a;
-    --color-brand-200: #fcd44d;
-    --color-brand-300: #fbbf24;
-    --color-brand-400: #f59e0b;
-    --color-brand-500: #d97706;
-    --color-brand-600: #b45309;
-    --color-brand-700: #92400e;
-    --color-brand-800: #78350f;
-    --color-brand-900: #451a03;
-    --color-brand-950: #2d1001;
+    /* Brand color palette - Atlassian Blue */
+    --color-brand-50: #eff6ff;
+    --color-brand-100: #dbeafe;
+    --color-brand-200: #bfdbfe;
+    --color-brand-300: #93bbfd;
+    --color-brand-400: #60a5fa;
+    --color-brand-500: #3b82f6;
+    --color-brand-600: #2563eb;
+    --color-brand-700: #1d4ed8;
+    --color-brand-800: #1e40af;
+    --color-brand-900: #1e3a8a;
+    --color-brand-950: #172554;
 }
 
 /* Dark mode variant */
@@ -34,90 +33,186 @@
 /* Alpine.js x-cloak */
 [x-cloak] { display: none !important; }
 
-/* Portal specific components */
-
-/* Sidebar icon alignment */
-.sidebar-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    width: 1.5rem;
-    height: 1.5rem;
-    font-size: 1.125rem;
-    line-height: 1;
-}
-
-/* Navigation base styles */
-nav a,
-nav button {
-    display: flex;
-    align-items: center;
-}
-
-nav i[class*="fa-"] {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.5rem;
-    height: 1.5rem;
-    font-size: 1.125rem;
-}
-
-nav span {
-    line-height: 1.5rem;
-}
-
-/* Custom scrollbar styling */
-.custom-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: #e5e7eb transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
+/* Custom scrollbar */
+::-webkit-scrollbar {
     width: 8px;
+    height: 8px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
+::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-gray-800;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #e5e7eb;
-    border-radius: 4px;
+::-webkit-scrollbar-thumb {
+    @apply bg-gray-400 dark:bg-gray-600 rounded;
 }
 
-/* Dark mode scrollbar */
-.dark .custom-scrollbar {
-    scrollbar-color: #374151 transparent;
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-500 dark:bg-gray-500;
 }
 
-.dark .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #374151;
+/* Focus styles */
+:focus {
+    outline: none;
 }
 
-/* Brand color utilities */
-.text-brand {
-    color: var(--color-brand-600);
+:focus-visible {
+    @apply ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-gray-800;
 }
 
-.bg-brand {
-    background-color: var(--color-brand-600);
+/* Sidebar Navigation Styles - Atlassian Pattern */
+.sidebar-nav-item {
+    @apply flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-150;
 }
 
-.hover\:bg-brand:hover {
-    background-color: var(--color-brand-700);
+.sidebar-nav-item:not(:last-child) {
+    @apply mb-0.5;
 }
 
-/* Dark mode brand colors */
-.dark .text-brand {
-    color: var(--color-brand-400);
+.sidebar-nav-item.active {
+    @apply bg-blue-50 dark:bg-white/10 text-blue-700 dark:text-blue-200;
 }
 
-.dark .bg-brand {
-    background-color: var(--color-brand-500);
+.sidebar-submenu-item {
+    @apply flex items-center pl-11 pr-3 py-2 text-sm rounded-lg transition-colors duration-150;
 }
 
-.dark .hover\:bg-brand:hover {
-    background-color: var(--color-brand-600);
+.sidebar-submenu-item:not(:last-child) {
+    @apply mb-0.5;
+}
+
+.sidebar-submenu-item.active {
+    @apply bg-blue-50 dark:bg-white/10 text-blue-700 dark:text-blue-200;
+}
+
+/* Sidebar specific styles */
+aside {
+    overflow-x: hidden;
+}
+
+aside nav {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Card component */
+.card {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700;
+}
+
+.card-header {
+    @apply px-6 py-4 border-b border-gray-200 dark:border-gray-700;
+}
+
+.card-body {
+    @apply p-6;
+}
+
+/* Alert component */
+.alert {
+    @apply px-4 py-3 rounded-md text-sm font-medium;
+}
+
+.alert-success {
+    @apply bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200;
+}
+
+.alert-error {
+    @apply bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200;
+}
+
+.alert-warning {
+    @apply bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200;
+}
+
+.alert-info {
+    @apply bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200;
+}
+
+/* Table styling */
+.table-responsive {
+    @apply overflow-x-auto;
+}
+
+.table-responsive table {
+    @apply w-full text-sm text-left;
+}
+
+.table-responsive th {
+    @apply font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800;
+}
+
+.table-responsive td {
+    @apply text-gray-600 dark:text-gray-400;
+}
+
+.table-responsive tr {
+    @apply border-b border-gray-200 dark:border-gray-700;
+}
+
+/* Footer styles */
+footer {
+    box-shadow: 0 -1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 640px) {
+    main {
+        padding-bottom: 3rem !important;
+    }
+    
+    footer {
+        padding: 0.5rem 1rem;
+    }
+
+    .settings-sticky-tabs {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 56px; /* Mobile header height */
+        z-index: 10;
+    }
+
+    /* Improve horizontal scrolling on mobile */
+    .overflow-x-auto {
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+        scrollbar-width: thin;
+    }
+    
+    /* Make scrollbar more visible */
+    .overflow-x-auto::-webkit-scrollbar {
+        height: 6px;
+    }
+    
+    .overflow-x-auto::-webkit-scrollbar-track {
+        background: #f3f4f6;
+        border-radius: 3px;
+    }
+    
+    .dark .overflow-x-auto::-webkit-scrollbar-track {
+        background: #374151;
+    }
+    
+    .overflow-x-auto::-webkit-scrollbar-thumb {
+        background: #9ca3af;
+        border-radius: 3px;
+    }
+    
+    .dark .overflow-x-auto::-webkit-scrollbar-thumb {
+        background: #6b7280;
+    }
+    
+    /* Add padding to prevent content cut-off */
+    .overflow-x-auto nav {
+        padding-bottom: 4px;
+    }
+}
+
+@media (min-width: 641px) {
+    .settings-sticky-tabs {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 64px; /* Desktop header height */
+        z-index: 10;
+    }
 }
