@@ -291,9 +291,9 @@
                                        id="current_password_inline"
                                        placeholder="Mevcut şifrenizi girin"
                                        autocomplete="current-password"
-                                       class="w-full rounded-lg border-0 px-4 py-3 pr-10 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 dark:focus:ring-indigo-500 transition-all @error('current_password') ring-red-600 dark:ring-red-500 @enderror">
+                                       class="w-full rounded-lg border-0 px-4 py-3 pr-12 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 dark:focus:ring-indigo-500 transition-all @error('current_password') ring-red-600 dark:ring-red-500 @enderror">
                                 <button type="button" @click="showPasswords.current = !showPasswords.current" 
-                                        class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                        class="absolute inset-y-0 right-0 w-10 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                                     <i :class="showPasswords.current ? 'fa-light fa-eye-slash' : 'fa-light fa-eye'"></i>
                                 </button>
                             </div>
@@ -312,9 +312,9 @@
                                        id="password_inline"
                                        placeholder="Yeni şifrenizi girin"
                                        autocomplete="new-password"
-                                       class="w-full rounded-lg border-0 px-4 py-3 pr-10 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 dark:focus:ring-indigo-500 transition-all @error('password') ring-red-600 dark:ring-red-500 @enderror">
+                                       class="w-full rounded-lg border-0 px-4 py-3 pr-12 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 dark:focus:ring-indigo-500 transition-all @error('password') ring-red-600 dark:ring-red-500 @enderror">
                                 <button type="button" @click="showPasswords.new = !showPasswords.new" 
-                                        class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                        class="absolute inset-y-0 right-0 w-10 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                                     <i :class="showPasswords.new ? 'fa-light fa-eye-slash' : 'fa-light fa-eye'"></i>
                                 </button>
                             </div>
@@ -334,9 +334,9 @@
                                        id="password_confirmation_inline"
                                        placeholder="Yeni şifrenizi tekrar girin"
                                        autocomplete="new-password"
-                                       class="w-full rounded-lg border-0 px-4 py-3 pr-10 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 dark:focus:ring-indigo-500 transition-all @error('password_confirmation') ring-red-600 dark:ring-red-500 @enderror">
+                                       class="w-full rounded-lg border-0 px-4 py-3 pr-12 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 dark:focus:ring-indigo-500 transition-all @error('password_confirmation') ring-red-600 dark:ring-red-500 @enderror">
                                 <button type="button" @click="showPasswords.confirm = !showPasswords.confirm" 
-                                        class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                        class="absolute inset-y-0 right-0 w-10 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                                     <i :class="showPasswords.confirm ? 'fa-light fa-eye-slash' : 'fa-light fa-eye'"></i>
                                 </button>
                             </div>
