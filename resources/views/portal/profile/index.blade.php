@@ -431,7 +431,7 @@
                     <span class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Kayıt Tarihi</span>
                     <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                         <i class="fa-light fa-calendar-days text-gray-400"></i>
-                        <span>{{ $user->created_at->format('d.m.Y H:i') }}</span>
+                        <span>@timezone($user->created_at)</span>
                     </div>
                 </div>
             </div>

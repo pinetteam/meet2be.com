@@ -50,15 +50,18 @@ class User extends Authenticatable
     protected $fillable = [
         'tenant_id',
         'username',
-        'name',
-        'surname',
         'email',
         'email_verified_at',
-        'phone',
         'password',
-        'type',
-        'is_active',
+        'first_name',
+        'last_name',
+        'phone',
+        'status',
         'last_login_at',
+        'last_ip_address',
+        'last_user_agent',
+        'type',
+        'settings',
     ];
 
     /**
@@ -81,8 +84,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'is_active' => 'boolean',
             'last_login_at' => 'datetime',
+            'settings' => 'array',
         ];
     }
 
@@ -93,7 +96,7 @@ class User extends Authenticatable
 
     public function getFullNameAttribute(): string
     {
-        return trim("{$this->name} {$this->surname}");
+        return trim("{$this->first_name} {$this->last_name}");
     }
 
     public function isAdmin(): bool
@@ -113,12 +116,12 @@ class User extends Authenticatable
 
     public function isActive(): bool
     {
-        return $this->is_active === true;
+        return $this->status === self::STATUS_ACTIVE;
     }
 
     public function isInactive(): bool
     {
-        return $this->is_active === false;
+        return $this->status === self::STATUS_INACTIVE;
     }
 
     public function isSuspended(): bool
@@ -129,13 +132,15 @@ class User extends Authenticatable
     public function updateLoginInfo($ipAddress = null, $userAgent = null): void
     {
         $this->update([
-            'last_login_at' => now(),
+            'last_login_at' => $this->getCurrentTime(),
+            'last_ip_address' => $ipAddress,
+            'last_user_agent' => $userAgent,
         ]);
     }
 
     public function scopeActive($query)
     {
-        return $query->where('is_active', true);
+        return $query->where('status', self::STATUS_ACTIVE);
     }
 
     public function scopeByType($query, string $type)
@@ -158,6 +163,32 @@ class User extends Authenticatable
         return $query->where('type', self::TYPE_OPERATOR);
     }
 
+    public function canAccessPortal(): bool
+    {
+        return in_array($this->type, [self::TYPE_ADMIN, self::TYPE_SCREENER, self::TYPE_OPERATOR]) 
+            && $this->isActive();
+    }
+
+    public function getStatusText(): string
+    {
+        return self::STATUSES[$this->status] ?? 'Unknown';
+    }
+
+    public function getTypeText(): string
+    {
+        return self::TYPES[$this->type] ?? 'Unknown';
+    }
+
+    public function getStatusColor(): string
+    {
+        return match($this->status) {
+            self::STATUS_ACTIVE => 'green',
+            self::STATUS_INACTIVE => 'gray',
+            self::STATUS_SUSPENDED => 'red',
+            default => 'gray'
+        };
+    }
+
     protected static function newFactory()
     {
         return UserFactory::new();
@@ -176,7 +207,7 @@ class User extends Authenticatable
     protected function fullName(): Attribute
     {
         return Attribute::make(
-            get: fn ($value, $attributes) => trim($attributes['name'] . ' ' . $attributes['surname']),
+            get: fn ($value, $attributes) => trim(($attributes['first_name'] ?? '') . ' ' . ($attributes['last_name'] ?? '')),
         );
     }
 
@@ -184,13 +215,30 @@ class User extends Authenticatable
     {
         return Attribute::make(
             get: function ($value, $attributes) {
-                return match($attributes['type']) {
-                    'admin' => 'Admin',
-                    'screener' => 'Screener',
-                    'operator' => 'Operator',
-                    'user' => 'User',
-                    default => $attributes['type']
-                };
+                return self::TYPES[$attributes['type']] ?? $attributes['type'];
+            },
+        );
+    }
+
+    protected function statusText(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value, $attributes) {
+                return self::STATUSES[$attributes['status']] ?? $attributes['status'];
+            },
+        );
+    }
+
+    protected function lastActivity(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value, $attributes) {
+                if (isset($attributes['last_login_at'])) {
+                    return $attributes['last_login_at'] instanceof \Carbon\Carbon 
+                        ? $attributes['last_login_at'] 
+                        : \Carbon\Carbon::parse($attributes['last_login_at']);
+                }
+                return null;
             },
         );
     }

@@ -359,28 +359,38 @@
                             <dd class="mt-1 text-sm text-gray-900 dark:text-white font-mono">{{ $tenant->id }}</dd>
                         </div>
                         <div>
-                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Oluşturma Tarihi</dt>
-                            <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $tenant->created_at->format('d.m.Y H:i') }}</dd>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('portal.common.created_at') }}</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white">@timezone($tenant->created_at)</dd>
                         </div>
                         <div>
                             <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Durum</dt>
                             <dd class="mt-1">
-                                @if($tenant->is_active)
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                        <i class="fa-solid fa-circle text-xs"></i>
-                                        Aktif
+                                @if($tenant->status === 'active')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200">
+                                        <i class="fas fa-check-circle mr-1"></i>
+                                        {{ __('Aktif') }}
+                                    </span>
+                                @elseif($tenant->status === 'trial')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-200">
+                                        <i class="fas fa-clock mr-1"></i>
+                                        {{ __('Deneme') }}
+                                    </span>
+                                @elseif($tenant->status === 'suspended')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-200">
+                                        <i class="fas fa-ban mr-1"></i>
+                                        {{ __('Askıda') }}
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400">
-                                        <i class="fa-solid fa-circle text-xs"></i>
-                                        Pasif
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+                                        <i class="fas fa-times-circle mr-1"></i>
+                                        {{ $tenant->getStatusName() }}
                                     </span>
                                 @endif
                             </dd>
                         </div>
                         <div>
-                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Son Güncelleme</dt>
-                            <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $tenant->updated_at->format('d.m.Y H:i') }}</dd>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('portal.common.updated_at') }}</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white">@timezone($tenant->updated_at)</dd>
                         </div>
                     </dl>
                 </div>

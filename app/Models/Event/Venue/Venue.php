@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Event\Event;
 use App\Traits\TenantAware;
+use App\Traits\HasTimezone;
 
 class Venue extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes, TenantAware;
+    use HasFactory, HasUuids, SoftDeletes, TenantAware, HasTimezone;
 
     protected $table = 'event_venues';
     protected $keyType = 'string';
@@ -160,7 +161,7 @@ class Venue extends Model
     {
         $this->update([
             'status' => self::STATUS_OCCUPIED,
-            'last_used_at' => now(),
+            'last_used_at' => $this->getCurrentTime(),
         ]);
         $this->increment('usage_count');
     }

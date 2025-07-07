@@ -10,10 +10,12 @@ use App\Models\Tenant\Tenant;
 use App\Models\System\Timezone;
 use App\Models\System\Language;
 use App\Traits\TenantAware;
+use App\Traits\HasTimezone;
+use Carbon\Carbon;
 
 class Event extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes, TenantAware;
+    use HasFactory, HasUuids, SoftDeletes, TenantAware, HasTimezone;
 
     protected $keyType = 'string';
     public $incrementing = false;
@@ -132,14 +134,16 @@ class Event extends Model
 
     public function isOngoing(): bool
     {
+        $now = $this->getCurrentTime();
         return $this->status === 'ongoing' || 
-               ($this->status === 'published' && now()->between($this->start_date, $this->end_date));
+               ($this->status === 'published' && $now->between($this->start_date, $this->end_date));
     }
 
     public function isCompleted(): bool
     {
+        $now = $this->getCurrentTime();
         return $this->status === 'completed' || 
-               ($this->status === 'published' && now()->isAfter($this->end_date));
+               ($this->status === 'published' && $now->isAfter($this->end_date));
     }
 
     public function isCancelled(): bool
@@ -149,7 +153,8 @@ class Event extends Model
 
     public function isUpcoming(): bool
     {
-        return $this->status === 'published' && now()->isBefore($this->start_date);
+        $now = $this->getCurrentTime();
+        return $this->status === 'published' && $now->isBefore($this->start_date);
     }
 
     public function hasCapacity(): bool
@@ -211,7 +216,7 @@ class Event extends Model
 
     public function updateActivity(): void
     {
-        $this->update(['last_activity_at' => now()]);
+        $this->update(['last_activity_at' => $this->getCurrentTime()]);
     }
 
     public function incrementParticipants(int $count = 1): void
@@ -338,7 +343,7 @@ class Event extends Model
             // Auto-update status based on dates
             if ($event->isDirty(['start_date', 'end_date', 'status'])) {
                 if ($event->status === 'published') {
-                    $now = now();
+                    $now = $event->getCurrentTime();
                     if ($now->between($event->start_date, $event->end_date)) {
                         $event->status = 'ongoing';
                     } elseif ($now->isAfter($event->end_date)) {
@@ -380,28 +385,43 @@ class Event extends Model
 
     public function scopeUpcoming($query)
     {
-        return $query->published()->where('start_date', '>', now());
+        // Get current tenant's timezone
+        $tenant = auth()->user()?->tenant;
+        $timezone = $tenant?->timezone?->name ?? config('app.timezone');
+        $now = Carbon::now($timezone);
+        
+        return $query->published()->where('start_date', '>', $now);
     }
 
     public function scopeOngoing($query)
     {
-        return $query->where(function ($q) {
+        // Get current tenant's timezone
+        $tenant = auth()->user()?->tenant;
+        $timezone = $tenant?->timezone?->name ?? config('app.timezone');
+        $now = Carbon::now($timezone);
+        
+        return $query->where(function ($q) use ($now) {
             $q->where('status', 'ongoing')
-              ->orWhere(function ($q2) {
+              ->orWhere(function ($q2) use ($now) {
                   $q2->where('status', 'published')
-                     ->where('start_date', '<=', now())
-                     ->where('end_date', '>=', now());
+                     ->where('start_date', '<=', $now)
+                     ->where('end_date', '>=', $now);
               });
         });
     }
 
     public function scopePast($query)
     {
-        return $query->where(function ($q) {
+        // Get current tenant's timezone
+        $tenant = auth()->user()?->tenant;
+        $timezone = $tenant?->timezone?->name ?? config('app.timezone');
+        $now = Carbon::now($timezone);
+        
+        return $query->where(function ($q) use ($now) {
             $q->where('status', 'completed')
-              ->orWhere(function ($q2) {
+              ->orWhere(function ($q2) use ($now) {
                   $q2->where('status', 'published')
-                     ->where('end_date', '<', now());
+                     ->where('end_date', '<', $now);
               });
         });
     }

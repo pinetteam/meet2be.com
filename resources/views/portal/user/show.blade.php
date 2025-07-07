@@ -41,8 +41,8 @@
                 </dt>
                 <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2 flex items-center">
                     <div class="flex-shrink-0 h-10 w-10 mr-3">
-                        <div class="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-white font-semibold">
-                            {{ strtoupper(substr($user->name, 0, 1)) }}{{ strtoupper(substr($user->surname, 0, 1)) }}
+                        <div class="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
+                            {{ strtoupper(substr($user->first_name, 0, 1)) }}{{ strtoupper(substr($user->last_name, 0, 1)) }}
                         </div>
                     </div>
                     {{ $user->full_name }}
@@ -111,11 +111,12 @@
                     Hesap Durumu
                 </dt>
                 <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
-                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        @if($user->is_active) bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
-                        @else bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
-                        @endif">
-                        {{ $user->is_active ? 'Aktif' : 'Pasif' }}
+                    <span class="
+                        @if($user->status === 'active') bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
+                        @elseif($user->status === 'suspended') bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
+                        @else bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 @endif
+                        px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
+                        {{ $user->getStatusText() }}
                     </span>
                 </dd>
             </div>

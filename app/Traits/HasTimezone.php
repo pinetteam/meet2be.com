@@ -12,6 +12,13 @@ trait HasTimezone
         return app(TimezoneService::class);
     }
     
+    // Get current time in tenant's timezone
+    public function getCurrentTime(): Carbon
+    {
+        $timezone = $this->tenant?->timezone?->name ?? config('app.timezone');
+        return Carbon::now($timezone);
+    }
+    
     // created_at accessor
     public function getCreatedAtLocalAttribute(): ?Carbon
     {
