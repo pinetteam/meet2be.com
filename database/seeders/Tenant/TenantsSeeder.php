@@ -19,9 +19,9 @@ class TenantsSeeder extends Seeder
         $countryUSA = Country::where('iso2', 'US')->first();
         $countryGermany = Country::where('iso2', 'DE')->first();
         
-        $languageTurkish = Language::where('code', 'tr')->first();
-        $languageEnglish = Language::where('code', 'en')->first();
-        $languageGerman = Language::where('code', 'de')->first();
+        $languageTurkish = Language::where('iso_639_1', 'tr')->first();
+        $languageEnglish = Language::where('iso_639_1', 'en')->first();
+        $languageGerman = Language::where('iso_639_1', 'de')->first();
         
         $currencyTRY = Currency::where('code', 'TRY')->first();
         $currencyUSD = Currency::where('code', 'USD')->first();
@@ -46,7 +46,6 @@ class TenantsSeeder extends Seeder
             'type' => 'enterprise',
             'email' => 'info@acme-teknoloji.com.tr',
             'phone' => '+905551234567',
-            'fax' => '+902123456789',
             'website' => 'https://www.acme-teknoloji.com.tr',
             'address_line_1' => 'Levent Mahallesi, Büyükdere Caddesi No:123',
             'address_line_2' => 'Levent Plaza, Kat:15',

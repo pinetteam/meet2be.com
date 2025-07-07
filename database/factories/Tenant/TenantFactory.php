@@ -33,7 +33,6 @@ class TenantFactory extends Factory
             'type' => fake()->randomElement(['individual', 'business', 'enterprise']),
             'email' => fake()->companyEmail(),
             'phone' => fake()->phoneNumber(),
-            'fax' => fake()->optional(0.3)->phoneNumber(),
             'website' => fake()->optional(0.6)->url(),
             'address_line_1' => fake()->streetAddress(),
             'address_line_2' => fake()->optional(0.3)->secondaryAddress(),

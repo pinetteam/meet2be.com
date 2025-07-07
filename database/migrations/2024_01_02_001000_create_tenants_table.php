@@ -24,7 +24,6 @@ return new class extends Migration
             // Contact Information
             $table->string('email', 255);
             $table->string('phone', 20)->nullable();
-            $table->string('fax', 20)->nullable();
             $table->string('website')->nullable();
             
             // Address Information

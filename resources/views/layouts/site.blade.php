@@ -40,14 +40,12 @@
                             <span class="text-stone-300">{{ Auth::user()->full_name }}</span>
                             <form method="POST" action="{{ route('site.auth.logout') }}" class="inline">
                                 @csrf
-                                <button type="submit" class="px-3 py-1.5 text-sm text-stone-300 hover:text-white rounded-md hover:bg-stone-700 transition-colors">
-                                    <i class="fa-solid fa-sign-out-alt mr-2"></i>
+                                <button type="submit" class="text-stone-200 hover:text-white">
                                     {{ __('site.common.logout') }}
                                 </button>
                             </form>
                         @else
-                            <a href="{{ route('site.auth.login') }}" class="px-4 py-2 text-sm text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors">
-                                <i class="fa-solid fa-sign-in-alt mr-2"></i>
+                            <a href="{{ route('site.auth.login') }}" class="text-stone-200 hover:text-white">
                                 {{ __('site.common.login') }}
                             </a>
                         @endauth

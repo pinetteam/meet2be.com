@@ -87,6 +87,8 @@ class SettingsController extends Controller
             'currency_id' => 'nullable|exists:system_currencies,id',
             'language_id' => 'nullable|exists:system_languages,id',
             'timezone_id' => 'nullable|exists:system_timezones,id',
+            'date_format' => 'nullable|string|in:Y-m-d,d/m/Y,m/d/Y,d.m.Y,d-m-Y,M j, Y,F j, Y,j F Y',
+            'time_format' => 'nullable|string|in:H:i,H:i:s,g:i A,g:i:s A,h:i A,h:i:s A',
         ]);
         
         // address_line_1 için address'i kullan
