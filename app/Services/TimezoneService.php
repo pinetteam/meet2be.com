@@ -10,6 +10,8 @@ class TimezoneService
 {
     protected ?Timezone $timezone = null;
     protected string $defaultTimezone = 'UTC';
+    protected string $defaultDateFormat = 'Y-m-d';
+    protected string $defaultTimeFormat = 'H:i';
     
     public function __construct()
     {
@@ -29,6 +31,23 @@ class TimezoneService
                 $this->timezone = $tenant->timezone;
             }
         }
+    }
+    
+    protected function getTenant()
+    {
+        return Auth::check() ? Auth::user()->tenant : null;
+    }
+    
+    protected function getDateFormat(): string
+    {
+        $tenant = $this->getTenant();
+        return $tenant ? $tenant->date_format : $this->defaultDateFormat;
+    }
+    
+    protected function getTimeFormat(): string
+    {
+        $tenant = $this->getTenant();
+        return $tenant ? $tenant->time_format : $this->defaultTimeFormat;
     }
     
     public function getTimezone(): ?Timezone
@@ -113,10 +132,15 @@ class TimezoneService
         return Carbon::today($this->getTimezoneName());
     }
     
-    public function format(?Carbon $date, string $format = 'd.m.Y H:i'): string
+    public function format(?Carbon $date, string $format = null): string
     {
         if (!$date) {
             return '';
+        }
+        
+        // Eğer format verilmemişse, tenant'ın formatını kullan
+        if ($format === null) {
+            $format = $this->getDateFormat() . ' ' . $this->getTimeFormat();
         }
         
         return $this->convertToUserTimezone($date)->format($format);
@@ -124,17 +148,32 @@ class TimezoneService
     
     public function formatDate(?Carbon $date): string
     {
-        return $this->format($date, 'd.m.Y');
+        if (!$date) {
+            return '';
+        }
+        
+        return $this->convertToUserTimezone($date)->format($this->getDateFormat());
     }
     
     public function formatTime(?Carbon $date): string
     {
-        return $this->format($date, 'H:i');
+        if (!$date) {
+            return '';
+        }
+        
+        return $this->convertToUserTimezone($date)->format($this->getTimeFormat());
     }
     
     public function formatDateTime(?Carbon $date): string
     {
-        return $this->format($date, 'd.m.Y H:i');
+        if (!$date) {
+            return '';
+        }
+        
+        $dateFormat = $this->getDateFormat();
+        $timeFormat = $this->getTimeFormat();
+        
+        return $this->convertToUserTimezone($date)->format($dateFormat . ' ' . $timeFormat);
     }
     
     public function formatRelative(?Carbon $date): string
@@ -148,13 +187,13 @@ class TimezoneService
         
         // Yakın tarihler için göreceli format
         if ($converted->isToday()) {
-            return 'Bugün ' . $converted->format('H:i');
+            return __('common.dates.today') . ' ' . $converted->format($this->getTimeFormat());
         } elseif ($converted->isYesterday()) {
-            return 'Dün ' . $converted->format('H:i');
+            return __('common.dates.yesterday') . ' ' . $converted->format($this->getTimeFormat());
         } elseif ($converted->diffInDays($now) < 7) {
             return $converted->diffForHumans();
         } else {
-            return $converted->format('d.m.Y H:i');
+            return $this->formatDateTime($date);
         }
     }
     

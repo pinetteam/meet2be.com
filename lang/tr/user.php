@@ -8,14 +8,15 @@ return [
     'actions' => [
         'add' => 'Kullanıcı Ekle',
         'create' => 'Kullanıcı Oluştur',
-        'edit' => 'Kullanıcı Düzenle',
+        'edit' => 'Düzenle',
         'update' => 'Kullanıcı Güncelle',
-        'delete' => 'Kullanıcı Sil',
-        'view' => 'Kullanıcı Görüntüle',
+        'delete' => 'Sil',
+        'view' => 'Görüntüle',
         'back_to_list' => 'Kullanıcılara Dön',
         'back_to_user' => 'Kullanıcıya Dön',
         'all_users' => 'Tüm Kullanıcılar',
         'add_first' => 'İlk Kullanıcıyı Ekle',
+        'add_first_user' => 'İlk Kullanıcıyı Ekle',
     ],
     
     // Etiketler
@@ -34,6 +35,14 @@ return [
         'select_tenant' => 'Bir kiracı seçin',
         'no_tenant' => 'Kiracı Yok',
         'never_logged' => 'Hiç giriş yapmadı',
+        'never' => 'Hiç',
+        'type' => 'Tip',
+        'status' => 'Durum',
+        'last_login' => 'Son Giriş',
+        'showing' => 'Gösterilen',
+        'to' => '-',
+        'of' => 'toplam',
+        'results' => 'sonuç',
     ],
     
     // Bölümler
@@ -75,6 +84,13 @@ return [
         'operator' => 'Operatör',
     ],
     
+    // Kullanıcı Durumları
+    'statuses' => [
+        'active' => 'Aktif',
+        'inactive' => 'Pasif',
+        'suspended' => 'Askıya Alınmış',
+    ],
+    
     // Mesajlar
     'messages' => [
         'created_successfully' => 'Kullanıcı başarıyla oluşturuldu',
@@ -82,6 +98,9 @@ return [
         'deleted_successfully' => 'Kullanıcı başarıyla silindi',
         'delete_confirm' => 'Bu kullanıcıyı silmek istediğinizden emin misiniz?',
         'password_hint' => 'Mevcut şifreyi korumak için şifre alanlarını boş bırakın',
+        'confirm_delete' => 'Bu kullanıcıyı silmek istediğinizden emin misiniz?',
+        'no_users_found' => 'Kullanıcı bulunamadı',
+        'try_adjusting_search_or_filter_criteria' => 'Arama veya filtre kriterlerinizi ayarlamayı deneyin',
     ],
     
     // Tablo başlıkları

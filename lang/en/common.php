@@ -154,4 +154,17 @@ return [
     'user' => 'User',
     'admin' => 'Admin',
     'increment' => 'Increment',
+    
+    // Dates
+    'dates' => [
+        'today' => 'Today',
+        'yesterday' => 'Yesterday',
+        'tomorrow' => 'Tomorrow',
+        'this_week' => 'This week',
+        'last_week' => 'Last week',
+        'this_month' => 'This month',
+        'last_month' => 'Last month',
+        'this_year' => 'This year',
+        'last_year' => 'Last year',
+    ],
 ]; 

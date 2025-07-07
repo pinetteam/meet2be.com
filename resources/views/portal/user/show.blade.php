@@ -125,12 +125,16 @@
                     Son Aktivite
                 </dt>
                 <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
-                    @if($user->last_activity)
-                        <span class="text-gray-900 dark:text-white">@timezoneRelative($user->last_activity)</span>
-                        <span class="text-gray-500 dark:text-gray-400 text-xs ml-2">(@timezone($user->last_activity))</span>
-                    @else
-                        <span class="text-gray-400">Henüz giriş yapmadı</span>
-                    @endif
+                    <div class="flex items-start space-x-3">
+                        <div class="rounded-full p-2 bg-gray-100 dark:bg-gray-700">
+                            <i class="fa-solid fa-clock w-5 h-5 text-gray-600 dark:text-gray-400"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ __('user.fields.last_activity') }}</p>
+                            <span class="text-gray-900 dark:text-white">@humandiff($user->last_activity)</span>
+                            <span class="text-gray-500 dark:text-gray-400 text-xs ml-2">(@datetime($user->last_activity))</span>
+                        </div>
+                    </div>
                 </dd>
             </div>
             <div class="bg-white dark:bg-gray-800 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -138,8 +142,16 @@
                     Kayıt Tarihi
                 </dt>
                 <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
-                    <span class="text-gray-900 dark:text-white">@timezone($user->created_at)</span>
-                    <span class="text-gray-500 dark:text-gray-400 text-xs ml-2">(@timezoneRelative($user->created_at))</span>
+                    <div class="flex items-start space-x-3">
+                        <div class="rounded-full p-2 bg-gray-100 dark:bg-gray-700">
+                            <i class="fa-solid fa-user-plus w-5 h-5 text-gray-600 dark:text-gray-400"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ __('common.fields.created_at') }}</p>
+                            <span class="text-gray-900 dark:text-white">@datetime($user->created_at)</span>
+                            <span class="text-gray-500 dark:text-gray-400 text-xs ml-2">(@humandiff($user->created_at))</span>
+                        </div>
+                    </div>
                 </dd>
             </div>
             <div class="bg-gray-50 dark:bg-gray-700/50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -148,8 +160,16 @@
                 </dt>
                 <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
                     @if($user->updated_at->ne($user->created_at))
-                        <span class="text-gray-900 dark:text-white">@timezone($user->updated_at)</span>
-                        <span class="text-gray-500 dark:text-gray-400 text-xs ml-2">(@timezoneRelative($user->updated_at))</span>
+                    <div class="flex items-start space-x-3">
+                        <div class="rounded-full p-2 bg-gray-100 dark:bg-gray-700">
+                            <i class="fa-solid fa-edit w-5 h-5 text-gray-600 dark:text-gray-400"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ __('common.fields.updated_at') }}</p>
+                            <span class="text-gray-900 dark:text-white">@datetime($user->updated_at)</span>
+                            <span class="text-gray-500 dark:text-gray-400 text-xs ml-2">(@humandiff($user->updated_at))</span>
+                        </div>
+                    </div>
                     @else
                         <span class="text-gray-400">Güncelleme yapılmadı</span>
                     @endif

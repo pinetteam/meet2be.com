@@ -154,4 +154,17 @@ return [
     'user' => 'Kullanıcı',
     'admin' => 'Yönetici',
     'increment' => 'Artır',
+    
+    // Dates
+    'dates' => [
+        'today' => 'Bugün',
+        'yesterday' => 'Dün',
+        'tomorrow' => 'Yarın',
+        'this_week' => 'Bu hafta',
+        'last_week' => 'Geçen hafta',
+        'this_month' => 'Bu ay',
+        'last_month' => 'Geçen ay',
+        'this_year' => 'Bu yıl',
+        'last_year' => 'Geçen yıl',
+    ],
 ]; 

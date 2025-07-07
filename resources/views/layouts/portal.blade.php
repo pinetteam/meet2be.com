@@ -5,7 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Meet2Be') }} - Portal</title>
+    <!-- Tenant Date/Time Formats -->
+    @auth
+        @if(auth()->user()->tenant)
+            <meta name="tenant-date-format" content="{{ auth()->user()->tenant->date_format }}">
+            <meta name="tenant-time-format" content="{{ auth()->user()->tenant->time_format }}">
+            <meta name="tenant-timezone" content="{{ auth()->user()->tenant->timezone?->name ?? 'UTC' }}">
+        @endif
+    @endauth
+
+    <title>@yield('title', 'Portal') - {{ config('app.name', 'Laravel') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">

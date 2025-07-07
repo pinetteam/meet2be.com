@@ -34,9 +34,9 @@ class User extends Authenticatable
     const TYPE_OPERATOR = 'operator';
 
     const TYPES = [
-        self::TYPE_ADMIN => 'Admin',
-        self::TYPE_SCREENER => 'Screener',
-        self::TYPE_OPERATOR => 'Operator',
+        self::TYPE_ADMIN => 'user.types.admin',
+        self::TYPE_SCREENER => 'user.types.screener',
+        self::TYPE_OPERATOR => 'user.types.operator',
     ];
 
     const STATUS_ACTIVE = 'active';
@@ -44,9 +44,9 @@ class User extends Authenticatable
     const STATUS_SUSPENDED = 'suspended';
 
     const STATUSES = [
-        self::STATUS_ACTIVE => 'Active',
-        self::STATUS_INACTIVE => 'Inactive',
-        self::STATUS_SUSPENDED => 'Suspended',
+        self::STATUS_ACTIVE => 'user.statuses.active',
+        self::STATUS_INACTIVE => 'user.statuses.inactive',
+        self::STATUS_SUSPENDED => 'user.statuses.suspended',
     ];
 
     /**
@@ -178,12 +178,14 @@ class User extends Authenticatable
 
     public function getStatusText(): string
     {
-        return self::STATUSES[$this->status] ?? 'Unknown';
+        $key = self::STATUSES[$this->status] ?? null;
+        return $key ? __($key) : 'Unknown';
     }
 
     public function getTypeText(): string
     {
-        return self::TYPES[$this->type] ?? 'Unknown';
+        $key = self::TYPES[$this->type] ?? null;
+        return $key ? __($key) : 'Unknown';
     }
 
     public function getStatusColor(): string
@@ -222,7 +224,8 @@ class User extends Authenticatable
     {
         return Attribute::make(
             get: function ($value, $attributes) {
-                return self::TYPES[$attributes['type']] ?? $attributes['type'];
+                $key = self::TYPES[$attributes['type']] ?? null;
+                return $key ? __($key) : $attributes['type'];
             },
         );
     }
@@ -231,7 +234,8 @@ class User extends Authenticatable
     {
         return Attribute::make(
             get: function ($value, $attributes) {
-                return self::STATUSES[$attributes['status']] ?? $attributes['status'];
+                $key = self::STATUSES[$attributes['status']] ?? null;
+                return $key ? __($key) : $attributes['status'];
             },
         );
     }

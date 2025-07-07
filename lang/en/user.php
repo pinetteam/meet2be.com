@@ -8,14 +8,15 @@ return [
     'actions' => [
         'add' => 'Add User',
         'create' => 'Create User',
-        'edit' => 'Edit User',
+        'edit' => 'Edit',
         'update' => 'Update User',
-        'delete' => 'Delete User',
-        'view' => 'View User',
+        'delete' => 'Delete',
+        'view' => 'View',
         'back_to_list' => 'Back to Users',
         'back_to_user' => 'Back to User',
         'all_users' => 'All Users',
         'add_first' => 'Add First User',
+        'add_first_user' => 'Add First User',
     ],
     
     // Labels
@@ -34,6 +35,14 @@ return [
         'select_tenant' => 'Select a tenant',
         'no_tenant' => 'No Tenant',
         'never_logged' => 'Never logged in',
+        'never' => 'Never',
+        'type' => 'Type',
+        'status' => 'Status',
+        'last_login' => 'Last Login',
+        'showing' => 'Showing',
+        'to' => 'to',
+        'of' => 'of',
+        'results' => 'results',
     ],
     
     // Sections
@@ -75,6 +84,13 @@ return [
         'operator' => 'Operator',
     ],
     
+    // User Statuses
+    'statuses' => [
+        'active' => 'Active',
+        'inactive' => 'Inactive',
+        'suspended' => 'Suspended',
+    ],
+    
     // Messages
     'messages' => [
         'created_successfully' => 'User created successfully',
@@ -82,6 +98,9 @@ return [
         'deleted_successfully' => 'User deleted successfully',
         'delete_confirm' => 'Are you sure you want to delete this user?',
         'password_hint' => 'Leave password fields blank to keep current password',
+        'confirm_delete' => 'Are you sure you want to delete this user?',
+        'no_users_found' => 'No users found',
+        'try_adjusting_search_or_filter_criteria' => 'Try adjusting your search or filter criteria',
     ],
     
     // Table headers

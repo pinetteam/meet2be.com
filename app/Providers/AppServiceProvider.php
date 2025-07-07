@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Services\TenantService;
 use App\Services\TimezoneService;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
@@ -14,11 +13,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // TenantService'i singleton olarak kaydet
-        $this->app->singleton(TenantService::class);
-        
-        // TimezoneService'i singleton olarak kaydet
-        $this->app->singleton(TimezoneService::class);
+        //
     }
 
     /**
