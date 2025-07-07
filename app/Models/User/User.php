@@ -58,7 +58,7 @@ class User extends Authenticatable
         'password',
         'type',
         'is_active',
-        'last_activity',
+        'last_login_at',
     ];
 
     /**
@@ -82,7 +82,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
-            'last_activity' => 'datetime',
+            'last_login_at' => 'datetime',
         ];
     }
 
@@ -129,7 +129,7 @@ class User extends Authenticatable
     public function updateLoginInfo($ipAddress = null, $userAgent = null): void
     {
         $this->update([
-            'last_activity' => now(),
+            'last_login_at' => now(),
         ]);
     }
 
