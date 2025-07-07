@@ -202,14 +202,19 @@
                             {{ $user->created_at->format('d.m.Y H:i:s') }}
                         </div>
                     </div>
-                    @if($user->last_login_at)
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">{{ __('Last Login') }}</label>
-                            <div class="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg bg-zinc-50 dark:bg-zinc-700 text-zinc-900 dark:text-white">
-                                {{ $user->last_login_at->format('d.m.Y H:i:s') }}
+                    <div class="col-span-6 sm:col-span-3">
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">{{ __('Last Login') }}</label>
+                        @if($user->last_activity)
+                            <div class="mt-1 flex items-center">
+                                <i class="fas fa-clock text-zinc-400 mr-2"></i>
+                                <span class="text-zinc-900 dark:text-white">
+                                    @timezone($user->last_activity)
+                                </span>
                             </div>
-                        </div>
-                    @endif
+                        @else
+                            <p class="mt-1 text-zinc-400 dark:text-zinc-500">{{ __('Never logged in') }}</p>
+                        @endif
+                    </div>
                     <div>
                         <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">{{ __('Last Updated') }}</label>
                         <div class="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg bg-zinc-50 dark:bg-zinc-700 text-zinc-900 dark:text-white">

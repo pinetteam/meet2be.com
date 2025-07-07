@@ -140,8 +140,19 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="#" class="group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-brand">
-                                            <i class="fa-light fa-gear sidebar-icon text-gray-400 dark:text-gray-500 group-hover:text-brand"></i>
+                                        <a href="{{ route('portal.settings.index') }}" 
+                                           @click="currentPage = 'Ayarlar'"
+                                           :class="[
+                                               currentPage === 'Ayarlar' 
+                                                 ? 'bg-gray-50 dark:bg-gray-800 text-brand' 
+                                                 : 'text-gray-700 dark:text-gray-300 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800',
+                                               'group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                                           ]">
+                                            <i :class="[
+                                                'fa-light fa-gear',
+                                                currentPage === 'Ayarlar' ? 'text-brand' : 'text-gray-400 dark:text-gray-500 group-hover:text-brand',
+                                                'sidebar-icon'
+                                            ]"></i>
                                             Ayarlar
                                         </a>
                                     </li>
@@ -244,8 +255,19 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="#" class="group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-brand">
-                                    <i class="fa-light fa-gear sidebar-icon text-gray-400 dark:text-gray-500 group-hover:text-brand"></i>
+                                <a href="{{ route('portal.settings.index') }}" 
+                                   @click="currentPage = 'Ayarlar'"
+                                   :class="[
+                                       currentPage === 'Ayarlar' 
+                                         ? 'bg-gray-50 dark:bg-gray-800 text-brand' 
+                                         : 'text-gray-700 dark:text-gray-300 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800',
+                                       'group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                                   ]">
+                                    <i :class="[
+                                        'fa-light fa-gear',
+                                        currentPage === 'Ayarlar' ? 'text-brand' : 'text-gray-400 dark:text-gray-500 group-hover:text-brand',
+                                        'sidebar-icon'
+                                    ]"></i>
                                     Ayarlar
                                 </a>
                             </li>
@@ -436,6 +458,8 @@
             // Check bottom menu items
             if (path === '/portal/user') {
                 this.currentPage = 'Kullanıcılar';
+            } else if (path === '/portal/settings') {
+                this.currentPage = 'Ayarlar';
             } else {
                 // Check main navigation
                 this.navigation.forEach(item => {

@@ -1,202 +1,168 @@
 @extends('layouts.portal')
 
+@section('title', 'Kullanıcı Detayı')
+
 @section('content')
-<div class="space-y-6">
-    <!-- Page Header -->
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-            <h1 class="text-2xl font-bold text-zinc-900 dark:text-white">{{ __('User Details') }}</h1>
-            <p class="text-sm text-zinc-600 dark:text-zinc-400">{{ __('View user information') }}</p>
-        </div>
-        <div class="flex items-center gap-3">
-            <a href="{{ route('portal.user.index') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-zinc-600 hover:bg-zinc-700 text-white rounded-lg font-medium text-sm transition-colors">
-                <i class="fas fa-arrow-left"></i>
-                {{ __('Back to Users') }}
-            </a>
-            <a href="{{ route('portal.user.edit', $user) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-medium text-sm transition-colors">
-                <i class="fas fa-edit"></i>
-                {{ __('Edit User') }}
-            </a>
+<div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex justify-between items-center">
+            <div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">
+                    Kullanıcı Bilgileri
+                </h3>
+                <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
+                    Detaylı kullanıcı bilgileri ve hesap durumu
+                </p>
+            </div>
+            <div class="flex space-x-3">
+                <a href="{{ route('portal.user.edit', $user) }}" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <i class="fas fa-edit mr-2"></i>
+                    Düzenle
+                </a>
+                <form action="{{ route('portal.user.destroy', $user) }}" method="POST" class="inline" 
+                      onsubmit="return confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" 
+                            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        <i class="fas fa-trash mr-2"></i>
+                        Sil
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- User Profile Card -->
-        <div class="lg:col-span-1">
-            <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-6">
-                <div class="text-center">
-                    <!-- Avatar -->
-                    <div class="size-24 mx-auto rounded-full bg-amber-600 flex items-center justify-center text-white text-2xl font-bold mb-4">
-                        {{ substr($user->full_name, 0, 1) }}
-                    </div>
-                    
-                    <!-- Basic Info -->
-                    <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">{{ $user->full_name }}</h3>
-                    <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-4">{{ $user->username }}</p>
-                    
-                    <!-- Status & Type Badges -->
-                    <div class="flex items-center justify-center gap-2 mb-6">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                            @if($user->status === 'active') bg-green-100 text-green-800 dark:bg-green-800/20 dark:text-green-300
-                            @elseif($user->status === 'inactive') bg-zinc-100 text-zinc-800 dark:bg-zinc-800/20 dark:text-zinc-300
-                            @else bg-red-100 text-red-800 dark:bg-red-800/20 dark:text-red-300 @endif">
-                            {{ __(\App\Models\User\User::STATUSES[$user->status]) }}
-                        </span>
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                            @if($user->type === 'admin') bg-purple-100 text-purple-800 dark:bg-purple-800/20 dark:text-purple-300
-                            @elseif($user->type === 'screener') bg-blue-100 text-blue-800 dark:bg-blue-800/20 dark:text-blue-300
-                            @else bg-green-100 text-green-800 dark:bg-green-800/20 dark:text-green-300 @endif">
-                            {{ __(\App\Models\User\User::TYPES[$user->type]) }}
-                        </span>
-                    </div>
-
-                    <!-- Quick Info -->
-                    <div class="space-y-3 text-sm">
-                        <div class="flex items-center justify-between">
-                            <span class="text-zinc-500 dark:text-zinc-400">{{ __('Email') }}:</span>
-                            <span class="text-zinc-900 dark:text-white">{{ $user->email }}</span>
+    <div class="border-t border-gray-200 dark:border-gray-700">
+        <dl>
+            <div class="bg-gray-50 dark:bg-gray-700/50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Ad Soyad
+                </dt>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2 flex items-center">
+                    <div class="flex-shrink-0 h-10 w-10 mr-3">
+                        <div class="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-white font-semibold">
+                            {{ strtoupper(substr($user->name, 0, 1)) }}{{ strtoupper(substr($user->surname, 0, 1)) }}
                         </div>
-                        @if($user->phone)
-                            <div class="flex items-center justify-between">
-                                <span class="text-zinc-500 dark:text-zinc-400">{{ __('Phone') }}:</span>
-                                <span class="text-zinc-900 dark:text-white">{{ $user->phone }}</span>
-                            </div>
-                        @endif
-
                     </div>
-                </div>
+                    {{ $user->full_name }}
+                </dd>
             </div>
-        </div>
-
-        <!-- User Details -->
-        <div class="lg:col-span-2 space-y-6">
-            <!-- Account Information -->
-            <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-6">
-                <h3 class="text-lg font-medium text-zinc-900 dark:text-white mb-4">{{ __('Account Information') }}</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ __('First Name') }}</label>
-                        <p class="text-zinc-900 dark:text-white">{{ $user->first_name }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ __('Last Name') }}</label>
-                        <p class="text-zinc-900 dark:text-white">{{ $user->last_name }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ __('Username') }}</label>
-                        <p class="text-zinc-900 dark:text-white">{{ $user->username }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ __('Email') }}</label>
-                        <p class="text-zinc-900 dark:text-white">{{ $user->email }}</p>
-                    </div>
-                    @if($user->phone)
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ __('Phone') }}</label>
-                            <p class="text-zinc-900 dark:text-white">{{ $user->phone }}</p>
-                        </div>
-                    @endif
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ __('User Type') }}</label>
-                        <p class="text-zinc-900 dark:text-white">{{ __(\App\Models\User\User::TYPES[$user->type]) }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ __('Status') }}</label>
-                        <p class="text-zinc-900 dark:text-white">{{ __(\App\Models\User\User::STATUSES[$user->status]) }}</p>
-                    </div>
-                </div>
+            <div class="bg-white dark:bg-gray-800 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Kullanıcı Adı
+                </dt>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
+                    @{{ $user->username }}
+                </dd>
             </div>
-
-            <!-- Login Activity -->
-            <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-6">
-                <h3 class="text-lg font-medium text-zinc-900 dark:text-white mb-4">{{ __('Login Activity') }}</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ __('Last Login') }}</label>
-                        @if($user->last_login_at)
-                            <p class="text-zinc-900 dark:text-white">{{ $user->last_login_at->format('d.m.Y H:i:s') }}</p>
-                            <p class="text-xs text-zinc-500 dark:text-zinc-400">{{ $user->last_login_at->diffForHumans() }}</p>
-                        @else
-                            <p class="text-zinc-500 dark:text-zinc-400">{{ __('Never logged in') }}</p>
-                        @endif
-                    </div>
-                    @if($user->last_ip_address)
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ __('Last IP Address') }}</label>
-                            <p class="text-zinc-900 dark:text-white font-mono">{{ $user->last_ip_address }}</p>
-                        </div>
-                    @endif
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ __('Account Created') }}</label>
-                        <p class="text-zinc-900 dark:text-white">{{ $user->created_at->format('d.m.Y H:i:s') }}</p>
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400">{{ $user->created_at->diffForHumans() }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ __('Last Updated') }}</label>
-                        <p class="text-zinc-900 dark:text-white">{{ $user->updated_at->format('d.m.Y H:i:s') }}</p>
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400">{{ $user->updated_at->diffForHumans() }}</p>
-                    </div>
-                    @if($user->last_user_agent)
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ __('Last User Agent') }}</label>
-                            <p class="text-zinc-900 dark:text-white text-sm font-mono break-all">{{ $user->last_user_agent }}</p>
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-            <!-- System Information -->
-            <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-6">
-                <h3 class="text-lg font-medium text-zinc-900 dark:text-white mb-4">{{ __('System Information') }}</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ __('User ID') }}</label>
-                        <p class="text-zinc-900 dark:text-white font-mono text-sm">{{ $user->id }}</p>
-                    </div>
-                </div>
-                
-                @if($user->settings && count($user->settings) > 0)
-                    <div class="mt-6">
-                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-3">{{ __('User Settings') }}</label>
-                        <div class="bg-zinc-50 dark:bg-zinc-700 rounded-lg p-4">
-                            <pre class="text-sm text-zinc-900 dark:text-white overflow-x-auto">{{ json_encode($user->settings, JSON_PRETTY_PRINT) }}</pre>
-                        </div>
-                    </div>
-                @endif
-            </div>
-
-            <!-- Actions -->
-            <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-6">
-                <h3 class="text-lg font-medium text-zinc-900 dark:text-white mb-4">{{ __('Actions') }}</h3>
-                <div class="flex flex-wrap gap-3">
-                    <a href="{{ route('portal.user.edit', $user) }}" 
-                       class="inline-flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-medium text-sm transition-colors">
-                        <i class="fas fa-edit"></i>
-                        {{ __('Edit User') }}
+            <div class="bg-gray-50 dark:bg-gray-700/50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    E-posta
+                </dt>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
+                    <a href="mailto:{{ $user->email }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500">
+                        {{ $user->email }}
                     </a>
-                    
-                                <form method="POST" action="{{ route('portal.user.destroy', $user) }}" class="inline" 
-                  onsubmit="return confirm('{{ __('Are you sure you want to delete this user?') }}')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" 
-                                class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium text-sm transition-colors">
-                            <i class="fas fa-trash"></i>
-                            {{ __('Delete User') }}
-                        </button>
-                    </form>
-                </div>
+                    @if($user->email_verified_at)
+                        <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                            <i class="fas fa-check-circle mr-1"></i>
+                            Doğrulanmış
+                        </span>
+                    @else
+                        <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            Doğrulanmamış
+                        </span>
+                    @endif
+                </dd>
             </div>
-        </div>
+            <div class="bg-white dark:bg-gray-800 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Telefon
+                </dt>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
+                    @if($user->phone)
+                        <a href="tel:{{ $user->phone }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500">
+                            {{ $user->phone }}
+                        </a>
+                    @else
+                        <span class="text-gray-400">-</span>
+                    @endif
+                </dd>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-700/50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Kullanıcı Tipi
+                </dt>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        @if($user->type == 'admin') bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
+                        @elseif($user->type == 'screener') bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200
+                        @elseif($user->type == 'operator') bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
+                        @else bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300
+                        @endif">
+                        {{ $user->type_text }}
+                    </span>
+                </dd>
+            </div>
+            <div class="bg-white dark:bg-gray-800 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Hesap Durumu
+                </dt>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        @if($user->is_active) bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
+                        @else bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
+                        @endif">
+                        {{ $user->is_active ? 'Aktif' : 'Pasif' }}
+                    </span>
+                </dd>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-700/50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Son Aktivite
+                </dt>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
+                    @if($user->last_activity)
+                        <span class="text-gray-900 dark:text-white">@timezoneRelative($user->last_activity)</span>
+                        <span class="text-gray-500 dark:text-gray-400 text-xs ml-2">(@timezone($user->last_activity))</span>
+                    @else
+                        <span class="text-gray-400">Henüz giriş yapmadı</span>
+                    @endif
+                </dd>
+            </div>
+            <div class="bg-white dark:bg-gray-800 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Kayıt Tarihi
+                </dt>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
+                    <span class="text-gray-900 dark:text-white">@timezone($user->created_at)</span>
+                    <span class="text-gray-500 dark:text-gray-400 text-xs ml-2">(@timezoneRelative($user->created_at))</span>
+                </dd>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-700/50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Son Güncelleme
+                </dt>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
+                    @if($user->updated_at->ne($user->created_at))
+                        <span class="text-gray-900 dark:text-white">@timezone($user->updated_at)</span>
+                        <span class="text-gray-500 dark:text-gray-400 text-xs ml-2">(@timezoneRelative($user->updated_at))</span>
+                    @else
+                        <span class="text-gray-400">Güncelleme yapılmadı</span>
+                    @endif
+                </dd>
+            </div>
+        </dl>
     </div>
+</div>
 
-    @if(session('success'))
-        <div class="fixed bottom-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg" x-data="{ show: true }" x-show="show" x-transition>
-            {{ session('success') }}
-            <button @click="show = false" class="ml-4 text-green-200 hover:text-white">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    @endif
+<div class="mt-8 flex justify-end space-x-3">
+    <a href="{{ route('portal.user.index') }}" 
+       class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        <i class="fas fa-arrow-left mr-2"></i>
+        Geri Dön
+    </a>
 </div>
 @endsection 

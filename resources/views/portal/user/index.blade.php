@@ -1,5 +1,7 @@
 @extends('layouts.portal')
 
+@section('title', 'Kullanıcılar')
+
 @section('content')
 <div class="space-y-6">
     <!-- Page Header -->
@@ -111,9 +113,9 @@
 
                         <!-- Last Login -->
                         <div class="col-span-2 text-sm text-zinc-600 dark:text-zinc-400">
-                            @if($user->last_login_at)
-                                <div>{{ $user->last_login_at->format('d.m.Y') }}</div>
-                                <div class="text-xs text-zinc-500 dark:text-zinc-500">{{ $user->last_login_at->format('H:i') }}</div>
+                            @if($user->last_activity)
+                                <div>@timezoneDate($user->last_activity)</div>
+                                <div class="text-xs text-zinc-500 dark:text-zinc-500">@timezoneTime($user->last_activity)</div>
                             @else
                                 <span class="text-zinc-400 dark:text-zinc-500">{{ __('Never') }}</span>
                             @endif
@@ -189,8 +191,8 @@
                         <div class="col-span-2">
                             <span class="text-zinc-500 dark:text-zinc-400">{{ __('Last Login') }}:</span>
                             <div class="mt-1 text-zinc-900 dark:text-white">
-                                @if($user->last_login_at)
-                                    {{ $user->last_login_at->format('d.m.Y H:i') }}
+                                @if($user->last_activity)
+                                    @timezone($user->last_activity)
                                 @else
                                     <span class="text-zinc-400 dark:text-zinc-500">{{ __('Never') }}</span>
                                 @endif

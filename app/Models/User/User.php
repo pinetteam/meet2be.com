@@ -2,6 +2,7 @@
 
 namespace App\Models\User;
 
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -9,12 +10,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Tenant\Tenant;
 use App\Traits\TenantAware;
+use App\Traits\HasTimezone;
 use Database\Factories\User\UserFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasUuids, SoftDeletes, TenantAware;
+    use HasFactory, Notifiable, HasUuids, SoftDeletes, TenantAware, HasTimezone;
 
     protected $keyType = 'string';
     public $incrementing = false;
@@ -47,17 +50,15 @@ class User extends Authenticatable
     protected $fillable = [
         'tenant_id',
         'username',
+        'name',
+        'surname',
         'email',
-        'password',
-        'first_name',
-        'last_name',
+        'email_verified_at',
         'phone',
-        'status',
+        'password',
         'type',
-        'settings',
-        'last_login_at',
-        'last_ip_address',
-        'last_user_agent',
+        'is_active',
+        'last_activity',
     ];
 
     /**
@@ -79,9 +80,9 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'last_login_at' => 'datetime',
             'password' => 'hashed',
-            'settings' => 'array',
+            'is_active' => 'boolean',
+            'last_activity' => 'datetime',
         ];
     }
 
@@ -92,7 +93,7 @@ class User extends Authenticatable
 
     public function getFullNameAttribute(): string
     {
-        return trim("{$this->first_name} {$this->last_name}");
+        return trim("{$this->name} {$this->surname}");
     }
 
     public function isAdmin(): bool
@@ -112,12 +113,12 @@ class User extends Authenticatable
 
     public function isActive(): bool
     {
-        return $this->status === self::STATUS_ACTIVE;
+        return $this->is_active === true;
     }
 
     public function isInactive(): bool
     {
-        return $this->status === self::STATUS_INACTIVE;
+        return $this->is_active === false;
     }
 
     public function isSuspended(): bool
@@ -128,15 +129,13 @@ class User extends Authenticatable
     public function updateLoginInfo($ipAddress = null, $userAgent = null): void
     {
         $this->update([
-            'last_login_at' => now(),
-            'last_ip_address' => $ipAddress,
-            'last_user_agent' => $userAgent ? substr($userAgent, 0, 250) : null,
+            'last_activity' => now(),
         ]);
     }
 
     public function scopeActive($query)
     {
-        return $query->where('status', self::STATUS_ACTIVE);
+        return $query->where('is_active', true);
     }
 
     public function scopeByType($query, string $type)
@@ -172,5 +171,27 @@ class User extends Authenticatable
     public function getRememberTokenDuration(): int
     {
         return 1440; // 1 gün (dakika cinsinden)
+    }
+
+    protected function fullName(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value, $attributes) => trim($attributes['name'] . ' ' . $attributes['surname']),
+        );
+    }
+
+    protected function typeText(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value, $attributes) {
+                return match($attributes['type']) {
+                    'admin' => 'Admin',
+                    'screener' => 'Screener',
+                    'operator' => 'Operator',
+                    'user' => 'User',
+                    default => $attributes['type']
+                };
+            },
+        );
     }
 }
