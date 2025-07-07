@@ -115,7 +115,7 @@
         </nav>
     </div>
 
-    <form action="{{ route('portal.settings.update') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('portal.setting.update') }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         

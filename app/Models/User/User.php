@@ -13,11 +13,19 @@ use App\Traits\TenantAware;
 use App\Traits\HasTimezone;
 use Database\Factories\User\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Traits\HasDateTime;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Event\Event;
+use App\Observers\User\UserObserver;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+#[ObservedBy([UserObserver::class])]
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasUuids, SoftDeletes, TenantAware, HasTimezone;
+    use HasFactory, Notifiable, HasUuids, SoftDeletes, TenantAware, HasTimezone, HasDateTime;
 
     protected $keyType = 'string';
     public $incrementing = false;

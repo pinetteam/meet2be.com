@@ -2,14 +2,14 @@
 
 namespace App\Traits;
 
-use App\Services\TimezoneService;
+use App\Services\DateTime\DateTimeManager;
 use Carbon\Carbon;
 
 trait HasTimezone
 {
-    protected function getTimezoneService(): TimezoneService
+    protected function getDateTimeManager(): DateTimeManager
     {
-        return app(TimezoneService::class);
+        return app(DateTimeManager::class);
     }
     
     /**
@@ -17,7 +17,7 @@ trait HasTimezone
      */
     public function getCurrentTime(): Carbon
     {
-        return Carbon::now('UTC');
+        return Carbon::now();
     }
     
     /**
@@ -44,63 +44,85 @@ trait HasTimezone
     // created_at accessor
     public function getCreatedAtLocalAttribute(): ?Carbon
     {
-        return $this->getTimezoneService()->convertToUserTimezone($this->created_at);
+        return $this->created_at ? $this->getDateTimeManager()->parse($this->created_at)->inTenantTimezone()->toCarbon() : null;
     }
     
     public function getCreatedAtFormattedAttribute(): string
     {
-        return $this->getTimezoneService()->formatDateTime($this->created_at);
+        return $this->created_at ? $this->getDateTimeManager()->parse($this->created_at)->toDateTimeString() : '';
     }
     
     public function getCreatedAtDateAttribute(): string
     {
-        return $this->getTimezoneService()->formatDate($this->created_at);
+        return $this->created_at ? $this->getDateTimeManager()->parse($this->created_at)->toDateString() : '';
     }
     
     public function getCreatedAtTimeAttribute(): string
     {
-        return $this->getTimezoneService()->formatTime($this->created_at);
+        return $this->created_at ? $this->getDateTimeManager()->parse($this->created_at)->toTimeString() : '';
     }
     
     public function getCreatedAtRelativeAttribute(): string
     {
-        return $this->getTimezoneService()->formatRelative($this->created_at);
+        return $this->created_at ? $this->getDateTimeManager()->parse($this->created_at)->toRelativeString() : '';
     }
     
     // updated_at accessor
     public function getUpdatedAtLocalAttribute(): ?Carbon
     {
-        return $this->getTimezoneService()->convertToUserTimezone($this->updated_at);
+        return $this->updated_at ? $this->getDateTimeManager()->parse($this->updated_at)->inTenantTimezone()->toCarbon() : null;
     }
     
     public function getUpdatedAtFormattedAttribute(): string
     {
-        return $this->getTimezoneService()->formatDateTime($this->updated_at);
+        return $this->updated_at ? $this->getDateTimeManager()->parse($this->updated_at)->toDateTimeString() : '';
     }
     
     public function getUpdatedAtDateAttribute(): string
     {
-        return $this->getTimezoneService()->formatDate($this->updated_at);
+        return $this->updated_at ? $this->getDateTimeManager()->parse($this->updated_at)->toDateString() : '';
     }
     
     public function getUpdatedAtTimeAttribute(): string
     {
-        return $this->getTimezoneService()->formatTime($this->updated_at);
+        return $this->updated_at ? $this->getDateTimeManager()->parse($this->updated_at)->toTimeString() : '';
     }
     
     public function getUpdatedAtRelativeAttribute(): string
     {
-        return $this->getTimezoneService()->formatRelative($this->updated_at);
+        return $this->updated_at ? $this->getDateTimeManager()->parse($this->updated_at)->toRelativeString() : '';
     }
     
     // Genel metod - herhangi bir Carbon alanı için
-    public function formatInTimezone(?Carbon $date, string $format = 'd.m.Y H:i'): string
+    public function formatInTimezone($date, $format = null): string
     {
-        return $this->getTimezoneService()->format($date, $format);
+        return $this->getDateTimeManager()->format($date, $format);
     }
     
-    public function toUserTimezone(?Carbon $date): ?Carbon
+    public function toUserTimezone($date): ?Carbon
     {
-        return $this->getTimezoneService()->convertToUserTimezone($date);
+        return $date ? $this->getDateTimeManager()->parse($date)->inTenantTimezone()->toCarbon() : null;
+    }
+
+    public function convertToTimezone($date, $timezone = null)
+    {
+        if (!$date instanceof Carbon) {
+            $date = Carbon::parse($date);
+        }
+
+        $timezone = $timezone ?? $this->getDateTimeManager()->getTimezone();
+        
+        return $date->setTimezone($timezone);
+    }
+
+    public function convertFromTimezone($date, $timezone = null)
+    {
+        if (!$date instanceof Carbon) {
+            $date = Carbon::parse($date);
+        }
+
+        $timezone = $timezone ?? $this->getDateTimeManager()->getTimezone();
+        
+        return $date->setTimezone('UTC');
     }
 } 

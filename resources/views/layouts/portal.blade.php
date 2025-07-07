@@ -14,6 +14,13 @@
         @endif
     @endauth
 
+    <!-- Tenant DateTime Settings -->
+    @auth
+        @if(auth()->user()->tenant)
+            <meta name="tenant-datetime" content='@json(["timezone" => auth()->user()->tenant->timezone?->name ?? config("app.timezone"), "dateFormat" => auth()->user()->tenant->date_format ?? "Y-m-d", "timeFormat" => auth()->user()->tenant->time_format ?? "H:i", "locale" => auth()->user()->tenant->language?->iso_639_1 ?? app()->getLocale()])'>
+        @endif
+    @endauth
+
     <title>@yield('title', 'Portal') - {{ config('app.name', 'Laravel') }}</title>
 
     <!-- Fonts -->
@@ -66,7 +73,7 @@
                                     class="rounded-full p-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 hover:rotate-90">
                                 <span class="sr-only">Menüyü kapat</span>
                                 <i class="fa-regular fa-xmark text-xl text-gray-600 dark:text-gray-300"></i>
-            </button>
+                            </button>
                         </div>
                     </div>
 
@@ -155,14 +162,9 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="{{ route('portal.settings.index') }}" 
-                                           @click="currentPage = 'Ayarlar'"
-                                           :class="[
-                                               currentPage === 'Ayarlar' 
-                                                 ? 'bg-gray-50 dark:bg-gray-800 text-brand' 
-                                                 : 'text-gray-700 dark:text-gray-300 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800',
-                                               'group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
-                                           ]">
+                                        <a href="{{ route('portal.setting.index') }}"
+                                           class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors duration-200
+                                           {{ request()->routeIs('portal.setting.*') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white' : 'text-zinc-600 dark:text-zinc-400' }}">
                                             <i :class="[
                                                 'fa-light fa-gear',
                                                 currentPage === 'Ayarlar' ? 'text-brand' : 'text-gray-400 dark:text-gray-500 group-hover:text-brand',
@@ -270,14 +272,9 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ route('portal.settings.index') }}" 
-                                   @click="currentPage = 'Ayarlar'"
-                                   :class="[
-                                       currentPage === 'Ayarlar' 
-                                         ? 'bg-gray-50 dark:bg-gray-800 text-brand' 
-                                         : 'text-gray-700 dark:text-gray-300 hover:text-brand hover:bg-gray-50 dark:hover:bg-gray-800',
-                                       'group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
-                                   ]">
+                                <a href="{{ route('portal.setting.index') }}"
+                                   class="flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors duration-200
+                                   {{ request()->routeIs('portal.setting.*') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white' : 'text-zinc-600 dark:text-zinc-400' }}">
                                     <i :class="[
                                         'fa-light fa-gear',
                                         currentPage === 'Ayarlar' ? 'text-brand' : 'text-gray-400 dark:text-gray-500 group-hover:text-brand',
@@ -473,7 +470,7 @@
             // Check bottom menu items
             if (path === '/portal/user') {
                 this.currentPage = 'Kullanıcılar';
-            } else if (path === '/portal/settings') {
+            } else if (path === '/portal/setting') {
                 this.currentPage = 'Ayarlar';
             } else {
                 // Check main navigation
@@ -512,9 +509,9 @@
                     document.documentElement.classList.remove('dark');
                 }
             });
-                }
-            }
         }
+    }
+}
     </script>
 </body>
 </html> 

@@ -2,7 +2,8 @@ import Alpine from 'alpinejs';
 import collapse from '@alpinejs/collapse'
 import mask from '@alpinejs/mask'
 import axios from 'axios';
- 
+import '../services/datetime';
+
 Alpine.plugin(collapse)
 Alpine.plugin(mask)
 

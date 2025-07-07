@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Portal\Settings;
+namespace App\Http\Controllers\Portal\Setting;
 
 use App\Http\Controllers\Controller;
 use App\Models\System\Country;
@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
-class SettingsController extends Controller
+class SettingController extends Controller
 {
     public function index(Request $request): View
     {
@@ -65,7 +65,7 @@ class SettingsController extends Controller
                 : $countries->firstWhere('iso2', 'TR');
         }
         
-        return view('portal.settings.index', compact('tenant', 'countries', 'currencies', 'languages', 'groupedTimezones', 'currentCountry', 'phoneNumber'));
+        return view('portal.setting.index', compact('tenant', 'countries', 'currencies', 'languages', 'groupedTimezones', 'currentCountry', 'phoneNumber'));
     }
     
     public function update(Request $request): RedirectResponse
@@ -125,7 +125,7 @@ class SettingsController extends Controller
         }
         
         return redirect()
-            ->route('portal.settings.index')
+            ->route('portal.setting.index')
             ->with('success', __('settings.messages.updated_successfully'));
     }
 } 

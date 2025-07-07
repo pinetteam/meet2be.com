@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Services\TimezoneService;
+use App\Services\DateTime\DateTimeManager;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
 
@@ -13,7 +13,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Register DateTimeManager as singleton
+        $this->app->singleton(DateTimeManager::class, function ($app) {
+            return new DateTimeManager();
+        });
+        
+        // Alias for easier access
+        $this->app->alias(DateTimeManager::class, 'datetime');
     }
 
     /**
@@ -21,57 +27,38 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Blade Timezone Directives
+        // Blade directives using new DateTime system
+        Blade::directive('dt', function ($expression) {
+            return "<?php echo dt($expression)->toDateTimeString(); ?>";
+        });
+        
+        Blade::directive('date', function ($expression) {
+            return "<?php echo dt($expression)->toDateString(); ?>";
+        });
+        
+        Blade::directive('time', function ($expression) {
+            return "<?php echo dt($expression)->toTimeString(); ?>";
+        });
+        
+        Blade::directive('relative', function ($expression) {
+            return "<?php echo dt($expression)->toRelativeString(); ?>";
+        });
+        
+        // Legacy blade directives for backward compatibility
         Blade::directive('timezone', function ($expression) {
-            return "<?php 
-                \$__date = $expression;
-                if (\$__date instanceof \\Carbon\\Carbon || \$__date instanceof \\DateTime) {
-                    echo app(App\Services\TimezoneService::class)->formatDateTime(\$__date);
-                } elseif (is_string(\$__date) && !empty(\$__date)) {
-                    echo app(App\Services\TimezoneService::class)->formatDateTime(\\Carbon\\Carbon::parse(\$__date));
-                } else {
-                    echo '';
-                }
-            ?>";
+            return "<?php echo dt($expression)->toDateTimeString(); ?>";
         });
         
         Blade::directive('timezoneDate', function ($expression) {
-            return "<?php 
-                \$__date = $expression;
-                if (\$__date instanceof \\Carbon\\Carbon || \$__date instanceof \\DateTime) {
-                    echo app(App\Services\TimezoneService::class)->formatDate(\$__date);
-                } elseif (is_string(\$__date) && !empty(\$__date)) {
-                    echo app(App\Services\TimezoneService::class)->formatDate(\\Carbon\\Carbon::parse(\$__date));
-                } else {
-                    echo '';
-                }
-            ?>";
+            return "<?php echo dt($expression)->toDateString(); ?>";
         });
         
         Blade::directive('timezoneTime', function ($expression) {
-            return "<?php 
-                \$__date = $expression;
-                if (\$__date instanceof \\Carbon\\Carbon || \$__date instanceof \\DateTime) {
-                    echo app(App\Services\TimezoneService::class)->formatTime(\$__date);
-                } elseif (is_string(\$__date) && !empty(\$__date)) {
-                    echo app(App\Services\TimezoneService::class)->formatTime(\\Carbon\\Carbon::parse(\$__date));
-                } else {
-                    echo '';
-                }
-            ?>";
+            return "<?php echo dt($expression)->toTimeString(); ?>";
         });
         
         Blade::directive('timezoneRelative', function ($expression) {
-            return "<?php 
-                \$__date = $expression;
-                if (\$__date instanceof \\Carbon\\Carbon || \$__date instanceof \\DateTime) {
-                    echo app(App\Services\TimezoneService::class)->formatRelative(\$__date);
-                } elseif (is_string(\$__date) && !empty(\$__date)) {
-                    echo app(App\Services\TimezoneService::class)->formatRelative(\\Carbon\\Carbon::parse(\$__date));
-                } else {
-                    echo '';
-                }
-            ?>";
+            return "<?php echo dt($expression)->toRelativeString(); ?>";
         });
     }
 }

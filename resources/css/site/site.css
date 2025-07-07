@@ -4,11 +4,26 @@
 /* Site specific styles */
 @source '../../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../../storage/framework/views/*.php';
-@source '../../views/site/**/*.blade.php';
 @source '../../views/layouts/site.blade.php';
-@source '../../js/site/site.js';
+@source "../../views/site/**/*.blade.php";
+@source "../../js/site/**/*.js";
 
 
+/* Theme configuration */
 @theme {
+    /* Font family */
     --font-sans: Inter, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    
+    /* Brand color palette - Easy to customize */
+    --color-brand-50: #fef3c7;
+    --color-brand-100: #fee68a;
+    --color-brand-200: #fcd44d;
+    --color-brand-300: #fbbf24;
+    --color-brand-400: #f59e0b;
+    --color-brand-500: #d97706;
+    --color-brand-600: #b45309;
+    --color-brand-700: #92400e;
+    --color-brand-800: #78350f;
+    --color-brand-900: #451a03;
+    --color-brand-950: #2d1001;
 }

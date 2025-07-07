@@ -137,6 +137,19 @@ return [
         'never' => 'Hiçbir zaman',
         'timezone' => 'Saat Dilimi',
         'current_time' => 'Şu Anki Saat',
+        'seconds' => ':count saniye',
+        'minutes' => ':count dakika',
+        'hours' => ':count saat',
+        'days' => ':count gün',
+        'weeks' => ':count hafta',
+        'months' => ':count ay',
+        'years' => ':count yıl',
+        'ago' => ':time önce',
+        'from_now' => ':time sonra',
+        'just_now' => 'Şimdi',
+        'today_at' => 'Bugün :time',
+        'yesterday_at' => 'Dün :time',
+        'tomorrow_at' => 'Yarın :time',
     ],
     
     // Basit kelimeler
@@ -155,16 +168,13 @@ return [
     'admin' => 'Yönetici',
     'increment' => 'Artır',
     
-    // Dates
+    // Tarihler
     'dates' => [
         'today' => 'Bugün',
         'yesterday' => 'Dün',
         'tomorrow' => 'Yarın',
-        'this_week' => 'Bu hafta',
-        'last_week' => 'Geçen hafta',
-        'this_month' => 'Bu ay',
-        'last_month' => 'Geçen ay',
-        'this_year' => 'Bu yıl',
-        'last_year' => 'Geçen yıl',
+        'start_date' => 'Başlangıç Tarihi',
+        'end_date' => 'Bitiş Tarihi',
+        'date_range' => 'Tarih Aralığı',
     ],
 ]; 

@@ -65,7 +65,7 @@
                 <div class="col-span-4">{{ __('user.table.user') }}</div>
                 <div class="col-span-2">{{ __('user.table.type') }}</div>
                 <div class="col-span-2">{{ __('user.table.status') }}</div>
-                <div class="col-span-2">{{ __('user.table.last_login') }}</div>
+                <div class="col-span-3">{{ __('user.table.last_login') }}</div>
                 <div class="col-span-2 text-center">{{ __('user.table.actions') }}</div>
             </div>
         </div>
@@ -112,10 +112,11 @@
                         </div>
 
                         <!-- Last Login -->
-                        <div class="col-span-2 text-sm text-zinc-600 dark:text-zinc-400">
-                            @if($user->last_activity)
-                                <div>@timezoneDate($user->last_activity)</div>
-                                <div class="text-xs text-zinc-500 dark:text-zinc-500">@timezoneTime($user->last_activity)</div>
+                        <div class="col-span-3">
+                            @if($user->last_login_at)
+                                <span class="text-zinc-700 dark:text-zinc-300" title="@dt($user->last_login_at)">
+                                    @relative($user->last_login_at)
+                                </span>
                             @else
                                 <span class="text-zinc-400 dark:text-zinc-500">{{ __('user.labels.never_logged') }}</span>
                             @endif
@@ -191,8 +192,8 @@
                         <div class="col-span-2">
                             <span class="text-zinc-500 dark:text-zinc-400">{{ __('user.labels.last_login') }}:</span>
                             <div class="mt-1 text-zinc-900 dark:text-white">
-                                @if($user->last_activity)
-                                    @timezone($user->last_activity)
+                                @if($user->last_login_at)
+                                    @relative($user->last_login_at)
                                 @else
                                     <span class="text-zinc-400 dark:text-zinc-500">{{ __('user.labels.never_logged') }}</span>
                                 @endif

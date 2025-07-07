@@ -102,79 +102,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      '/portal/profile' => 
-      array (
-        0 => 
-        array (
-          0 => 
-          array (
-            '_route' => 'portal.profile.index',
-          ),
-          1 => NULL,
-          2 => 
-          array (
-            'GET' => 0,
-            'HEAD' => 1,
-          ),
-          3 => NULL,
-          4 => false,
-          5 => false,
-          6 => NULL,
-        ),
-        1 => 
-        array (
-          0 => 
-          array (
-            '_route' => 'portal.profile.update',
-          ),
-          1 => NULL,
-          2 => 
-          array (
-            'PUT' => 0,
-          ),
-          3 => NULL,
-          4 => false,
-          5 => false,
-          6 => NULL,
-        ),
-      ),
-      '/portal/settings' => 
-      array (
-        0 => 
-        array (
-          0 => 
-          array (
-            '_route' => 'portal.settings.index',
-          ),
-          1 => NULL,
-          2 => 
-          array (
-            'GET' => 0,
-            'HEAD' => 1,
-          ),
-          3 => NULL,
-          4 => false,
-          5 => false,
-          6 => NULL,
-        ),
-        1 => 
-        array (
-          0 => 
-          array (
-            '_route' => 'portal.settings.update',
-          ),
-          1 => NULL,
-          2 => 
-          array (
-            'PUT' => 0,
-          ),
-          3 => NULL,
-          4 => false,
-          5 => false,
-          6 => NULL,
-        ),
-      ),
-      '/portal/user' => 
+      '/portal/users' => 
       array (
         0 => 
         array (
@@ -210,7 +138,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      '/portal/user/create' => 
+      '/portal/users/create' => 
       array (
         0 => 
         array (
@@ -230,14 +158,70 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
+      '/portal/profile' => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'portal.profile.index',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'GET' => 0,
+            'HEAD' => 1,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+      ),
+      '/portal/settings' => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'portal.setting.index',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'GET' => 0,
+            'HEAD' => 1,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+        1 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'portal.setting.update',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'PUT' => 0,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+      ),
     ),
     2 => 
     array (
-      0 => '{^(?|/portal/user/([^/]++)(?|(*:31)|/edit(*:43)|(*:50))|/storage/(.*)(*:71))/?$}sDu',
+      0 => '{^(?|/portal/(?|users/([^/]++)(?|(*:35)|/edit(*:47)|(*:54))|profile/([^/]++)(*:78))|/storage/(.*)(*:99))/?$}sDu',
     ),
     3 => 
     array (
-      31 => 
+      35 => 
       array (
         0 => 
         array (
@@ -260,7 +244,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      43 => 
+      47 => 
       array (
         0 => 
         array (
@@ -283,7 +267,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      50 => 
+      54 => 
       array (
         0 => 
         array (
@@ -325,7 +309,30 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      71 => 
+      78 => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'portal.profile.update',
+          ),
+          1 => 
+          array (
+            0 => 'profile',
+          ),
+          2 => 
+          array (
+            'PUT' => 0,
+            'PATCH' => 1,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => true,
+          6 => NULL,
+        ),
+      ),
+      99 => 
       array (
         0 => 
         array (
@@ -551,160 +558,6 @@ app('router')->setCompiledRoutes(
       'waitSeconds' => NULL,
       'withTrashed' => false,
     ),
-    'portal.profile.index' => 
-    array (
-      'methods' => 
-      array (
-        0 => 'GET',
-        1 => 'HEAD',
-      ),
-      'uri' => 'portal/profile',
-      'action' => 
-      array (
-        'middleware' => 
-        array (
-          0 => 'web',
-          1 => 'auth',
-          2 => 'tenant',
-        ),
-        'uses' => 'App\\Http\\Controllers\\Portal\\Profile\\ProfileController@index',
-        'controller' => 'App\\Http\\Controllers\\Portal\\Profile\\ProfileController@index',
-        'as' => 'portal.profile.index',
-        'namespace' => NULL,
-        'prefix' => 'portal',
-        'where' => 
-        array (
-        ),
-      ),
-      'fallback' => false,
-      'defaults' => 
-      array (
-      ),
-      'wheres' => 
-      array (
-      ),
-      'bindingFields' => 
-      array (
-      ),
-      'lockSeconds' => NULL,
-      'waitSeconds' => NULL,
-      'withTrashed' => false,
-    ),
-    'portal.profile.update' => 
-    array (
-      'methods' => 
-      array (
-        0 => 'PUT',
-      ),
-      'uri' => 'portal/profile',
-      'action' => 
-      array (
-        'middleware' => 
-        array (
-          0 => 'web',
-          1 => 'auth',
-          2 => 'tenant',
-        ),
-        'uses' => 'App\\Http\\Controllers\\Portal\\Profile\\ProfileController@update',
-        'controller' => 'App\\Http\\Controllers\\Portal\\Profile\\ProfileController@update',
-        'as' => 'portal.profile.update',
-        'namespace' => NULL,
-        'prefix' => 'portal',
-        'where' => 
-        array (
-        ),
-      ),
-      'fallback' => false,
-      'defaults' => 
-      array (
-      ),
-      'wheres' => 
-      array (
-      ),
-      'bindingFields' => 
-      array (
-      ),
-      'lockSeconds' => NULL,
-      'waitSeconds' => NULL,
-      'withTrashed' => false,
-    ),
-    'portal.settings.index' => 
-    array (
-      'methods' => 
-      array (
-        0 => 'GET',
-        1 => 'HEAD',
-      ),
-      'uri' => 'portal/settings',
-      'action' => 
-      array (
-        'middleware' => 
-        array (
-          0 => 'web',
-          1 => 'auth',
-          2 => 'tenant',
-        ),
-        'uses' => 'App\\Http\\Controllers\\Portal\\Settings\\SettingsController@index',
-        'controller' => 'App\\Http\\Controllers\\Portal\\Settings\\SettingsController@index',
-        'as' => 'portal.settings.index',
-        'namespace' => NULL,
-        'prefix' => 'portal',
-        'where' => 
-        array (
-        ),
-      ),
-      'fallback' => false,
-      'defaults' => 
-      array (
-      ),
-      'wheres' => 
-      array (
-      ),
-      'bindingFields' => 
-      array (
-      ),
-      'lockSeconds' => NULL,
-      'waitSeconds' => NULL,
-      'withTrashed' => false,
-    ),
-    'portal.settings.update' => 
-    array (
-      'methods' => 
-      array (
-        0 => 'PUT',
-      ),
-      'uri' => 'portal/settings',
-      'action' => 
-      array (
-        'middleware' => 
-        array (
-          0 => 'web',
-          1 => 'auth',
-          2 => 'tenant',
-        ),
-        'uses' => 'App\\Http\\Controllers\\Portal\\Settings\\SettingsController@update',
-        'controller' => 'App\\Http\\Controllers\\Portal\\Settings\\SettingsController@update',
-        'as' => 'portal.settings.update',
-        'namespace' => NULL,
-        'prefix' => 'portal',
-        'where' => 
-        array (
-        ),
-      ),
-      'fallback' => false,
-      'defaults' => 
-      array (
-      ),
-      'wheres' => 
-      array (
-      ),
-      'bindingFields' => 
-      array (
-      ),
-      'lockSeconds' => NULL,
-      'waitSeconds' => NULL,
-      'withTrashed' => false,
-    ),
     'portal.user.index' => 
     array (
       'methods' => 
@@ -712,7 +565,7 @@ app('router')->setCompiledRoutes(
         0 => 'GET',
         1 => 'HEAD',
       ),
-      'uri' => 'portal/user',
+      'uri' => 'portal/users',
       'action' => 
       array (
         'middleware' => 
@@ -751,7 +604,7 @@ app('router')->setCompiledRoutes(
         0 => 'GET',
         1 => 'HEAD',
       ),
-      'uri' => 'portal/user/create',
+      'uri' => 'portal/users/create',
       'action' => 
       array (
         'middleware' => 
@@ -789,7 +642,7 @@ app('router')->setCompiledRoutes(
       array (
         0 => 'POST',
       ),
-      'uri' => 'portal/user',
+      'uri' => 'portal/users',
       'action' => 
       array (
         'middleware' => 
@@ -828,7 +681,7 @@ app('router')->setCompiledRoutes(
         0 => 'GET',
         1 => 'HEAD',
       ),
-      'uri' => 'portal/user/{user}',
+      'uri' => 'portal/users/{user}',
       'action' => 
       array (
         'middleware' => 
@@ -867,7 +720,7 @@ app('router')->setCompiledRoutes(
         0 => 'GET',
         1 => 'HEAD',
       ),
-      'uri' => 'portal/user/{user}/edit',
+      'uri' => 'portal/users/{user}/edit',
       'action' => 
       array (
         'middleware' => 
@@ -906,7 +759,7 @@ app('router')->setCompiledRoutes(
         0 => 'PUT',
         1 => 'PATCH',
       ),
-      'uri' => 'portal/user/{user}',
+      'uri' => 'portal/users/{user}',
       'action' => 
       array (
         'middleware' => 
@@ -944,7 +797,7 @@ app('router')->setCompiledRoutes(
       array (
         0 => 'DELETE',
       ),
-      'uri' => 'portal/user/{user}',
+      'uri' => 'portal/users/{user}',
       'action' => 
       array (
         'middleware' => 
@@ -956,6 +809,161 @@ app('router')->setCompiledRoutes(
         'as' => 'portal.user.destroy',
         'uses' => 'App\\Http\\Controllers\\Portal\\User\\UserController@destroy',
         'controller' => 'App\\Http\\Controllers\\Portal\\User\\UserController@destroy',
+        'namespace' => NULL,
+        'prefix' => 'portal',
+        'where' => 
+        array (
+        ),
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'portal.profile.index' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'GET',
+        1 => 'HEAD',
+      ),
+      'uri' => 'portal/profile',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+          2 => 'tenant',
+        ),
+        'as' => 'portal.profile.index',
+        'uses' => 'App\\Http\\Controllers\\Portal\\Profile\\ProfileController@index',
+        'controller' => 'App\\Http\\Controllers\\Portal\\Profile\\ProfileController@index',
+        'namespace' => NULL,
+        'prefix' => 'portal',
+        'where' => 
+        array (
+        ),
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'portal.profile.update' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'PUT',
+        1 => 'PATCH',
+      ),
+      'uri' => 'portal/profile/{profile}',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+          2 => 'tenant',
+        ),
+        'as' => 'portal.profile.update',
+        'uses' => 'App\\Http\\Controllers\\Portal\\Profile\\ProfileController@update',
+        'controller' => 'App\\Http\\Controllers\\Portal\\Profile\\ProfileController@update',
+        'namespace' => NULL,
+        'prefix' => 'portal',
+        'where' => 
+        array (
+        ),
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'portal.setting.index' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'GET',
+        1 => 'HEAD',
+      ),
+      'uri' => 'portal/settings',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+          2 => 'tenant',
+        ),
+        'uses' => 'App\\Http\\Controllers\\Portal\\Setting\\SettingController@index',
+        'controller' => 'App\\Http\\Controllers\\Portal\\Setting\\SettingController@index',
+        'as' => 'portal.setting.index',
+        'namespace' => NULL,
+        'prefix' => 'portal',
+        'where' => 
+        array (
+        ),
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'portal.setting.update' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'PUT',
+      ),
+      'uri' => 'portal/settings',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+          2 => 'tenant',
+        ),
+        'uses' => 'App\\Http\\Controllers\\Portal\\Setting\\SettingController@update',
+        'controller' => 'App\\Http\\Controllers\\Portal\\Setting\\SettingController@update',
+        'as' => 'portal.setting.update',
         'namespace' => NULL,
         'prefix' => 'portal',
         'where' => 
@@ -992,7 +1000,7 @@ app('router')->setCompiledRoutes(
                         $config,
                         $isProduction
                     ))($request, $path);
-                }";s:5:"scope";s:47:"Illuminate\\Filesystem\\FilesystemServiceProvider";s:4:"this";N;s:4:"self";s:32:"00000000000008c60000000000000000";}}',
+                }";s:5:"scope";s:47:"Illuminate\\Filesystem\\FilesystemServiceProvider";s:4:"this";N;s:4:"self";s:32:"00000000000008d50000000000000000";}}',
         'as' => 'storage.local',
       ),
       'fallback' => false,

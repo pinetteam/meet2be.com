@@ -4,9 +4,10 @@
 /* Portal specific source files */
 @source '../../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../../storage/framework/views/*.php';
-@source '../../views/portal/**/*.blade.php';
 @source '../../views/layouts/portal.blade.php';
-@source '../../js/portal/portal.js';
+@source "../../views/portal/**/*.blade.php";
+@source "../../js/portal/**/*.js";
+
 
 /* Theme configuration */
 @theme {

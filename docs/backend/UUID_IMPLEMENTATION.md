@@ -1,0 +1,566 @@
+# UUID Implementation
+
+## Overview
+
+Meet2Be uses UUID v7 as the primary key for all database tables. This provides globally unique identifiers that are time-sortable, secure, and suitable for distributed systems.
+
+## Why UUIDs?
+
+### Advantages
+
+1. **Global Uniqueness**: No collisions across distributed systems
+2. **Security**: Non-sequential IDs prevent enumeration attacks
+3. **Scalability**: Generate IDs without database coordination
+4. **Portability**: Easy data migration between systems
+5. **Time-sortable**: UUID v7 maintains chronological ordering
+
+### UUID v7 Specifics
+
+UUID v7 combines:
+- 48-bit timestamp (millisecond precision)
+- 74 bits of randomness
+- Maintains creation order when sorted lexicographically
+
+## Laravel Implementation
+
+### Model Configuration
+
+Laravel 12 provides built-in UUID support:
+
+```php
+namespace App\Models\User;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+
+class User extends Model
+{
+    use HasUuids;
+    
+    // No need to specify $keyType or $incrementing
+    // Laravel handles this automatically with HasUuids trait
+}
+```
+
+### What HasUuids Provides
+
+```php
+trait HasUuids
+{
+    // Automatically sets these properties
+    public function getIncrementing()
+    {
+        return false;
+    }
+    
+    public function getKeyType()
+    {
+        return 'string';
+    }
+    
+    // Generates UUID v7 on model creation
+    protected static function bootHasUuids()
+    {
+        static::creating(function ($model) {
+            foreach ($model->uniqueIds() as $column) {
+                if (empty($model->{$column})) {
+                    $model->{$column} = $model->newUniqueId();
+                }
+            }
+        });
+    }
+    
+    // Uses UUID v7 by default
+    public function newUniqueId()
+    {
+        return (string) Str::uuid7();
+    }
+}
+```
+
+## Database Schema
+
+### Migration Structure
+
+```php
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->uuid('tenant_id');
+            $table->string('email');
+            $table->timestamps();
+            
+            // Foreign key references
+            $table->foreign('tenant_id')->references('id')->on('tenants');
+            
+            // Indexes
+            $table->index('tenant_id');
+            $table->unique(['tenant_id', 'email']);
+        });
+    }
+};
+```
+
+### Storage Optimization
+
+UUIDs are stored as CHAR(36) in MySQL:
+
+```sql
+CREATE TABLE users (
+    id CHAR(36) PRIMARY KEY,
+    tenant_id CHAR(36) NOT NULL,
+    -- other columns
+);
+```
+
+For PostgreSQL, use the native UUID type:
+
+```sql
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID NOT NULL,
+    -- other columns
+);
+```
+
+## Model Relationships
+
+### Defining Relationships
+
+```php
+class User extends Model
+{
+    use HasUuids;
+    
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+    
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+}
+
+class Post extends Model
+{
+    use HasUuids;
+    
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+}
+```
+
+### Pivot Tables
+
+```php
+Schema::create('role_user', function (Blueprint $table) {
+    $table->uuid('role_id');
+    $table->uuid('user_id');
+    $table->timestamps();
+    
+    $table->primary(['role_id', 'user_id']);
+    $table->foreign('role_id')->references('id')->on('roles');
+    $table->foreign('user_id')->references('id')->on('users');
+});
+```
+
+## Route Model Binding
+
+### Automatic UUID Resolution
+
+Laravel automatically handles UUID route model binding:
+
+```php
+// routes/portal.php
+Route::resource('users', UserController::class);
+
+// Generates routes like:
+// GET /portal/users/550e8400-e29b-41d4-a716-446655440000
+
+// Controller
+public function show(User $user)
+{
+    // $user is automatically resolved by UUID
+    return view('portal.user.show', compact('user'));
+}
+```
+
+### Custom Route Key
+
+```php
+class Event extends Model
+{
+    use HasUuids;
+    
+    // Use slug for routes instead of UUID
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+    
+    // Or support multiple keys
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->where($field ?? 'id', $value)->firstOrFail();
+    }
+}
+```
+
+## Factory Implementation
+
+### Model Factories
+
+```php
+namespace Database\Factories\User;
+
+use App\Models\User\User;
+use App\Models\Tenant\Tenant;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
+
+class UserFactory extends Factory
+{
+    protected $model = User::class;
+    
+    public function definition(): array
+    {
+        return [
+            // UUID automatically generated by HasUuids trait
+            'tenant_id' => Tenant::factory(),
+            'name' => fake()->name(),
+            'email' => fake()->unique()->safeEmail(),
+            'password' => bcrypt('password'),
+            'remember_token' => Str::random(10),
+        ];
+    }
+}
+```
+
+## API Resources
+
+### Exposing UUIDs
+
+```php
+namespace App\Http\Resources;
+
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class UserResource extends JsonResource
+{
+    public function toArray($request): array
+    {
+        return [
+            'id' => $this->id, // UUID string
+            'name' => $this->name,
+            'email' => $this->email,
+            'created_at' => $this->created_at,
+            'links' => [
+                'self' => route('api.users.show', $this),
+            ],
+        ];
+    }
+}
+```
+
+### Collection Resources
+
+```php
+class UserCollection extends ResourceCollection
+{
+    public function toArray($request): array
+    {
+        return [
+            'data' => $this->collection,
+            'meta' => [
+                'total' => $this->resource->total(),
+                'per_page' => $this->resource->perPage(),
+            ],
+        ];
+    }
+}
+```
+
+## Form Handling
+
+### Hidden UUID Fields
+
+```blade
+<form method="POST" action="{{ route('portal.user.update', $user) }}">
+    @csrf
+    @method('PUT')
+    
+    {{-- UUID is in the URL, not a form field --}}
+    
+    <input type="text" name="name" value="{{ $user->name }}">
+    <button type="submit">Update</button>
+</form>
+```
+
+### Select Dropdowns
+
+```blade
+<select name="user_id">
+    @foreach($users as $user)
+        <option value="{{ $user->id }}">{{ $user->name }}</option>
+    @endforeach
+</select>
+```
+
+## Validation
+
+### UUID Validation Rule
+
+```php
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreEventRequest extends FormRequest
+{
+    public function rules(): array
+    {
+        return [
+            'venue_id' => 'required|uuid|exists:venues,id',
+            'organizer_id' => 'required|uuid|exists:users,id',
+        ];
+    }
+}
+```
+
+### Custom UUID Validation
+
+```php
+namespace App\Rules;
+
+use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Str;
+
+class ValidUuid implements Rule
+{
+    public function passes($attribute, $value): bool
+    {
+        return Str::isUuid($value);
+    }
+    
+    public function message(): string
+    {
+        return 'The :attribute must be a valid UUID.';
+    }
+}
+```
+
+## Querying with UUIDs
+
+### Finding Records
+
+```php
+// Find by UUID
+$user = User::find('550e8400-e29b-41d4-a716-446655440000');
+
+// Find or fail
+$user = User::findOrFail($uuid);
+
+// Where clause
+$users = User::where('tenant_id', $tenantUuid)->get();
+
+// Multiple UUIDs
+$users = User::whereIn('id', $uuidArray)->get();
+```
+
+### Query Optimization
+
+```php
+// Good - Use indexes
+$events = Event::where('tenant_id', $tenantId)
+    ->where('venue_id', $venueId)
+    ->get();
+
+// Add composite indexes for common queries
+Schema::table('events', function (Blueprint $table) {
+    $table->index(['tenant_id', 'venue_id']);
+});
+```
+
+## JavaScript Integration
+
+### Frontend UUID Handling
+
+```javascript
+// Generate UUID v4 in JavaScript (for temporary IDs)
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
+// Alpine.js component
+Alpine.data('userForm', () => ({
+    user: {
+        id: null,
+        name: '',
+        email: ''
+    },
+    
+    async saveUser() {
+        const response = await fetch('/api/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(this.user)
+        });
+        
+        const data = await response.json();
+        this.user.id = data.id; // UUID from server
+    }
+}));
+```
+
+## Performance Considerations
+
+### Indexing
+
+```php
+// Always index foreign key UUIDs
+Schema::table('posts', function (Blueprint $table) {
+    $table->index('user_id');
+    $table->index('category_id');
+    $table->index(['user_id', 'created_at']); // Composite index
+});
+```
+
+### Query Performance
+
+```php
+// Efficient UUID joins
+$posts = Post::select('posts.*', 'users.name as author_name')
+    ->join('users', 'posts.user_id', '=', 'users.id')
+    ->where('posts.tenant_id', $tenantId)
+    ->get();
+```
+
+### Caching Strategies
+
+```php
+// Cache by UUID
+$user = Cache::remember("user_{$uuid}", 3600, function () use ($uuid) {
+    return User::find($uuid);
+});
+
+// Clear cache
+Cache::forget("user_{$user->id}");
+```
+
+## Testing with UUIDs
+
+### Unit Tests
+
+```php
+public function test_creates_user_with_uuid()
+{
+    $user = User::factory()->create();
+    
+    $this->assertNotNull($user->id);
+    $this->assertTrue(Str::isUuid($user->id));
+}
+
+public function test_relationships_with_uuid()
+{
+    $user = User::factory()->create();
+    $post = Post::factory()->create(['user_id' => $user->id]);
+    
+    $this->assertEquals($user->id, $post->user->id);
+}
+```
+
+### Feature Tests
+
+```php
+public function test_can_update_user_by_uuid()
+{
+    $user = User::factory()->create();
+    
+    $response = $this->actingAs($user)
+        ->put(route('portal.user.update', $user), [
+            'name' => 'Updated Name'
+        ]);
+    
+    $response->assertRedirect();
+    $this->assertEquals('Updated Name', $user->fresh()->name);
+}
+```
+
+## Migration from Auto-Increment
+
+### Step 1: Add UUID Column
+
+```php
+Schema::table('users', function (Blueprint $table) {
+    $table->uuid('uuid')->after('id')->nullable();
+});
+
+// Populate UUIDs
+User::chunk(100, function ($users) {
+    foreach ($users as $user) {
+        $user->update(['uuid' => Str::uuid()]);
+    }
+});
+```
+
+### Step 2: Update Foreign Keys
+
+```php
+// Add new UUID foreign keys
+Schema::table('posts', function (Blueprint $table) {
+    $table->uuid('user_uuid')->after('user_id')->nullable();
+});
+
+// Copy relationships
+Post::chunk(100, function ($posts) {
+    foreach ($posts as $post) {
+        $post->update(['user_uuid' => $post->user->uuid]);
+    }
+});
+```
+
+### Step 3: Switch Primary Key
+
+```php
+// Drop old foreign keys
+Schema::table('posts', function (Blueprint $table) {
+    $table->dropForeign(['user_id']);
+    $table->dropColumn('user_id');
+    $table->renameColumn('user_uuid', 'user_id');
+});
+
+// Update users table
+Schema::table('users', function (Blueprint $table) {
+    $table->dropPrimary();
+    $table->dropColumn('id');
+    $table->renameColumn('uuid', 'id');
+    $table->primary('id');
+});
+```
+
+## Best Practices
+
+1. **Always use HasUuids trait** for UUID models
+2. **Index foreign key UUIDs** for query performance
+3. **Use route model binding** for automatic resolution
+4. **Validate UUID format** in form requests
+5. **Cache by UUID** for better performance
+6. **Use UUID v7** for time-sortable IDs
+7. **Store as CHAR(36)** in MySQL for consistency 
