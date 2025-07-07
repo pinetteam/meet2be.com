@@ -30,6 +30,9 @@
 /* Dark mode variant */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Alpine.js x-cloak */
+[x-cloak] { display: none !important; }
+
 /* Portal specific components */
 
 /* Sidebar icon alignment */

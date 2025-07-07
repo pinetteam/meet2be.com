@@ -1,8 +1,10 @@
 import Alpine from 'alpinejs';
 import collapse from '@alpinejs/collapse'
+import mask from '@alpinejs/mask'
 import axios from 'axios';
  
 Alpine.plugin(collapse)
+Alpine.plugin(mask)
 
 // Alpine'i window objesine ekle
 window.Alpine = Alpine;

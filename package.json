@@ -20,6 +20,7 @@
     },
     "dependencies": {
         "@alpinejs/collapse": "^3.14.9",
+        "@alpinejs/mask": "^3.14.9",
         "@fortawesome/fontawesome-pro": "^6.7.2",
         "alpinejs": "^3.14.9"
     }
