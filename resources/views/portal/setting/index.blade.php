@@ -586,6 +586,13 @@ function settingsForm() {
                 
                 if (data.success) {
                     window.notify('{{ __('portal.general.success') }}', data.message, 'success');
+                    
+                    // If datetime settings changed, reload page to update all datetime displays
+                    if (data.datetime_updated) {
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    }
                 } else {
                     window.notify('{{ __('portal.general.error') }}', data.message || '{{ __('portal.settings.messages.update_failed') }}', 'error');
                 }

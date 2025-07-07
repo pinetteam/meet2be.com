@@ -244,6 +244,26 @@ $manager = app(DateTimeManager::class);
 $manager->setTenant($tenant)->clearCache();
 ```
 
+### Important: Automatic Cache Clearing
+
+The cache is automatically cleared when timezone, date format, or time format settings are changed in the Settings page. This ensures that all datetime displays across the application immediately reflect the new settings.
+
+If you're updating these settings programmatically, make sure to clear the cache:
+
+```php
+// Update tenant settings
+$tenant->update([
+    'timezone_id' => $newTimezoneId,
+    'date_format' => $newDateFormat,
+    'time_format' => $newTimeFormat,
+]);
+
+// Clear the cache to reflect changes immediately
+app(DateTimeManager::class)->clearCache();
+```
+
+The frontend will automatically reload after datetime settings are changed to ensure all displayed dates and times use the new format.
+
 ## Best Practices
 
 1. **Always use the system for user-facing dates** - Never display raw database timestamps

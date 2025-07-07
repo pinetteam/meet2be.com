@@ -8,6 +8,7 @@ use App\Models\System\Country;
 use App\Models\System\Currency;
 use App\Models\System\Language;
 use App\Models\System\Timezone;
+use App\Services\DateTime\DateTimeManager;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -46,11 +47,25 @@ class SettingController extends Controller
         $tenant = $request->user()->tenant;
         
         try {
+            // Check if timezone or date/time format changed
+            $timezoneChanged = $request->has('timezone_id') && $tenant->timezone_id != $request->timezone_id;
+            $dateFormatChanged = $request->has('date_format') && $tenant->date_format != $request->date_format;
+            $timeFormatChanged = $request->has('time_format') && $tenant->time_format != $request->time_format;
+            
             $tenant->update($request->validated());
+            
+            // Clear DateTime cache if any date/time settings changed
+            if ($timezoneChanged || $dateFormatChanged || $timeFormatChanged) {
+                app(DateTimeManager::class)->clearCache();
+                
+                // Update session to trigger frontend refresh
+                session(['datetime_settings_updated' => now()->timestamp]);
+            }
             
             return response()->json([
                 'success' => true,
-                'message' => __('portal.settings.messages.updated_successfully')
+                'message' => __('portal.settings.messages.updated_successfully'),
+                'datetime_updated' => $timezoneChanged || $dateFormatChanged || $timeFormatChanged
             ]);
         } catch (\Exception $e) {
             return response()->json([
