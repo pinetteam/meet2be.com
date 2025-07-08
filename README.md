@@ -5,6 +5,7 @@ meet2be.com, çoklu tenant destekli, yüksek güvenlikli ve performans odaklı b
 
 Git yüklemeleri sonrası sunucu otomatik eşitler.
 
+
 ## Teknoloji Yığını
 - **Backend:** Laravel 12 (PHP 8.3+)
 - **Frontend:** Tailwind CSS, Alpine.js 3.x, FontAwesome Pro
