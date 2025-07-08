@@ -3,7 +3,6 @@
 ## Proje Tanımı
 meet2be.com, çoklu tenant destekli, yüksek güvenlikli ve performans odaklı bir etkinlik yönetim platformudur. Kod kalitesi, mimari ve sürdürülebilirlikte Fortune 500 standartlarını hedefler.
 
-Git yüklemeleri sonrası sunucu otomatik eşitler.
 
 
 ## Teknoloji Yığını
