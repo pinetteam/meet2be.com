@@ -7,7 +7,6 @@ use App\Http\Controllers\Portal\Setting\SettingController;
 use App\Http\Controllers\Portal\Profile\ProfileController;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
-
 Route::resource('user', UserController::class)->names('user');
 Route::resource('profile', ProfileController::class)->only(['index', 'update']);
 
