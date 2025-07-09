@@ -3,40 +3,45 @@
 @section('title', __('user.title'))
 
 @section('content')
-<div class="space-y-6">
-    <!-- Page Header -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('user.title') }}</h1>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ __('user.subtitle') }}</p>
-            </div>
-            <a href="{{ route('portal.user.create') }}" 
-               class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium text-sm transition-colors duration-150">
-                <i class="fa-solid fa-plus text-xs"></i>
-                {{ __('user.actions.add') }}
-            </a>
+<div class="max-w-7xl mx-auto">
+    {{-- Page Header --}}
+    <div class="mb-8 flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+                {{ __('user.title') }}
+            </h1>
+            <p class="mt-2 text-gray-600 dark:text-gray-400">
+                {{ __('user.subtitle') }}
+            </p>
         </div>
+        <a href="{{ route('portal.user.create') }}" 
+           class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <i class="fa-light fa-plus mr-2"></i>
+            {{ __('user.actions.add') }}
+        </a>
     </div>
 
-    <!-- Filters & Search -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6" x-data="userFilters()">
+    {{-- Filters & Search --}}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 mb-6" 
+         x-data="userFilters()">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <!-- Search -->
-            <div class="sm:col-span-2 lg:col-span-2">
+            {{-- Search --}}
+            <div class="sm:col-span-2">
                 <div class="relative">
-                    <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <i class="fa-light fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                     <input type="text" 
                            placeholder="{{ __('user.labels.search_placeholder') }}" 
-                           class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-150 text-sm"
-                           x-model="search">
+                           class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                           x-model="search"
+                           @keyup.enter="applyFilters()">
                 </div>
             </div>
             
-            <!-- Status Filter -->
+            {{-- Status Filter --}}
             <div>
-                <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-150 text-sm"
-                        x-model="statusFilter">
+                <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        x-model="statusFilter"
+                        @change="applyFilters()">
                     <option value="">{{ __('user.labels.all_statuses') }}</option>
                     <option value="active">{{ __('user.statuses.active') }}</option>
                     <option value="inactive">{{ __('user.statuses.inactive') }}</option>
@@ -44,10 +49,11 @@
                 </select>
             </div>
 
-            <!-- Type Filter -->
+            {{-- Type Filter --}}
             <div>
-                <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-150 text-sm"
-                        x-model="typeFilter">
+                <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        x-model="typeFilter"
+                        @change="applyFilters()">
                     <option value="">{{ __('user.labels.all_types') }}</option>
                     <option value="admin">{{ __('user.types.admin') }}</option>
                     <option value="screener">{{ __('user.types.screener') }}</option>
@@ -55,42 +61,69 @@
                 </select>
             </div>
         </div>
+
+        {{-- Active Filters --}}
+        <div x-show="hasActiveFilters()" x-cloak class="mt-4 flex items-center gap-2">
+            <span class="text-sm text-gray-600 dark:text-gray-400">{{ __('common.labels.active_filters') }}:</span>
+            <div class="flex flex-wrap gap-2">
+                <span x-show="search" class="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md text-sm">
+                    {{ __('common.labels.search') }}: <span x-text="search"></span>
+                    <button @click="search = ''; applyFilters()" class="ml-1 hover:text-blue-900 dark:hover:text-blue-100">
+                        <i class="fa-light fa-xmark"></i>
+                    </button>
+                </span>
+                <span x-show="statusFilter" class="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md text-sm">
+                    {{ __('user.labels.status') }}: <span x-text="getStatusLabel(statusFilter)"></span>
+                    <button @click="statusFilter = ''; applyFilters()" class="ml-1 hover:text-blue-900 dark:hover:text-blue-100">
+                        <i class="fa-light fa-xmark"></i>
+                    </button>
+                </span>
+                <span x-show="typeFilter" class="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md text-sm">
+                    {{ __('user.labels.type') }}: <span x-text="getTypeLabel(typeFilter)"></span>
+                    <button @click="typeFilter = ''; applyFilters()" class="ml-1 hover:text-blue-900 dark:hover:text-blue-100">
+                        <i class="fa-light fa-xmark"></i>
+                    </button>
+                </span>
+                <button @click="clearFilters()" class="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
+                    {{ __('common.actions.clear_all') }}
+                </button>
+            </div>
+        </div>
     </div>
 
-    <!-- Users Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
-        <!-- Table Header (Desktop) -->
-        <div class="hidden lg:block">
+    {{-- Users Table --}}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-900">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            {{ __('user.table.user') }}
+                        <th scope="col" class="px-6 py-3 text-left">
+                            <x-ui.sortable-header column="name" :label="__('user.table.user')" />
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            {{ __('user.table.type') }}
+                        <th scope="col" class="px-6 py-3 text-left">
+                            <x-ui.sortable-header column="type" :label="__('user.table.type')" />
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            {{ __('user.table.status') }}
+                        <th scope="col" class="px-6 py-3 text-left">
+                            <x-ui.sortable-header column="status" :label="__('user.table.status')" />
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            {{ __('user.table.last_login') }}
+                        <th scope="col" class="px-6 py-3 text-left">
+                            <x-ui.sortable-header column="last_login_at" :label="__('user.table.last_login')" />
                         </th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            {{ __('user.table.actions') }}
+                        <th scope="col" class="relative px-6 py-3">
+                            <span class="sr-only">{{ __('user.table.actions') }}</span>
                         </th>
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     @forelse($users as $user)
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
-                            <!-- User Info -->
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                            {{-- User Info --}}
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
                                     <div class="h-10 w-10 flex-shrink-0">
-                                        <div class="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                                            <span class="text-sm font-medium text-blue-600 dark:text-blue-400">
-                                                {{ substr($user->full_name, 0, 1) }}
+                                        <div class="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                                            <span class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                                                {{ strtoupper(substr($user->first_name, 0, 1) . substr($user->last_name, 0, 1)) }}
                                             </span>
                                         </div>
                                     </div>
@@ -105,7 +138,7 @@
                                 </div>
                             </td>
 
-                            <!-- Type -->
+                            {{-- Type --}}
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                     @if($user->type === 'admin') bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400
@@ -115,7 +148,7 @@
                                 </span>
                             </td>
 
-                            <!-- Status -->
+                            {{-- Status --}}
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                     @if($user->status === 'active') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
@@ -125,7 +158,7 @@
                                 </span>
                             </td>
 
-                            <!-- Last Login -->
+                            {{-- Last Login --}}
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                                 @if($user->last_login_at)
                                     <span title="@dt($user->last_login_at)">
@@ -136,29 +169,27 @@
                                 @endif
                             </td>
 
-                            <!-- Actions -->
-                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                <div class="flex items-center justify-center gap-2">
+                            {{-- Actions --}}
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div class="flex items-center justify-end gap-2">
                                     <a href="{{ route('portal.user.show', $user) }}" 
-                                       class="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors duration-150"
+                                       class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                                        title="{{ __('user.actions.view') }}">
-                                        <i class="fa-solid fa-eye"></i>
+                                        <i class="fa-light fa-eye"></i>
                                     </a>
                                     <a href="{{ route('portal.user.edit', $user) }}" 
-                                       class="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors duration-150"
+                                       class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                                        title="{{ __('user.actions.edit') }}">
-                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <i class="fa-light fa-pen-to-square"></i>
                                     </a>
-                                    <form method="POST" action="{{ route('portal.user.destroy', $user) }}" class="inline" 
-                                          onsubmit="return confirm('{{ __('user.messages.confirm_delete') }}')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" 
-                                                class="text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors duration-150"
+                                    @if($user->id !== auth()->id())
+                                        <button type="button" 
+                                                @click="deleteUser('{{ $user->id }}')"
+                                                class="text-gray-400 hover:text-red-600 dark:hover:text-red-400"
                                                 title="{{ __('user.actions.delete') }}">
-                                            <i class="fa-solid fa-trash"></i>
+                                            <i class="fa-light fa-trash"></i>
                                         </button>
-                                    </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -166,9 +197,13 @@
                         <tr>
                             <td colspan="5" class="px-6 py-12 text-center">
                                 <div class="text-gray-400 dark:text-gray-500">
-                                    <i class="fa-solid fa-users text-4xl mb-4"></i>
-                                    <p class="text-sm font-medium text-gray-900 dark:text-white mb-1">{{ __('user.messages.no_users_found') }}</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('user.messages.try_adjusting_search_or_filter_criteria') }}</p>
+                                    <i class="fa-light fa-users text-4xl mb-4"></i>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                                        {{ __('user.messages.no_users_found') }}
+                                    </p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                                        {{ __('user.messages.try_adjusting_search_or_filter_criteria') }}
+                                    </p>
                                 </div>
                             </td>
                         </tr>
@@ -176,161 +211,84 @@
                 </tbody>
             </table>
         </div>
-
-        <!-- Mobile View -->
-        <div class="lg:hidden">
-            @forelse($users as $user)
-                <div class="p-4 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
-                    <!-- User Header -->
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center flex-shrink-0">
-                            <span class="text-sm font-medium text-blue-600 dark:text-blue-400">
-                                {{ substr($user->full_name, 0, 1) }}
-                            </span>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="font-medium text-gray-900 dark:text-white truncate">
-                                {{ $user->full_name }}
-                            </div>
-                            <div class="text-sm text-gray-500 dark:text-gray-400 truncate">
-                                {{ $user->email }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Mobile Details -->
-                    <div class="grid grid-cols-2 gap-3 text-sm mb-3">
-                        <div>
-                            <span class="text-gray-500 dark:text-gray-400 text-xs">{{ __('user.labels.type') }}</span>
-                            <div class="mt-1">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                                    @if($user->type === 'admin') bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400
-                                    @elseif($user->type === 'screener') bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400
-                                    @else bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 @endif">
-                                    {{ $user->type_text }}
-                                </span>
-                            </div>
-                        </div>
-                        <div>
-                            <span class="text-gray-500 dark:text-gray-400 text-xs">{{ __('user.labels.status') }}</span>
-                            <div class="mt-1">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                                    @if($user->status === 'active') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
-                                    @elseif($user->status === 'inactive') bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400
-                                    @else bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 @endif">
-                                    {{ $user->status_text }}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="col-span-2">
-                            <span class="text-gray-500 dark:text-gray-400 text-xs">{{ __('user.labels.last_login') }}</span>
-                            <div class="mt-1 text-gray-900 dark:text-white">
-                                @if($user->last_login_at)
-                                    @relative($user->last_login_at)
-                                @else
-                                    <span class="text-gray-400 dark:text-gray-500 text-sm">{{ __('user.labels.never_logged') }}</span>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Mobile Actions -->
-                    <div class="flex items-center gap-2">
-                        <a href="{{ route('portal.user.show', $user) }}" 
-                           class="flex-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md text-center text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-150">
-                            <i class="fa-solid fa-eye mr-1"></i>{{ __('user.actions.view') }}
-                        </a>
-                        <a href="{{ route('portal.user.edit', $user) }}" 
-                           class="flex-1 px-3 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-md text-center text-sm font-medium hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors duration-150">
-                            <i class="fa-solid fa-pen-to-square mr-1"></i>{{ __('user.actions.edit') }}
-                        </a>
-                    </div>
-                </div>
-            @empty
-                <!-- Empty State Mobile -->
-                <div class="p-8 text-center">
-                    <div class="text-gray-400 dark:text-gray-500">
-                        <i class="fa-solid fa-users text-4xl mb-4"></i>
-                        <p class="text-sm font-medium text-gray-900 dark:text-white mb-1">{{ __('user.messages.no_users_found') }}</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">{{ __('user.messages.try_adjusting_search_or_filter_criteria') }}</p>
-                        <a href="{{ route('portal.user.create') }}" 
-                           class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium text-sm transition-colors duration-150">
-                            <i class="fa-solid fa-plus"></i>
-                            {{ __('user.actions.add_first_user') }}
-                        </a>
-                    </div>
-                </div>
-            @endforelse
-        </div>
     </div>
 
-    <!-- Pagination -->
+    {{-- Pagination --}}
     @if($users->hasPages())
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="text-sm text-gray-600 dark:text-gray-400">
-                    {{ __('user.labels.showing') }} {{ $users->firstItem() }} {{ __('user.labels.to') }} {{ $users->lastItem() }} {{ __('user.labels.of') }} {{ $users->total() }} {{ __('user.labels.results') }}
-                </div>
-                <div class="flex items-center gap-2">
-                    {{ $users->links() }}
-                </div>
-            </div>
+        <div class="mt-6">
+            {{ $users->links() }}
         </div>
     @endif
 </div>
 
-<!-- Success Message -->
-@if(session('success'))
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            window.notify('{{ session('success') }}', 'success');
-        });
-    </script>
-@endif
-
-@if(session('error'))
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            window.notify('{{ session('error') }}', 'error');
-        });
-    </script>
-@endif
-
-<!-- Alpine.js Component -->
+@push('scripts')
 <script>
 function userFilters() {
     return {
-        search: '{{ request('search') }}',
-        statusFilter: '{{ request('status') }}',
-        typeFilter: '{{ request('type') }}',
+        search: @js(request('search', '')),
+        statusFilter: @js(request('status', '')),
+        typeFilter: @js(request('type', '')),
         
-        init() {
-            // Auto-submit form when filters change
-            this.$watch('search', () => this.applyFilters());
-            this.$watch('statusFilter', () => this.applyFilters());
-            this.$watch('typeFilter', () => this.applyFilters());
+        hasActiveFilters() {
+            return this.search || this.statusFilter || this.typeFilter;
+        },
+        
+        getStatusLabel(status) {
+            const labels = {
+                'active': '{{ __('user.statuses.active') }}',
+                'inactive': '{{ __('user.statuses.inactive') }}',
+                'suspended': '{{ __('user.statuses.suspended') }}'
+            };
+            return labels[status] || status;
+        },
+        
+        getTypeLabel(type) {
+            const labels = {
+                'admin': '{{ __('user.types.admin') }}',
+                'screener': '{{ __('user.types.screener') }}',
+                'operator': '{{ __('user.types.operator') }}'
+            };
+            return labels[type] || type;
         },
         
         applyFilters() {
-            // Debounce search input
-            clearTimeout(this.searchTimeout);
-            this.searchTimeout = setTimeout(() => {
-                this.submitFilters();
-            }, 300);
-        },
-        
-        submitFilters() {
-            const url = new URL(window.location.href);
             const params = new URLSearchParams();
             
             if (this.search) params.set('search', this.search);
             if (this.statusFilter) params.set('status', this.statusFilter);
             if (this.typeFilter) params.set('type', this.typeFilter);
             
-            url.search = params.toString();
-            window.location.href = url.toString();
+            // Preserve sort parameters
+            const sortBy = @js(request('sort_by', ''));
+            const sortOrder = @js(request('sort_order', ''));
+            if (sortBy) params.set('sort_by', sortBy);
+            if (sortOrder) params.set('sort_order', sortOrder);
+            
+            window.location.href = `{{ route('portal.user.index') }}${params.toString() ? '?' + params.toString() : ''}`;
+        },
+        
+        clearFilters() {
+            this.search = '';
+            this.statusFilter = '';
+            this.typeFilter = '';
+            this.applyFilters();
+        },
+        
+        deleteUser(userId) {
+            if (confirm('{{ __('user.messages.confirm_delete') }}')) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `{{ route('portal.user.index') }}/${userId}`;
+                form.innerHTML = `
+                    @csrf
+                    @method('DELETE')
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            }
         }
     }
 }
 </script>
+@endpush
 @endsection 

@@ -1,199 +1,146 @@
 @extends('layouts.portal')
 
+@section('title', __('user.create_title'))
+
 @section('content')
-<div class="space-y-6">
-    <!-- Page Header -->
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-            <h1 class="text-2xl font-bold text-zinc-900 dark:text-white">{{ __('Add User') }}</h1>
-            <p class="text-sm text-zinc-600 dark:text-zinc-400">{{ __('Create a new system user') }}</p>
+<div class="max-w-3xl mx-auto">
+    {{-- Page Header --}}
+    <div class="mb-8">
+        <div class="flex items-center gap-4 mb-4">
+            <a href="{{ route('portal.user.index') }}" 
+               class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
+                <i class="fa-light fa-arrow-left"></i>
+            </a>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+                {{ __('user.create_title') }}
+            </h1>
         </div>
-        <a href="{{ route('portal.user.index') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-zinc-600 hover:bg-zinc-700 text-white rounded-lg font-medium text-sm transition-colors">
-            <i class="fas fa-arrow-left"></i>
-            {{ __('Back to Users') }}
-        </a>
+        <p class="text-gray-600 dark:text-gray-400 ml-8">
+            {{ __('user.create_subtitle') }}
+        </p>
     </div>
 
-    <!-- User Form -->
-    <div class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700" x-data="userForm()">
-        <form method="POST" action="{{ route('portal.user.store') }}" class="p-6 space-y-6">
-            @csrf
-
-            <!-- Basic Information -->
-            <div>
-                <h3 class="text-lg font-medium text-zinc-900 dark:text-white mb-4">{{ __('Basic Information') }}</h3>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- First Name -->
-                    <div>
-                        <label for="first_name" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-                            {{ __('First Name') }} <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" name="first_name" id="first_name" value="{{ old('first_name') }}" required
-                               class="w-full px-3 py-2 border rounded-lg bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                               @error('first_name') border-red-500 dark:border-red-500 @else border-zinc-300 dark:border-zinc-600 @enderror">
-                        @error('first_name')
-                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Last Name -->
-                    <div>
-                        <label for="last_name" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-                            {{ __('Last Name') }} <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" name="last_name" id="last_name" value="{{ old('last_name') }}" required
-                               class="w-full px-3 py-2 border rounded-lg bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                               @error('last_name') border-red-500 dark:border-red-500 @else border-zinc-300 dark:border-zinc-600 @enderror">
-                        @error('last_name')
-                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
+    {{-- Form --}}
+    <form method="POST" action="{{ route('portal.user.store') }}" x-data="userForm()">
+        @csrf
+        
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+            {{-- Basic Information --}}
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                    {{ __('user.sections.basic_info') }}
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <x-form.input
+                        name="first_name"
+                        :label="__('user.fields.first_name')"
+                        :placeholder="__('user.placeholders.first_name')"
+                        required
+                        autofocus />
+                    
+                    <x-form.input
+                        name="last_name"
+                        :label="__('user.fields.last_name')"
+                        :placeholder="__('user.placeholders.last_name')"
+                        required />
                 </div>
             </div>
 
-            <!-- Account Information -->
-            <div>
-                <h3 class="text-lg font-medium text-zinc-900 dark:text-white mb-4">{{ __('Account Information') }}</h3>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Username -->
-                    <div>
-                        <label for="username" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-                            {{ __('Username') }} <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" name="username" id="username" value="{{ old('username') }}" required
-                               class="w-full px-3 py-2 border rounded-lg bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                               @error('username') border-red-500 dark:border-red-500 @else border-zinc-300 dark:border-zinc-600 @enderror">
-                        @error('username')
-                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Email -->
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-                            {{ __('Email') }} <span class="text-red-500">*</span>
-                        </label>
-                        <input type="email" name="email" id="email" value="{{ old('email') }}" required
-                               class="w-full px-3 py-2 border rounded-lg bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                               @error('email') border-red-500 dark:border-red-500 @else border-zinc-300 dark:border-zinc-600 @enderror">
-                        @error('email')
-                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Phone -->
-                    <div>
-                        <label for="phone" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-                            {{ __('Phone') }}
-                        </label>
-                        <input type="tel" name="phone" id="phone" value="{{ old('phone') }}"
-                               class="w-full px-3 py-2 border rounded-lg bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                               @error('phone') border-red-500 dark:border-red-500 @else border-zinc-300 dark:border-zinc-600 @enderror">
-                        @error('phone')
-                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
+            {{-- Account Information --}}
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                    {{ __('user.sections.account_info') }}
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <x-form.input
+                        name="username"
+                        :label="__('user.fields.username')"
+                        :placeholder="__('user.placeholders.username')"
+                        :hint="__('user.hints.username')"
+                        required />
+                    
+                    <x-form.input
+                        type="email"
+                        name="email"
+                        :label="__('user.fields.email')"
+                        :placeholder="__('user.placeholders.email')"
+                        required />
+                    
+                    <x-form.input
+                        type="tel"
+                        name="phone"
+                        :label="__('user.fields.phone')"
+                        :placeholder="__('user.placeholders.phone')" />
                 </div>
             </div>
 
-            <!-- Password Information -->
-            <div>
-                <h3 class="text-lg font-medium text-zinc-900 dark:text-white mb-4">{{ __('Password Information') }}</h3>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Password -->
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-                            {{ __('Password') }} <span class="text-red-500">*</span>
-                        </label>
-                        <input type="password" name="password" id="password" required
-                               class="w-full px-3 py-2 border rounded-lg bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                               @error('password') border-red-500 dark:border-red-500 @else border-zinc-300 dark:border-zinc-600 @enderror">
-                        @error('password')
-                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Password Confirmation -->
-                    <div>
-                        <label for="password_confirmation" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-                            {{ __('Confirm Password') }} <span class="text-red-500">*</span>
-                        </label>
-                        <input type="password" name="password_confirmation" id="password_confirmation" required
-                               class="w-full px-3 py-2 border rounded-lg bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                               @error('password_confirmation') border-red-500 dark:border-red-500 @else border-zinc-300 dark:border-zinc-600 @enderror">
-                        @error('password_confirmation')
-                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
+            {{-- Password --}}
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                    {{ __('user.sections.password') }}
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <x-form.input
+                        type="password"
+                        name="password"
+                        :label="__('user.fields.password')"
+                        :placeholder="__('user.placeholders.password')"
+                        :hint="__('user.hints.password')"
+                        required />
+                    
+                    <x-form.input
+                        type="password"
+                        name="password_confirmation"
+                        :label="__('user.fields.password_confirmation')"
+                        :placeholder="__('user.placeholders.password_confirmation')"
+                        required />
                 </div>
             </div>
 
-            <!-- User Permissions -->
-            <div>
-                <h3 class="text-lg font-medium text-zinc-900 dark:text-white mb-4">{{ __('User Permissions') }}</h3>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- User Type -->
-                    <div>
-                        <label for="type" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-                            {{ __('User Type') }} <span class="text-red-500">*</span>
-                        </label>
-                        <select name="type" id="type" required
-                                class="w-full px-3 py-2 border rounded-lg bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                                @error('type') border-red-500 dark:border-red-500 @else border-zinc-300 dark:border-zinc-600 @enderror">
-                            <option value="">{{ __('Select user type') }}</option>
-                            @foreach(\App\Models\User\User::TYPES as $key => $label)
-                                <option value="{{ $key }}" {{ old('type') === $key ? 'selected' : '' }}>
-                                    {{ __($label) }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('type')
-                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Status -->
-                    <div>
-                        <label for="status" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-                            {{ __('Status') }} <span class="text-red-500">*</span>
-                        </label>
-                        <select name="status" id="status" required
-                                class="w-full px-3 py-2 border rounded-lg bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent
-                                @error('status') border-red-500 dark:border-red-500 @else border-zinc-300 dark:border-zinc-600 @enderror">
-                            <option value="">{{ __('Select status') }}</option>
-                            @foreach(\App\Models\User\User::STATUSES as $key => $label)
-                                <option value="{{ $key }}" {{ old('status', 'active') === $key ? 'selected' : '' }}>
-                                    {{ __($label) }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('status')
-                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
+            {{-- Permissions --}}
+            <div class="p-6">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                    {{ __('user.sections.permissions') }}
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <x-form.select
+                        name="type"
+                        :label="__('user.fields.type')"
+                        :options="collect(\App\Models\User\User::TYPES)->map(fn($label, $key) => ['value' => $key, 'label' => __('user.types.' . $key)])->values()->toArray()"
+                        :placeholder="__('user.placeholders.select_type')"
+                        required />
+                    
+                    <x-form.select
+                        name="status"
+                        :label="__('user.fields.status')"
+                        :options="collect(\App\Models\User\User::STATUSES)->map(fn($label, $key) => ['value' => $key, 'label' => __('user.statuses.' . $key)])->values()->toArray()"
+                        :selected="'active'"
+                        required />
                 </div>
             </div>
+        </div>
 
-            <!-- Actions -->
-            <div class="flex items-center justify-end gap-4 pt-6 border-t border-zinc-200 dark:border-zinc-600">
-                <a href="{{ route('portal.user.index') }}" 
-                   class="px-4 py-2 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-700 dark:text-zinc-300 rounded-lg font-medium text-sm transition-colors">
-                    {{ __('Cancel') }}
-                </a>
-                <button type="submit" 
-                        class="px-6 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-medium text-sm transition-colors">
-                    {{ __('Create User') }}
-                </button>
-            </div>
-        </form>
-    </div>
+        {{-- Form Actions --}}
+        <div class="mt-6 flex items-center justify-end gap-3">
+            <a href="{{ route('portal.user.index') }}" 
+               class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                {{ __('common.cancel') }}
+            </a>
+            <button type="submit" 
+                    class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                {{ __('user.actions.create') }}
+            </button>
+        </div>
+    </form>
 </div>
 
+@push('scripts')
 <script>
 function userForm() {
     return {
-        
+        // Form state can be managed here if needed
     }
 }
 </script>
+@endpush
 @endsection 

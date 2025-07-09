@@ -14,24 +14,46 @@ class UserController extends Controller
 {
     public function index(Request $request): View
     {
-        $users = User::query()
-            ->when($request->search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('first_name', 'like', "%{$search}%")
-                      ->orWhere('last_name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhere('username', 'like', "%{$search}%");
-                });
-            })
-            ->when($request->type, function ($query, $type) {
-                $query->byType($type);
-            })
-            ->when($request->status, function ($query, $status) {
-                $query->where('status', $status);
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate(15)
-            ->withQueryString();
+        $query = User::query();
+        
+        // Search
+        if ($search = $request->search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('username', 'like', "%{$search}%");
+            });
+        }
+        
+        // Type filter
+        if ($type = $request->type) {
+            $query->byType($type);
+        }
+        
+        // Status filter
+        if ($status = $request->status) {
+            $query->where('status', $status);
+        }
+        
+        // Sorting
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        
+        // Handle name sorting (combine first_name and last_name)
+        if ($sortBy === 'name') {
+            $query->orderByRaw("CONCAT(first_name, ' ', last_name) {$sortOrder}");
+        } else {
+            // Validate sortable columns
+            $sortableColumns = ['type', 'status', 'last_login_at', 'created_at'];
+            if (in_array($sortBy, $sortableColumns)) {
+                $query->orderBy($sortBy, $sortOrder);
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+        }
+        
+        $users = $query->paginate(5)->withQueryString();
 
         return view('portal.user.index', compact('users'));
     }

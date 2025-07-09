@@ -1,189 +1,254 @@
 @extends('layouts.portal')
 
-@section('title', 'Kullanıcı Detayı')
+@section('title', __('user.show_title'))
 
 @section('content')
-<div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg">
-    <div class="px-4 py-5 sm:px-6 border-b border-gray-200 dark:border-gray-700">
-        <div class="flex justify-between items-center">
-            <div>
-                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">
-                    Kullanıcı Bilgileri
-                </h3>
-                <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
-                    Detaylı kullanıcı bilgileri ve hesap durumu
-                </p>
-            </div>
-            <div class="flex space-x-3">
-                <a href="{{ route('portal.user.edit', $user) }}" 
-                   class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    <i class="fas fa-edit mr-2"></i>
-                    Düzenle
-                </a>
-                <form action="{{ route('portal.user.destroy', $user) }}" method="POST" class="inline" 
-                      onsubmit="return confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" 
-                            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                        <i class="fas fa-trash mr-2"></i>
-                        Sil
-                    </button>
-                </form>
-            </div>
+<div class="max-w-4xl mx-auto">
+    {{-- Page Header --}}
+    <div class="mb-8">
+        <div class="flex items-center gap-4 mb-4">
+            <a href="{{ route('portal.user.index') }}" 
+               class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
+                <i class="fa-light fa-arrow-left"></i>
+            </a>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+                {{ $user->full_name }}
+            </h1>
+        </div>
+        <div class="flex items-center gap-4 ml-8">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                @if($user->type === 'admin') bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400
+                @elseif($user->type === 'screener') bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400
+                @else bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 @endif">
+                {{ $user->type_text }}
+            </span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                @if($user->status === 'active') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
+                @elseif($user->status === 'inactive') bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400
+                @else bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 @endif">
+                {{ $user->status_text }}
+            </span>
         </div>
     </div>
-    <div class="border-t border-gray-200 dark:border-gray-700">
-        <dl>
-            <div class="bg-gray-50 dark:bg-gray-700/50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Ad Soyad
-                </dt>
-                <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2 flex items-center">
-                    <div class="flex-shrink-0 h-10 w-10 mr-3">
-                        <div class="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
-                            {{ strtoupper(substr($user->first_name, 0, 1)) }}{{ strtoupper(substr($user->last_name, 0, 1)) }}
-                        </div>
-                    </div>
-                    {{ $user->full_name }}
-                </dd>
+
+    {{-- Actions --}}
+    <div class="mb-6 flex items-center justify-end gap-3">
+        <a href="{{ route('portal.user.edit', $user) }}" 
+           class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <i class="fa-light fa-pen-to-square mr-2"></i>
+            {{ __('user.actions.edit') }}
+        </a>
+        @if($user->id !== auth()->id())
+            <button type="button" 
+                    @click="deleteUser"
+                    class="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                <i class="fa-light fa-trash mr-2"></i>
+                {{ __('user.actions.delete') }}
+            </button>
+        @endif
+    </div>
+
+    {{-- User Details --}}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        {{-- User Header --}}
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex items-center gap-4">
+                <div class="h-16 w-16 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                    <span class="text-xl font-medium text-gray-600 dark:text-gray-400">
+                        {{ strtoupper(substr($user->first_name, 0, 1) . substr($user->last_name, 0, 1)) }}
+                    </span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-medium text-gray-900 dark:text-white">
+                        {{ $user->full_name }}
+                    </h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        @{{ $user->username }}
+                    </p>
+                </div>
             </div>
-            <div class="bg-white dark:bg-gray-800 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Kullanıcı Adı
-                </dt>
-                <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
-                    @{{ $user->username }}
-                </dd>
-            </div>
-            <div class="bg-gray-50 dark:bg-gray-700/50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    E-posta
-                </dt>
-                <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
-                    <a href="mailto:{{ $user->email }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500">
-                        {{ $user->email }}
-                    </a>
-                    @if($user->email_verified_at)
-                        <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                            <i class="fas fa-check-circle mr-1"></i>
-                            Doğrulanmış
-                        </span>
-                    @else
-                        <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                            <i class="fas fa-exclamation-circle mr-1"></i>
-                            Doğrulanmamış
-                        </span>
-                    @endif
-                </dd>
-            </div>
-            <div class="bg-white dark:bg-gray-800 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Telefon
-                </dt>
-                <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
-                    @if($user->phone)
-                        <a href="tel:{{ $user->phone }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500">
-                            {{ $user->phone }}
+        </div>
+
+        {{-- Basic Information --}}
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                {{ __('user.sections.basic_info') }}
+            </h3>
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        {{ __('user.fields.first_name') }}
+                    </dt>
+                    <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                        {{ $user->first_name }}
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        {{ __('user.fields.last_name') }}
+                    </dt>
+                    <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                        {{ $user->last_name }}
+                    </dd>
+                </div>
+            </dl>
+        </div>
+
+        {{-- Account Information --}}
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                {{ __('user.sections.account_info') }}
+            </h3>
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        {{ __('user.fields.email') }}
+                    </dt>
+                    <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                        <a href="mailto:{{ $user->email }}" class="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+                            {{ $user->email }}
                         </a>
-                    @else
-                        <span class="text-gray-400">-</span>
-                    @endif
-                </dd>
-            </div>
-            <div class="bg-gray-50 dark:bg-gray-700/50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Kullanıcı Tipi
-                </dt>
-                <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
-                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        @if($user->type == 'admin') bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
-                        @elseif($user->type == 'screener') bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200
-                        @elseif($user->type == 'operator') bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
-                        @else bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300
-                        @endif">
-                        {{ $user->type_text }}
-                    </span>
-                </dd>
-            </div>
-            <div class="bg-white dark:bg-gray-800 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Hesap Durumu
-                </dt>
-                <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
-                    <span class="
-                        @if($user->status === 'active') bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
-                        @elseif($user->status === 'suspended') bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
-                        @else bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 @endif
-                        px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
-                        {{ $user->getStatusText() }}
-                    </span>
-                </dd>
-            </div>
-            <div class="bg-gray-50 dark:bg-gray-700/50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Son Aktivite
-                </dt>
-                <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
-                    <div class="flex items-start space-x-3">
-                        <div class="rounded-full p-2 bg-gray-100 dark:bg-gray-700">
-                            <i class="fa-solid fa-clock w-5 h-5 text-gray-600 dark:text-gray-400"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ __('user.fields.last_activity') }}</p>
-                            <span class="text-gray-900 dark:text-white">@humandiff($user->last_activity)</span>
-                            <span class="text-gray-500 dark:text-gray-400 text-xs ml-2">(@datetime($user->last_activity))</span>
-                        </div>
-                    </div>
-                </dd>
-            </div>
-            <div class="bg-white dark:bg-gray-800 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Kayıt Tarihi
-                </dt>
-                <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
-                    <div class="flex items-start space-x-3">
-                        <div class="rounded-full p-2 bg-gray-100 dark:bg-gray-700">
-                            <i class="fa-solid fa-user-plus w-5 h-5 text-gray-600 dark:text-gray-400"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ __('common.fields.created_at') }}</p>
-                            <span class="text-gray-900 dark:text-white">@datetime($user->created_at)</span>
-                            <span class="text-gray-500 dark:text-gray-400 text-xs ml-2">(@humandiff($user->created_at))</span>
-                        </div>
-                    </div>
-                </dd>
-            </div>
-            <div class="bg-gray-50 dark:bg-gray-700/50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Son Güncelleme
-                </dt>
-                <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
-                    @if($user->updated_at->ne($user->created_at))
-                    <div class="flex items-start space-x-3">
-                        <div class="rounded-full p-2 bg-gray-100 dark:bg-gray-700">
-                            <i class="fa-solid fa-edit w-5 h-5 text-gray-600 dark:text-gray-400"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ __('common.fields.updated_at') }}</p>
-                            <span class="text-gray-900 dark:text-white">@datetime($user->updated_at)</span>
-                            <span class="text-gray-500 dark:text-gray-400 text-xs ml-2">(@humandiff($user->updated_at))</span>
-                        </div>
-                    </div>
-                    @else
-                        <span class="text-gray-400">Güncelleme yapılmadı</span>
-                    @endif
-                </dd>
-            </div>
-        </dl>
+                        @if($user->email_verified_at)
+                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                <i class="fa-light fa-check-circle mr-1"></i>
+                                {{ __('user.labels.verified') }}
+                            </span>
+                        @endif
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        {{ __('user.fields.phone') }}
+                    </dt>
+                    <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                        @if($user->phone)
+                            <a href="tel:{{ $user->phone }}" class="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+                                {{ $user->phone }}
+                            </a>
+                        @else
+                            <span class="text-gray-400 dark:text-gray-500">-</span>
+                        @endif
+                    </dd>
+                </div>
+            </dl>
+        </div>
+
+        {{-- Permissions --}}
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                {{ __('user.sections.permissions') }}
+            </h3>
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        {{ __('user.fields.type') }}
+                    </dt>
+                    <dd class="mt-1">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                            @if($user->type === 'admin') bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400
+                            @elseif($user->type === 'screener') bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400
+                            @else bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 @endif">
+                            {{ $user->type_text }}
+                        </span>
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        {{ __('user.fields.status') }}
+                    </dt>
+                    <dd class="mt-1">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                            @if($user->status === 'active') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
+                            @elseif($user->status === 'inactive') bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400
+                            @else bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 @endif">
+                            {{ $user->status_text }}
+                        </span>
+                    </dd>
+                </div>
+            </dl>
+        </div>
+
+        {{-- System Information --}}
+        <div class="p-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                {{ __('user.sections.system_info') }}
+            </h3>
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        {{ __('user.fields.user_id') }}
+                    </dt>
+                    <dd class="mt-1 text-sm text-gray-900 dark:text-white font-mono">
+                        {{ $user->id }}
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        {{ __('user.fields.last_login') }}
+                    </dt>
+                    <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                        @if($user->last_login_at)
+                            <span title="@dt($user->last_login_at)">
+                                @relative($user->last_login_at)
+                            </span>
+                        @else
+                            <span class="text-gray-400 dark:text-gray-500">{{ __('user.labels.never_logged') }}</span>
+                        @endif
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        {{ __('user.fields.created_at') }}
+                    </dt>
+                    <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                        <span title="@relative($user->created_at)">
+                            @dt($user->created_at)
+                        </span>
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        {{ __('user.fields.updated_at') }}
+                    </dt>
+                    <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                        @if($user->updated_at->ne($user->created_at))
+                            <span title="@relative($user->updated_at)">
+                                @dt($user->updated_at)
+                            </span>
+                        @else
+                            <span class="text-gray-400 dark:text-gray-500">{{ __('user.labels.never_updated') }}</span>
+                        @endif
+                    </dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+
+    {{-- Back Button --}}
+    <div class="mt-6 flex justify-end">
+        <a href="{{ route('portal.user.index') }}" 
+           class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <i class="fa-light fa-arrow-left mr-2"></i>
+            {{ __('user.actions.back_to_list') }}
+        </a>
     </div>
 </div>
 
-<div class="mt-8 flex justify-end space-x-3">
-    <a href="{{ route('portal.user.index') }}" 
-       class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-        <i class="fas fa-arrow-left mr-2"></i>
-        Geri Dön
-    </a>
-</div>
+@push('scripts')
+<script>
+function deleteUser() {
+    if (confirm('{{ __('user.messages.confirm_delete') }}')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ route('portal.user.destroy', $user) }}';
+        form.innerHTML = `
+            @csrf
+            @method('DELETE')
+        `;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+@endpush
 @endsection 

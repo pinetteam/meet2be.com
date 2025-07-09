@@ -19,6 +19,7 @@ return [
         'view_all' => 'Tümünü Görüntüle',
         'save_changes' => 'Değişiklikleri Kaydet',
         'clear' => 'Temizle',
+        'clear_all' => 'Tümünü Temizle',
         'select' => 'Seç',
         'add' => 'Ekle',
         'remove' => 'Kaldır',
@@ -87,6 +88,8 @@ return [
         'currency' => 'Para Birimi',
         'date_format' => 'Tarih Formatı',
         'time_format' => 'Saat Formatı',
+        'active_filters' => 'Aktif Filtreler',
+        'search' => 'Arama',
     ],
     
     // Mesajlar

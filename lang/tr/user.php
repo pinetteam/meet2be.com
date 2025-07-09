@@ -3,13 +3,18 @@
 return [
     'title' => 'Kullanıcılar',
     'subtitle' => 'Sistem kullanıcılarını ve izinlerini yönetin',
+    'create_title' => 'Kullanıcı Ekle',
+    'create_subtitle' => 'Yeni bir sistem kullanıcısı oluşturun',
+    'edit_title' => 'Kullanıcı Düzenle',
+    'edit_subtitle' => ':name kullanıcısının bilgilerini güncelleyin',
+    'show_title' => 'Kullanıcı Detayı',
     
     // Eylemler
     'actions' => [
         'add' => 'Kullanıcı Ekle',
         'create' => 'Kullanıcı Oluştur',
         'edit' => 'Düzenle',
-        'update' => 'Kullanıcı Güncelle',
+        'update' => 'Güncelle',
         'delete' => 'Sil',
         'view' => 'Görüntüle',
         'back_to_list' => 'Kullanıcılara Dön',
@@ -35,6 +40,8 @@ return [
         'select_tenant' => 'Bir kiracı seçin',
         'no_tenant' => 'Kiracı Yok',
         'never_logged' => 'Hiç giriş yapmadı',
+        'never_updated' => 'Güncelleme yapılmadı',
+        'verified' => 'Doğrulanmış',
         'never' => 'Hiç',
         'type' => 'Tip',
         'status' => 'Durum',
@@ -49,8 +56,9 @@ return [
     'sections' => [
         'basic_info' => 'Temel Bilgiler',
         'account_info' => 'Hesap Bilgileri',
+        'password' => 'Şifre',
         'password_info' => 'Şifre Bilgileri',
-        'permissions' => 'Kullanıcı İzinleri',
+        'permissions' => 'İzinler',
         'login_activity' => 'Giriş Aktivitesi',
         'system_info' => 'Sistem Bilgileri',
     ],
@@ -63,9 +71,11 @@ return [
         'email' => 'E-posta',
         'phone' => 'Telefon',
         'password' => 'Şifre',
+        'password_confirmation' => 'Şifre Onayı',
         'confirm_password' => 'Şifre Onayı',
         'new_password' => 'Yeni Şifre',
         'confirm_new_password' => 'Yeni Şifre Onayı',
+        'type' => 'Kullanıcı Tipi',
         'user_type' => 'Kullanıcı Tipi',
         'status' => 'Durum',
         'tenant' => 'Kiracı',
@@ -75,6 +85,29 @@ return [
         'last_ip' => 'Son IP Adresi',
         'last_user_agent' => 'Son Kullanıcı Aracısı',
         'settings' => 'Kullanıcı Ayarları',
+        'created_at' => 'Oluşturulma Tarihi',
+        'updated_at' => 'Güncellenme Tarihi',
+    ],
+    
+    // Placeholders
+    'placeholders' => [
+        'first_name' => 'Adınızı girin',
+        'last_name' => 'Soyadınızı girin',
+        'username' => 'Kullanıcı adı girin',
+        'email' => 'E-posta adresi girin',
+        'phone' => 'Telefon numarası girin',
+        'password' => 'Güçlü bir şifre girin',
+        'password_confirmation' => 'Şifreyi tekrar girin',
+        'new_password' => 'Yeni şifre girin',
+        'select_type' => 'Tip seçin',
+        'select_status' => 'Durum seçin',
+    ],
+    
+    // İpuçları
+    'hints' => [
+        'username' => 'Benzersiz olmalıdır, boşluk içeremez',
+        'password' => 'En az 8 karakter, büyük/küçük harf, rakam ve özel karakter içermelidir',
+        'password_update' => 'Mevcut şifreyi korumak için şifre alanlarını boş bırakın',
     ],
     
     // Kullanıcı Tipleri
