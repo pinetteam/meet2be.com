@@ -171,6 +171,7 @@
             {{-- Phone Number Input --}}
             <input
                 type="tel"
+                id="{{ $fieldId }}"
                 name="{{ $name }}_display"
                 x-ref="phoneInput"
                 x-model="phoneNumber"
@@ -180,6 +181,7 @@
                 @if($required) required @endif
                 @if($disabled) disabled @endif
                 @if($readonly) readonly @endif
+                autocomplete="tel-national"
                 class="flex-1 px-3 py-2 border {{ $disabled ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-gray-700' }} border-gray-300 dark:border-gray-600 rounded-r-md focus:outline-none focus:z-10 dark:text-white sm:text-sm transition-colors duration-150"
                 :class="{ 
                     'border-gray-300 dark:border-gray-600': !focused, 
@@ -193,7 +195,7 @@
         <input 
             type="hidden" 
             name="{{ $name }}" 
-            id="{{ $fieldId }}"
+            id="{{ $fieldId }}_hidden"
             :value="fullPhoneNumber"
         />
         
@@ -212,10 +214,13 @@
             <div class="p-2 border-b border-gray-200 dark:border-gray-600">
                 <input
                     type="text"
+                    id="{{ $fieldId }}_country_search"
+                    name="{{ $name }}_country_search"
                     x-model="countrySearch"
                     x-ref="countrySearchInput"
                     @click.stop
                     placeholder="{{ __('common.search') }}"
+                    autocomplete="off"
                     class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:text-white"
                 />
             </div>

@@ -142,6 +142,7 @@ unset($__defined_vars); ?>
         
         <button
             type="button"
+            id="<?php echo e($fieldId); ?>"
             @click="toggleDropdown()"
             <?php echo e($disabled ? 'disabled' : ''); ?>
 
@@ -185,7 +186,7 @@ unset($__defined_vars); ?>
         <input 
             type="hidden" 
             name="<?php echo e($name); ?>" 
-            id="<?php echo e($fieldId); ?>"
+            id="<?php echo e($fieldId); ?>_hidden"
             :value="selectedId"
             <?php if($required): ?> required <?php endif; ?>
         />
@@ -205,10 +206,13 @@ unset($__defined_vars); ?>
             <div class="p-2 border-b border-gray-200 dark:border-gray-600">
                 <input
                     type="text"
+                    id="<?php echo e($fieldId); ?>_search"
+                    name="<?php echo e($name); ?>_search"
                     x-model="search"
                     x-ref="searchInput"
                     @click.stop
                     placeholder="<?php echo e(__('common.search')); ?>"
+                    autocomplete="off"
                     class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:text-white"
                 />
             </div>

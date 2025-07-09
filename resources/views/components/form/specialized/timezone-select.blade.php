@@ -102,6 +102,7 @@
         {{-- Select Button --}}
         <button
             type="button"
+            id="{{ $fieldId }}"
             @click="toggleDropdown()"
             {{ $disabled ? 'disabled' : '' }}
             class="relative w-full px-3 py-2 text-left {{ $disabled ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-gray-700' }} border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-150"
@@ -122,7 +123,7 @@
         <input 
             type="hidden" 
             name="{{ $name }}" 
-            id="{{ $fieldId }}"
+            id="{{ $fieldId }}_hidden"
             :value="selectedId"
             @if($required) required @endif
         />
@@ -143,10 +144,13 @@
             <div class="p-2 border-b border-gray-200 dark:border-gray-600">
                 <input
                     type="text"
+                    id="{{ $fieldId }}_search"
+                    name="{{ $name }}_search"
                     x-model="search"
                     x-ref="searchInput"
                     @click.stop
                     placeholder="{{ __('common.search') }}"
+                    autocomplete="off"
                     class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:text-white"
                 />
             </div>

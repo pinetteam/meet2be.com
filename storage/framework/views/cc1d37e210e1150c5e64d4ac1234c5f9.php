@@ -218,6 +218,7 @@ unset($__defined_vars); ?>
             
             <input
                 type="tel"
+                id="<?php echo e($fieldId); ?>"
                 name="<?php echo e($name); ?>_display"
                 x-ref="phoneInput"
                 x-model="phoneNumber"
@@ -227,6 +228,7 @@ unset($__defined_vars); ?>
                 <?php if($required): ?> required <?php endif; ?>
                 <?php if($disabled): ?> disabled <?php endif; ?>
                 <?php if($readonly): ?> readonly <?php endif; ?>
+                autocomplete="tel-national"
                 class="flex-1 px-3 py-2 border <?php echo e($disabled ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-gray-700'); ?> border-gray-300 dark:border-gray-600 rounded-r-md focus:outline-none focus:z-10 dark:text-white sm:text-sm transition-colors duration-150"
                 :class="{ 
                     'border-gray-300 dark:border-gray-600': !focused, 
@@ -241,7 +243,7 @@ unset($__defined_vars); ?>
         <input 
             type="hidden" 
             name="<?php echo e($name); ?>" 
-            id="<?php echo e($fieldId); ?>"
+            id="<?php echo e($fieldId); ?>_hidden"
             :value="fullPhoneNumber"
         />
         
@@ -260,10 +262,13 @@ unset($__defined_vars); ?>
             <div class="p-2 border-b border-gray-200 dark:border-gray-600">
                 <input
                     type="text"
+                    id="<?php echo e($fieldId); ?>_country_search"
+                    name="<?php echo e($name); ?>_country_search"
                     x-model="countrySearch"
                     x-ref="countrySearchInput"
                     @click.stop
                     placeholder="<?php echo e(__('common.search')); ?>"
+                    autocomplete="off"
                     class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:text-white"
                 />
             </div>
