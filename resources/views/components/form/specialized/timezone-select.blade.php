@@ -1,75 +1,62 @@
 {{-- Meet2Be: Timezone select component --}}
 {{-- Author: Meet2Be Development Team --}}
-{{-- Timezone selector with UTC offset display --}}
+{{-- Grouped timezone selector with search --}}
 
 @props([
-    'name' => 'timezone_id',
+    'name',
     'label' => null,
-    'value' => '',
+    'selected' => null,
     'placeholder' => null,
     'hint' => null,
     'required' => false,
     'disabled' => false,
     'model' => null,
-    'size' => 'md',
-    'wrapperClass' => '',
     'timezones' => null,
-    'showOffset' => true,
-    'groupByRegion' => true
+    'searchPlaceholder' => null,
+    'noResultsText' => null,
+    'wrapperClass' => ''
 ])
 
 @php
-    $label = $label ?? __('common.labels.timezone');
-    $placeholder = $placeholder ?? __('common.messages.select_option');
-    $timezones = $timezones ?? \App\Models\System\Timezone::where('is_active', true)->orderBy('offset')->get();
+    $placeholder = $placeholder ?? __('common.select');
+    $searchPlaceholder = $searchPlaceholder ?? __('common.search');
+    $noResultsText = $noResultsText ?? __('common.no_results');
     
-    // Group timezones by region if enabled
-    $groupedTimezones = [];
-    if ($groupByRegion) {
-        foreach ($timezones as $timezone) {
+    // Get timezones grouped by region
+    if (!$timezones) {
+        $allTimezones = App\Models\System\Timezone::orderBy('name')->get();
+        $timezones = [];
+        
+        foreach ($allTimezones as $timezone) {
             $parts = explode('/', $timezone->name);
             $region = $parts[0] ?? 'Other';
-            $groupedTimezones[$region][] = $timezone;
+            
+            if (!isset($timezones[$region])) {
+                $timezones[$region] = [];
+            }
+            
+            $timezones[$region][$timezone->id] = $timezone->name . ' (UTC' . ($timezone->offset >= 0 ? '+' : '') . number_format($timezone->offset, 1) . ')';
         }
-        ksort($groupedTimezones);
     }
+    
+    // Generate unique ID
+    $fieldId = $name . '_' . uniqid();
 @endphp
 
-<x-form.select
+<x-form.select.searchable
     :name="$name"
+    :id="$fieldId"
     :label="$label"
-    :value="$value"
+    :options="$timezones"
+    :selected="$selected"
     :placeholder="$placeholder"
     :hint="$hint"
     :required="$required"
     :disabled="$disabled"
     :model="$model"
-    :size="$size"
+    :search-placeholder="$searchPlaceholder"
+    :no-results-text="$noResultsText"
+    :grouped="true"
     :wrapper-class="$wrapperClass"
-    searchable>
-    
-    @if($groupByRegion)
-        @foreach($groupedTimezones as $region => $regionTimezones)
-            <optgroup label="{{ $region }}">
-                @foreach($regionTimezones as $timezone)
-                    <option value="{{ $timezone->id }}">
-                        {{ $timezone->name }}
-                        @if($showOffset)
-                            (UTC {{ $timezone->offset >= 0 ? '+' : '' }}{{ $timezone->offset }})
-                        @endif
-                    </option>
-                @endforeach
-            </optgroup>
-        @endforeach
-    @else
-        @foreach($timezones as $timezone)
-            <option value="{{ $timezone->id }}">
-                {{ $timezone->name }}
-                @if($showOffset)
-                    (UTC {{ $timezone->offset >= 0 ? '+' : '' }}{{ $timezone->offset }})
-                @endif
-            </option>
-        @endforeach
-    @endif
-    
-</x-form.select> 
+    autocomplete="off"
+/> 

@@ -11,8 +11,6 @@
     'required' => false,
     'disabled' => false,
     'model' => null,
-    'size' => 'md',
-    'wrapperClass' => '',
     'currencies' => null,
     'showSymbol' => true,
     'showCode' => true
@@ -24,29 +22,32 @@
     $currencies = $currencies ?? \App\Models\System\Currency::where('is_active', true)->orderBy('name')->get();
 @endphp
 
-<x-form.select
-    :name="$name"
-    :label="$label"
-    :value="$value"
-    :placeholder="$placeholder"
-    :hint="$hint"
-    :required="$required"
-    :disabled="$disabled"
-    :model="$model"
-    :size="$size"
-    :wrapper-class="$wrapperClass"
-    searchable>
+<x-form.base.field-wrapper 
+    :name="$name" 
+    :label="$label" 
+    :required="$required" 
+    :hint="$hint">
     
-    @foreach($currencies as $currency)
-        <option value="{{ $currency->id }}">
-            {{ $currency->name }}
-            @if($showCode)
-                ({{ $currency->code }})
-            @endif
-            @if($showSymbol && $currency->symbol)
-                - {{ $currency->symbol }}
-            @endif
-        </option>
-    @endforeach
+    <x-form.base.select-base
+        :name="$name"
+        :value="$value"
+        :placeholder="$placeholder"
+        :required="$required"
+        :disabled="$disabled"
+        :model="$model">
+        
+        @foreach($currencies as $currency)
+            <option value="{{ $currency->id }}" @if($value == $currency->id) selected @endif>
+                {{ $currency->name }}
+                @if($showCode)
+                    ({{ $currency->code }})
+                @endif
+                @if($showSymbol && $currency->symbol)
+                    - {{ $currency->symbol }}
+                @endif
+            </option>
+        @endforeach
+        
+    </x-form.base.select-base>
     
-</x-form.select> 
+</x-form.base.field-wrapper> 

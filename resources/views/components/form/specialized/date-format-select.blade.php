@@ -10,54 +10,49 @@
     'hint' => null,
     'required' => false,
     'disabled' => false,
-    'model' => null,
-    'size' => 'md',
-    'wrapperClass' => '',
-    'showPreview' => true
+    'model' => null
 ])
 
 @php
     $label = $label ?? __('common.labels.date_format');
     $placeholder = $placeholder ?? __('common.messages.select_option');
-    $currentDate = now();
     
     // Common date formats
     $formats = [
-        'Y-m-d' => 'ISO 8601 (2024-03-15)',
-        'd/m/Y' => 'European (15/03/2024)',
-        'm/d/Y' => 'US (03/15/2024)',
-        'd.m.Y' => 'Dot notation (15.03.2024)',
-        'd-m-Y' => 'Dash notation (15-03-2024)',
-        'F j, Y' => 'Long format (March 15, 2024)',
-        'M j, Y' => 'Medium format (Mar 15, 2024)',
-        'j F Y' => 'Day first long (15 March 2024)',
-        'j M Y' => 'Day first medium (15 Mar 2024)',
-        'd/m/y' => 'Short year (15/03/24)',
-        'Y年m月d日' => 'Japanese (2024年03月15日)',
-        'd F' => 'Day Month (15 March)',
-        'F Y' => 'Month Year (March 2024)'
+        'Y-m-d' => __('settings.date_formats.iso8601'),
+        'd/m/Y' => __('settings.date_formats.european'),
+        'm/d/Y' => __('settings.date_formats.us'),
+        'd.m.Y' => __('settings.date_formats.european_dot'),
+        'd-m-Y' => __('settings.date_formats.european_dash'),
+        'M j, Y' => __('settings.date_formats.long'),
+        'F j, Y' => __('settings.date_formats.full'),
+        'j M Y' => __('settings.date_formats.compact'),
+        'd M Y' => __('settings.date_formats.medium'),
     ];
+    
+    $now = now();
 @endphp
 
-<x-form.select
-    :name="$name"
-    :label="$label"
-    :value="$value"
-    :placeholder="$placeholder"
-    :hint="$hint"
-    :required="$required"
-    :disabled="$disabled"
-    :model="$model"
-    :size="$size"
-    :wrapper-class="$wrapperClass">
+<x-form.base.field-wrapper 
+    :name="$name" 
+    :label="$label" 
+    :required="$required" 
+    :hint="$hint">
     
-    @foreach($formats as $format => $description)
-        <option value="{{ $format }}">
-            {{ $description }}
-            @if($showPreview)
-                - {{ $currentDate->format($format) }}
-            @endif
-        </option>
-    @endforeach
+    <x-form.base.select-base
+        :name="$name"
+        :value="$value"
+        :placeholder="$placeholder"
+        :required="$required"
+        :disabled="$disabled"
+        :model="$model">
+        
+        @foreach($formats as $format => $description)
+            <option value="{{ $format }}" @if($value == $format) selected @endif>
+                {{ $description }} ({{ $now->format($format) }})
+            </option>
+        @endforeach
+        
+    </x-form.base.select-base>
     
-</x-form.select> 
+</x-form.base.field-wrapper> 

@@ -10,50 +10,46 @@
     'hint' => null,
     'required' => false,
     'disabled' => false,
-    'model' => null,
-    'size' => 'md',
-    'wrapperClass' => '',
-    'showPreview' => true
+    'model' => null
 ])
 
 @php
     $label = $label ?? __('common.labels.time_format');
     $placeholder = $placeholder ?? __('common.messages.select_option');
-    $currentTime = now();
     
     // Common time formats
     $formats = [
-        'H:i' => '24-hour (14:30)',
-        'H:i:s' => '24-hour with seconds (14:30:45)',
-        'g:i A' => '12-hour (2:30 PM)',
-        'g:i:s A' => '12-hour with seconds (2:30:45 PM)',
-        'h:i A' => '12-hour with leading zero (02:30 PM)',
-        'h:i:s A' => '12-hour with seconds and leading zero (02:30:45 PM)',
-        'G:i' => '24-hour no leading zero (14:30)',
-        'H\hi' => 'French format (14h30)',
-        'H:i \U\h\r' => 'German format (14:30 Uhr)'
+        'H:i' => __('settings.time_formats.24h'),
+        'H:i:s' => __('settings.time_formats.24h_seconds'),
+        'g:i A' => __('settings.time_formats.12h'),
+        'g:i:s A' => __('settings.time_formats.12h_seconds'),
+        'h:i A' => __('settings.time_formats.12h_leading'),
+        'h:i:s A' => __('settings.time_formats.12h_leading_seconds'),
     ];
+    
+    $now = now();
 @endphp
 
-<x-form.select
-    :name="$name"
-    :label="$label"
-    :value="$value"
-    :placeholder="$placeholder"
-    :hint="$hint"
-    :required="$required"
-    :disabled="$disabled"
-    :model="$model"
-    :size="$size"
-    :wrapper-class="$wrapperClass">
+<x-form.base.field-wrapper 
+    :name="$name" 
+    :label="$label" 
+    :required="$required" 
+    :hint="$hint">
     
-    @foreach($formats as $format => $description)
-        <option value="{{ $format }}">
-            {{ $description }}
-            @if($showPreview)
-                - {{ $currentTime->format($format) }}
-            @endif
-        </option>
-    @endforeach
+    <x-form.base.select-base
+        :name="$name"
+        :value="$value"
+        :placeholder="$placeholder"
+        :required="$required"
+        :disabled="$disabled"
+        :model="$model">
+        
+        @foreach($formats as $format => $description)
+            <option value="{{ $format }}" @if($value == $format) selected @endif>
+                {{ $description }} ({{ $now->format($format) }})
+            </option>
+        @endforeach
+        
+    </x-form.base.select-base>
     
-</x-form.select> 
+</x-form.base.field-wrapper> 

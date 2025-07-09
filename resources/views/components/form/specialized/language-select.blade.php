@@ -11,8 +11,6 @@
     'required' => false,
     'disabled' => false,
     'model' => null,
-    'size' => 'md',
-    'wrapperClass' => '',
     'languages' => null,
     'showNativeName' => true
 ])
@@ -23,26 +21,29 @@
     $languages = $languages ?? \App\Models\System\Language::where('is_active', true)->orderBy('name_en')->get();
 @endphp
 
-<x-form.select
-    :name="$name"
-    :label="$label"
-    :value="$value"
-    :placeholder="$placeholder"
-    :hint="$hint"
-    :required="$required"
-    :disabled="$disabled"
-    :model="$model"
-    :size="$size"
-    :wrapper-class="$wrapperClass"
-    searchable>
+<x-form.base.field-wrapper 
+    :name="$name" 
+    :label="$label" 
+    :required="$required" 
+    :hint="$hint">
     
-    @foreach($languages as $language)
-        <option value="{{ $language->id }}">
-            {{ $language->name_en }}
-            @if($showNativeName && $language->name_native)
-                ({{ $language->name_native }})
-            @endif
-        </option>
-    @endforeach
+    <x-form.base.select-base
+        :name="$name"
+        :value="$value"
+        :placeholder="$placeholder"
+        :required="$required"
+        :disabled="$disabled"
+        :model="$model">
+        
+        @foreach($languages as $language)
+            <option value="{{ $language->id }}" @if($value == $language->id) selected @endif>
+                {{ $language->name_en }}
+                @if($showNativeName && $language->name_native)
+                    ({{ $language->name_native }})
+                @endif
+            </option>
+        @endforeach
+        
+    </x-form.base.select-base>
     
-</x-form.select> 
+</x-form.base.field-wrapper> 

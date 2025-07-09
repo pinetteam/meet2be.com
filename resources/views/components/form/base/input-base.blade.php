@@ -4,6 +4,7 @@
 
 @props([
     'name',
+    'id' => null,
     'type' => 'text',
     'value' => '',
     'placeholder' => '',
@@ -11,7 +12,7 @@
     'disabled' => false,
     'readonly' => false,
     'autofocus' => false,
-    'autocomplete' => null,
+    'autocomplete' => 'off',
     'min' => null,
     'max' => null,
     'step' => null,
@@ -65,6 +66,9 @@
     }
     
     $finalClasses = trim("$baseClasses $currentSizeClasses $currentStateClasses $inputClass");
+
+    // Use provided ID or generate one
+    $inputId = $id ?? $name . '_' . uniqid();
 @endphp
 
 <div class="relative">
@@ -82,7 +86,7 @@
     <input 
         type="{{ $type }}"
         name="{{ $name }}"
-        id="{{ $name }}"
+        id="{{ $inputId }}"
         @if($xModel) x-model="{{ $xModel }}" @else value="{{ old($name, $value) }}" @endif
         @if($placeholder) placeholder="{{ $placeholder }}" @endif
         @if($required) required @endif

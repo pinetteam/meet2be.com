@@ -18,7 +18,8 @@
     'noResultsText' => null,
     'loadingText' => null,
     'ajax' => false, // For future AJAX support
-    'ajaxUrl' => null
+    'ajaxUrl' => null,
+    'autocomplete' => 'off'
 ])
 
 @php
@@ -28,6 +29,9 @@
     
     // Meet2Be: Extract x-model from attributes
     $xModel = $attributes->get('x-model');
+    
+    // Generate unique ID
+    $fieldId = $name . '_' . uniqid();
 @endphp
 
 <x-form.base.field-wrapper 
@@ -109,7 +113,10 @@
                    name="{{ $name }}" 
                    x-model="selectedValue"
                    @if($xModel) x-modelable="selectedValue" @endif
-                   @if($required) required @endif>
+                   @if($required) required @endif
+                   id="{{ $fieldId }}"
+                   :value="selectedValue"
+                   autocomplete="{{ $autocomplete }}">
         </div>
     </div>
 

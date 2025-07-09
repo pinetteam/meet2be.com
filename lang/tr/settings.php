@@ -1,9 +1,9 @@
 <?php
 
 return [
+    // Sayfa
     'title' => 'Ayarlar',
-    'subtitle' => 'Kuruluş bilgilerinizi ve tercihlerinizi yönetin',
-    'select_tab' => 'Ayar kategorisi seçin',
+    'subtitle' => 'Organizasyon ayarlarınızı yönetin',
     
     // Sekmeler
     'tabs' => [
@@ -15,7 +15,7 @@ return [
     
     // Bölümler
     'sections' => [
-        'organization_info' => 'Kuruluş Bilgileri',
+        'organization_info' => 'Organizasyon Bilgileri',
         'contact_info' => 'İletişim Bilgileri',
         'address' => 'Adres',
         'regional_settings' => 'Bölgesel Ayarlar',
@@ -24,12 +24,11 @@ return [
     
     // Alanlar
     'fields' => [
-        // Kuruluş
-        'organization_name' => 'Kuruluş Adı',
-        'legal_name' => 'Yasal Adı',
-        'organization_code' => 'Kuruluş Kodu',
-        'organization_id' => 'Kuruluş ID',
-        'url_slug' => 'URL Kısa Adı',
+        // Genel
+        'organization_name' => 'Organizasyon Adı',
+        'legal_name' => 'Yasal Unvan',
+        'organization_code' => 'Organizasyon Kodu',
+        'organization_id' => 'Organizasyon ID',
         
         // İletişim
         'email' => 'E-posta Adresi',
@@ -40,73 +39,85 @@ return [
         'address_line_1' => 'Adres Satırı 1',
         'address_line_2' => 'Adres Satırı 2',
         'city' => 'Şehir',
-        'state' => 'Eyalet/İl',
+        'state' => 'İl/Eyalet',
         'postal_code' => 'Posta Kodu',
         'country' => 'Ülke',
         
         // Yerelleştirme
         'language' => 'Dil',
-        'currency' => 'Para Birimi',
         'timezone' => 'Saat Dilimi',
         'date_format' => 'Tarih Formatı',
         'time_format' => 'Saat Formatı',
     ],
     
-    // Yer tutucular
+    // Yer Tutucular
     'placeholders' => [
-        'organization_name' => 'Acme Şirketi',
-        'legal_name' => 'Acme Şirketi Ltd. Şti.',
-        'email' => 'iletisim@ornek.com',
-        'phone' => '+90 (555) 123-4567',
-        'address_line_1' => 'Atatürk Caddesi No: 123',
-        'address_line_2' => 'Kat 4 Daire 10',
-        'city' => 'İstanbul',
-        'state' => 'İstanbul',
-        'postal_code' => '34000',
+        'organization_name' => 'Organizasyon adını girin',
+        'legal_name' => 'Yasal işletme adını girin',
+        'email' => 'info@ornek.com',
+        'website' => 'https://www.ornek.com',
+        'address_line_1' => 'Sokak adresi, Posta kutusu, şirket adı',
+        'address_line_2' => 'Daire, süit, birim, bina, kat, vb.',
+        'city' => 'Şehir veya ilçe adı',
+        'state' => 'İl, eyalet veya bölge',
+        'postal_code' => 'Posta kodu',
         'select_country' => 'Bir ülke seçin',
         'select_language' => 'Bir dil seçin',
-        'select_currency' => 'Bir para birimi seçin',
         'select_timezone' => 'Bir saat dilimi seçin',
     ],
     
     // İpuçları
     'hints' => [
-        'organization_name' => 'Bu ad tüm kullanıcılara görünür olacaktır',
+        'organization_name' => 'Bu ad sistem genelinde görüntülenecektir',
         'legal_name' => 'Yasal belgeler ve faturalar için resmi kayıtlı isim',
-        'organization_code' => 'Sistem tarafından otomatik oluşturulur',
-        'organization_id' => 'Kuruluşunuzun sistemdeki benzersiz tanımlayıcısı',
-        'phone' => 'İş iletişimi için birincil iletişim numarası',
-        'email' => 'Kuruluşunuz için birincil iletişim e-postası',
+        'organization_code' => 'Organizasyonunuza atanan benzersiz kod',
+        'organization_id' => 'Organizasyonunuz için benzersiz sistem tanımlayıcısı',
+        'email' => 'Organizasyonunuz için birincil iletişim e-postası',
+        'phone' => 'İş iletişimleri için birincil iletişim numarası',
         'website' => 'Organizasyonunuzun web sitesi URL\'si',
-        'address_line_1' => 'Sokak adresi, posta kutusu, şirket adı',
-        'address_line_2' => 'Daire, süit, birim, bina, kat vb.',
-        'city' => 'Şehir veya ilçe adı',
-        'state' => 'Eyalet, il veya bölge',
+        'address_line_1' => 'Sokak adresi veya posta kutusu',
+        'address_line_2' => 'Ek adres bilgisi (isteğe bağlı)',
+        'city' => 'Şehir veya ilçe',
+        'state' => 'İl, eyalet veya idari bölge',
         'postal_code' => 'Posta kodu',
         'country' => 'Adres ve bölgesel ayarlar için ülke',
-        'language' => 'Organizasyon için varsayılan dil',
-        'currency' => 'Finansal işlemler için varsayılan para birimi',
+        'language' => 'Organizasyonunuz için varsayılan dil',
         'timezone' => 'Zamanlama ve zaman damgaları için saat dilimi',
-        'date_format' => 'Sistem genelinde tarihlerin görüntülenme şekli',
-        'time_format' => 'Sistem genelinde saatlerin görüntülenme şekli',
-        'save_changes' => 'Değişiklikler kaydedildikten sonra hemen uygulanacak',
+        'date_format' => 'Tarihler sistem genelinde nasıl görüntülenecek',
+        'time_format' => 'Saatler sistem genelinde nasıl görüntülenecek',
         'no_changes' => 'Kaydedilecek değişiklik yok',
+        'save_changes' => 'Kaydedilmemiş değişiklikleriniz var',
     ],
     
-    // Tarih formatları
+    // Tarih Formatları
     'date_formats' => [
-        'full' => 'Tam tarih',
-        'full_us' => 'Tam tarih (ABD)',
-        'medium' => 'Orta tarih',
-        'medium_us' => 'Orta tarih (ABD)',
+        'iso8601' => 'ISO 8601',
+        'european' => 'Avrupa',
+        'us' => 'ABD',
+        'european_dot' => 'Avrupa (nokta)',
+        'european_dash' => 'Avrupa (tire)',
+        'long' => 'Uzun format',
+        'full' => 'Tam format',
+        'compact' => 'Kompakt',
+        'medium' => 'Orta',
+    ],
+    
+    // Saat Formatları
+    'time_formats' => [
+        '24h' => '24 saat',
+        '24h_seconds' => '24 saat (saniyeli)',
+        '12h' => '12 saat',
+        '12h_seconds' => '12 saat (saniyeli)',
+        '12h_leading' => '12 saat (başında sıfır)',
+        '12h_leading_seconds' => '12 saat (başında sıfır ve saniyeli)',
     ],
     
     // Abonelik
     'subscription' => [
-        'current_plan' => 'Mevcut Abonelik Planı',
+        'current_plan' => 'Mevcut Plan',
         'plan' => 'Plan',
         'status' => 'Durum',
-        'expires' => 'Bitiş Tarihi',
+        'expires' => 'Bitiş',
         'usage_statistics' => 'Kullanım İstatistikleri',
         'users' => 'Kullanıcılar',
         'storage' => 'Depolama',
@@ -118,5 +129,6 @@ return [
     'messages' => [
         'saved_successfully' => 'Ayarlar başarıyla kaydedildi',
         'save_failed' => 'Ayarlar kaydedilemedi. Lütfen tekrar deneyin.',
+        'datetime_updated' => 'Tarih ve saat ayarları güncellendi. Değişiklikleri uygulamak için sayfa yeniden yüklenecek.',
     ],
 ]; 

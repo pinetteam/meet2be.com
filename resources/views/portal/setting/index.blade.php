@@ -249,7 +249,7 @@
                                         :placeholder="__('settings.placeholders.select_country')"
                                         :hint="__('settings.hints.country')"
                                         :countries="$countries"
-                                        x-model="form.country_id" />
+                                        model="form.country_id" />
                                 </div>
                             </div>
                         </div>
@@ -275,20 +275,10 @@
                                     :placeholder="__('settings.placeholders.select_language')"
                                     :hint="__('settings.hints.language')"
                                     :languages="$languages"
-                                    x-model="form.language_id" />
+                                    model="form.language_id" />
                             </div>
 
-                            {{-- Currency --}}
-                            <div>
-                                <x-form.specialized.currency-select
-                                    name="currency_id"
-                                    :label="__('settings.fields.currency')"
-                                    :value="$tenant->currency_id"
-                                    :placeholder="__('settings.placeholders.select_currency')"
-                                    :hint="__('settings.hints.currency')"
-                                    :currencies="$currencies"
-                                    x-model="form.currency_id" />
-                            </div>
+
 
                             {{-- Timezone --}}
                             <div>
@@ -299,7 +289,7 @@
                                     :placeholder="__('settings.placeholders.select_timezone')"
                                     :hint="__('settings.hints.timezone')"
                                     :timezones="$timezones"
-                                    x-model="form.timezone_id" />
+                                    model="form.timezone_id" />
                             </div>
                         </div>
                     </div>
@@ -317,7 +307,7 @@
                                     :label="__('settings.fields.date_format')"
                                     :value="$tenant->date_format"
                                     :hint="__('settings.hints.date_format')"
-                                    x-model="form.date_format" />
+                                    model="form.date_format" />
                             </div>
 
                             {{-- Time Format --}}
@@ -327,7 +317,7 @@
                                     :label="__('settings.fields.time_format')"
                                     :value="$tenant->time_format"
                                     :hint="__('settings.hints.time_format')"
-                                    x-model="form.time_format" />
+                                    model="form.time_format" />
                             </div>
                         </div>
                     </div>
@@ -516,7 +506,6 @@ function settingsForm() {
             
             // Localization Settings
             language_id: @json($tenant->language_id),
-            currency_id: @json($tenant->currency_id),
             timezone_id: @json($tenant->timezone_id),
             date_format: @json($tenant->date_format),
             time_format: @json($tenant->time_format),

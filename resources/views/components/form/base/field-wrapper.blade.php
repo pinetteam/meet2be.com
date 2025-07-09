@@ -12,9 +12,14 @@
     'wrapperClass' => ''
 ])
 
+@php
+    // Generate a unique ID if not provided
+    $fieldId = $attributes->get('id') ?? $name . '_' . uniqid();
+@endphp
+
 <div class="{{ $wrapperClass }}">
     @if($label)
-        <label for="{{ $name }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 {{ $labelClass }}">
+        <label for="{{ $fieldId }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 {{ $labelClass }}">
             {{ $label }}
             @if($required)
                 <span class="text-red-500">*</span>
@@ -22,7 +27,9 @@
         </label>
     @endif
     
-    {{ $slot }}
+    <div {{ $attributes->only(['x-data', 'x-show', 'x-if']) }}>
+        {{ $slot }}
+    </div>
     
     @if($hint && !$errors->has($name))
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ $hint }}</p>
