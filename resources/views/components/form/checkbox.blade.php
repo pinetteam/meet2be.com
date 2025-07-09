@@ -1,12 +1,13 @@
 {{-- Meet2Be: Checkbox component --}}
 {{-- Author: Meet2Be Development Team --}}
-{{-- Single checkbox or checkbox group --}}
+{{-- Single checkbox with label and consistent styling --}}
 
 @props([
-    'name',
+    'name' => '',
     'label' => null,
     'value' => '1',
     'checked' => false,
+    'hint' => null,
     'required' => false,
     'disabled' => false,
     'model' => null,
@@ -15,47 +16,85 @@
 ])
 
 @php
-    $sizeClasses = [
+    // Size classes
+    $sizes = [
         'sm' => 'h-3.5 w-3.5',
         'md' => 'h-4 w-4',
         'lg' => 'h-5 w-5'
     ];
     
-    $labelSizeClasses = [
-        'sm' => 'text-xs',
+    $labelSizes = [
+        'sm' => 'text-sm',
         'md' => 'text-sm',
         'lg' => 'text-base'
     ];
     
-    $currentSize = $sizeClasses[$size] ?? $sizeClasses['md'];
-    $currentLabelSize = $labelSizeClasses[$size] ?? $labelSizeClasses['md'];
+    $sizeClass = $sizes[$size] ?? $sizes['md'];
+    $labelSizeClass = $labelSizes[$size] ?? $labelSizes['md'];
     
+    // Generate unique ID
+    $checkboxId = $attributes->get('id') ?? ($name ? $name . '_' . uniqid() : 'checkbox_' . uniqid());
+    
+    // Determine if checked
     $isChecked = old($name) ? old($name) == $value : $checked;
+    
+    // Determine if there's an error
+    $hasError = $errors->has($name);
+    
+    // Build classes
+    $baseClasses = 'rounded border-gray-300 dark:border-gray-600 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:checked:bg-blue-600 transition-colors duration-150';
+    
+    if ($hasError) {
+        $baseClasses = str_replace('border-gray-300 dark:border-gray-600', 'border-red-300 dark:border-red-400', $baseClasses);
+        $baseClasses = str_replace('focus:border-blue-500 focus:ring-blue-500', 'focus:border-red-500 focus:ring-red-500', $baseClasses);
+    }
+    
+    if ($disabled) {
+        $baseClasses .= ' cursor-not-allowed opacity-60';
+    } else {
+        $baseClasses .= ' cursor-pointer';
+    }
+    
+    // Combine all classes
+    $finalClasses = trim("$baseClasses $sizeClass");
 @endphp
 
-<div class="flex items-center {{ $wrapperClass }}">
-    <input type="hidden" name="{{ $name }}" value="0">
-    <input 
-        type="checkbox"
-        name="{{ $name }}"
-        id="{{ $name }}_{{ $value }}"
-        value="{{ $value }}"
-        @if($model) x-model="{{ $model }}" @elseif($isChecked) checked @endif
-        @if($required) required @endif
-        @if($disabled) disabled @endif
-        class="{{ $currentSize }} rounded border-gray-300 dark:border-gray-600 text-blue-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 dark:bg-gray-700 dark:checked:bg-blue-600 dark:checked:border-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
-        {{ $attributes }}>
+<div class="{{ $wrapperClass }}">
+    <div class="flex items-start">
+        <div class="flex items-center h-5">
+            <input 
+                type="checkbox"
+                name="{{ $name }}"
+                id="{{ $checkboxId }}"
+                value="{{ $value }}"
+                @if($model)
+                    x-model="{{ $model }}"
+                @elseif($isChecked)
+                    checked
+                @endif
+                @if($required) required @endif
+                @if($disabled) disabled @endif
+                {{ $attributes->except(['class'])->merge(['class' => $finalClasses]) }}
+            />
+        </div>
         
-    @if($label)
-        <label for="{{ $name }}_{{ $value }}" class="ml-2 block {{ $currentLabelSize }} text-gray-700 dark:text-gray-300 {{ $disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer' }}">
-            {{ $label }}
-            @if($required)
-                <span class="text-red-500">*</span>
-            @endif
-        </label>
-    @endif
-</div>
-
-@error($name)
-    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-@enderror 
+        @if($label)
+            <div class="ml-3">
+                <label for="{{ $checkboxId }}" class="font-medium text-gray-700 dark:text-gray-300 {{ $labelSizeClass }} {{ $disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer' }}">
+                    {{ $label }}
+                    @if($required)
+                        <span class="text-red-500 ml-0.5">*</span>
+                    @endif
+                </label>
+                
+                @if($hint)
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ $hint }}</p>
+                @endif
+            </div>
+        @endif
+    </div>
+    
+    @error($name)
+        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+    @enderror
+</div> 

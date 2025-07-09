@@ -144,7 +144,8 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {{-- Email --}}
                             <div>
-                                <x-form.input.email
+                                <x-form.input
+                                    type="email"
                                     name="email"
                                     :label="__('settings.fields.email')"
                                     :value="$tenant->email"
@@ -167,7 +168,8 @@
 
                             {{-- Website --}}
                             <div class="md:col-span-2">
-                                <x-form.input.url
+                                <x-form.input
+                                    type="url"
                                     name="website"
                                     :label="__('settings.fields.website')"
                                     :value="$tenant->website"
@@ -249,7 +251,7 @@
                                         :placeholder="__('settings.placeholders.select_country')"
                                         :hint="__('settings.hints.country')"
                                         :countries="$countries"
-                                        model="form.country_id" />
+                                        x-model="form.country_id" />
                                 </div>
                             </div>
                         </div>
@@ -275,7 +277,7 @@
                                     :placeholder="__('settings.placeholders.select_language')"
                                     :hint="__('settings.hints.language')"
                                     :languages="$languages"
-                                    model="form.language_id" />
+                                    x-model="form.language_id" />
                             </div>
 
 
@@ -289,7 +291,7 @@
                                     :placeholder="__('settings.placeholders.select_timezone')"
                                     :hint="__('settings.hints.timezone')"
                                     :timezones="$timezones"
-                                    model="form.timezone_id" />
+                                    x-model="form.timezone_id" />
                             </div>
                         </div>
                     </div>
@@ -307,7 +309,7 @@
                                     :label="__('settings.fields.date_format')"
                                     :value="$tenant->date_format"
                                     :hint="__('settings.hints.date_format')"
-                                    model="form.date_format" />
+                                    x-model="form.date_format" />
                             </div>
 
                             {{-- Time Format --}}
@@ -317,7 +319,7 @@
                                     :label="__('settings.fields.time_format')"
                                     :value="$tenant->time_format"
                                     :hint="__('settings.hints.time_format')"
-                                    model="form.time_format" />
+                                    x-model="form.time_format" />
                             </div>
                         </div>
                     </div>

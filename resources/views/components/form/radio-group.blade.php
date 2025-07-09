@@ -1,22 +1,25 @@
 {{-- Meet2Be: Radio group component --}}
 {{-- Author: Meet2Be Development Team --}}
-{{-- Group of radio buttons with label and error handling --}}
+{{-- Group of radio buttons with consistent styling --}}
 
 @props([
-    'name',
+    'name' => '',
     'label' => null,
     'options' => [],
-    'value' => '',
+    'selected' => null,
+    'hint' => null,
     'required' => false,
     'disabled' => false,
     'model' => null,
     'size' => 'md',
     'inline' => false,
-    'hint' => null,
-    'wrapperClass' => '',
-    'optionValue' => 'id',
-    'optionLabel' => 'name'
+    'wrapperClass' => ''
 ])
+
+@php
+    // Get selected value
+    $selectedValue = old($name, $selected);
+@endphp
 
 <x-form.base.field-wrapper 
     :name="$name" 
@@ -26,26 +29,18 @@
     :wrapper-class="$wrapperClass">
     
     <div class="{{ $inline ? 'flex flex-wrap gap-4' : 'space-y-2' }}">
-        @foreach($options as $option)
-            @php
-                $optValue = is_array($option) ? $option[$optionValue] : $option->$optionValue;
-                $optLabel = is_array($option) ? $option[$optionLabel] : $option->$optionLabel;
-                $isChecked = old($name, $value) == $optValue;
-            @endphp
-            
+        @foreach($options as $value => $optionLabel)
             <x-form.radio
                 :name="$name"
-                :value="$optValue"
-                :label="$optLabel"
-                :checked="$isChecked"
+                :value="$value"
+                :label="$optionLabel"
+                :checked="$selectedValue == $value"
                 :disabled="$disabled"
                 :model="$model"
-                :size="$size" />
+                :size="$size"
+                wrapper-class="{{ $inline ? '' : '' }}"
+            />
         @endforeach
-        
-        @if($slot->isNotEmpty())
-            {{ $slot }}
-        @endif
     </div>
     
 </x-form.base.field-wrapper> 

@@ -4,6 +4,487 @@ import '../services/datetime';
 // Alpine'i window objesine ekle
 window.Alpine = Alpine;
 
+// Meet2Be: Searchable select component
+window.searchableSelect = function(config) {
+    return {
+        // Configuration
+        name: config.name || '',
+        placeholder: config.placeholder || 'Select...',
+        grouped: config.grouped || false,
+        disabled: config.disabled || false,
+        size: config.size || 'md',
+        ajax: config.ajax || false,
+        ajaxUrl: config.ajaxUrl || null,
+        xModel: config.xModel || null,
+        
+        // State
+        showDropdown: false,
+        search: '',
+        selectedValue: config.value || '',
+        selectedDisplay: '',
+        loading: false,
+        options: [],
+        errors: false,
+        focusedIndex: -1,
+        
+        // Initialization
+        init() {
+            // Load initial options
+            this.loadOptions();
+            
+            // Set initial display
+            this.updateSelectedDisplay();
+            
+            // Handle x-model binding
+            if (this.xModel) {
+                this.$watch(this.xModel, (value) => {
+                    this.selectedValue = value;
+                    this.updateSelectedDisplay();
+                });
+            }
+            
+            // Handle clicks outside
+            document.addEventListener('click', (e) => {
+                if (!this.$el.contains(e.target)) {
+                    this.closeDropdown();
+                }
+            });
+        },
+        
+        // Load options
+        async loadOptions() {
+            if (this.ajax && this.ajaxUrl) {
+                this.loading = true;
+                try {
+                    const response = await fetch(this.ajaxUrl);
+                    const data = await response.json();
+                    this.options = data;
+                } catch (error) {
+                    console.error('Failed to load options:', error);
+                    this.errors = true;
+                } finally {
+                    this.loading = false;
+                }
+            } else {
+                // Options are passed via HTML
+                const selectEl = this.$el.querySelector('select.hidden');
+                if (selectEl) {
+                    this.options = this.parseSelectOptions(selectEl);
+                }
+            }
+        },
+        
+        // Parse options from hidden select element
+        parseSelectOptions(selectEl) {
+            const options = [];
+            
+            if (this.grouped) {
+                selectEl.querySelectorAll('optgroup').forEach(group => {
+                    const groupOptions = [];
+                    group.querySelectorAll('option').forEach(option => {
+                        if (option.value) {
+                            groupOptions.push({
+                                value: option.value,
+                                label: option.textContent.trim(),
+                                selected: option.selected
+                            });
+                        }
+                    });
+                    
+                    if (groupOptions.length > 0) {
+                        options.push({
+                            label: group.label,
+                            options: groupOptions
+                        });
+                    }
+                });
+            } else {
+                selectEl.querySelectorAll('option').forEach(option => {
+                    if (option.value) {
+                        options.push({
+                            value: option.value,
+                            label: option.textContent.trim(),
+                            selected: option.selected
+                        });
+                    }
+                });
+            }
+            
+            return options;
+        },
+        
+        // Update selected display text
+        updateSelectedDisplay() {
+            if (!this.selectedValue) {
+                this.selectedDisplay = '';
+                return;
+            }
+            
+            if (this.grouped) {
+                for (const group of this.options) {
+                    const option = group.options.find(o => o.value === this.selectedValue);
+                    if (option) {
+                        this.selectedDisplay = option.label;
+                        break;
+                    }
+                }
+            } else {
+                const option = this.options.find(o => o.value === this.selectedValue);
+                if (option) {
+                    this.selectedDisplay = option.label;
+                }
+            }
+        },
+        
+        // Toggle dropdown
+        toggleDropdown() {
+            if (this.disabled) return;
+            this.showDropdown = !this.showDropdown;
+            
+            if (this.showDropdown) {
+                this.$nextTick(() => {
+                    const searchInput = this.$el.querySelector('input[type="search"]');
+                    if (searchInput) searchInput.focus();
+                });
+            }
+        },
+        
+        // Close dropdown
+        closeDropdown() {
+            this.showDropdown = false;
+            this.search = '';
+            this.focusedIndex = -1;
+        },
+        
+        // Select option
+        selectOption(value) {
+            this.selectedValue = value;
+            this.updateSelectedDisplay();
+            this.closeDropdown();
+            
+            // Trigger change event
+            const event = new Event('change', { bubbles: true });
+            this.$el.querySelector('input[type="hidden"]').dispatchEvent(event);
+        },
+        
+        // Get filtered options HTML
+        get filteredOptionsHtml() {
+            let html = '';
+            const searchLower = this.search.toLowerCase();
+            
+            if (this.grouped) {
+                this.options.forEach(group => {
+                    const filteredOptions = group.options.filter(option => 
+                        option.label.toLowerCase().includes(searchLower)
+                    );
+                    
+                    if (filteredOptions.length > 0) {
+                        html += `<li class="text-xs font-semibold text-gray-400 dark:text-gray-500 px-3 py-2 uppercase tracking-wider">${group.label}</li>`;
+                        
+                        filteredOptions.forEach((option, index) => {
+                            const isSelected = option.value === this.selectedValue;
+                            const isFocused = this.focusedIndex === index;
+                            
+                            html += `
+                                <li>
+                                    <button type="button" 
+                                        @click="selectOption('${option.value}')"
+                                        class="w-full text-left px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700 focus:outline-none transition-colors duration-150 ${isSelected ? 'bg-blue-50 dark:bg-blue-900/50' : ''} ${isFocused ? 'bg-gray-50 dark:bg-gray-700' : ''}"
+                                        role="option"
+                                        aria-selected="${isSelected}">
+                                        <span class="block truncate ${isSelected ? 'font-semibold' : ''}">${option.label}</span>
+                                    </button>
+                                </li>
+                            `;
+                        });
+                    }
+                });
+            } else {
+                const filteredOptions = this.options.filter(option => 
+                    option.label.toLowerCase().includes(searchLower)
+                );
+                
+                filteredOptions.forEach((option, index) => {
+                    const isSelected = option.value === this.selectedValue;
+                    const isFocused = this.focusedIndex === index;
+                    
+                    html += `
+                        <li>
+                            <button type="button" 
+                                @click="selectOption('${option.value}')"
+                                class="w-full text-left px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700 focus:outline-none transition-colors duration-150 ${isSelected ? 'bg-blue-50 dark:bg-blue-900/50' : ''} ${isFocused ? 'bg-gray-50 dark:bg-gray-700' : ''}"
+                                role="option"
+                                aria-selected="${isSelected}">
+                                <span class="block truncate ${isSelected ? 'font-semibold' : ''}">${option.label}</span>
+                            </button>
+                        </li>
+                    `;
+                });
+                
+                if (filteredOptions.length === 0) {
+                    html = '<li class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 text-center">No results found</li>';
+                }
+            }
+            
+            return html;
+        },
+        
+        // Keyboard navigation
+        handleKeydown(event) {
+            if (!this.showDropdown) {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    this.toggleDropdown();
+                }
+                return;
+            }
+            
+            switch (event.key) {
+                case 'Escape':
+                    this.closeDropdown();
+                    break;
+                case 'ArrowDown':
+                    event.preventDefault();
+                    this.focusNext();
+                    break;
+                case 'ArrowUp':
+                    event.preventDefault();
+                    this.focusPrevious();
+                    break;
+                case 'Enter':
+                    event.preventDefault();
+                    if (this.focusedIndex >= 0) {
+                        const options = this.grouped ? this.options.flatMap(g => g.options) : this.options;
+                        const filteredOptions = options.filter(o => o.label.toLowerCase().includes(this.search.toLowerCase()));
+                        if (filteredOptions[this.focusedIndex]) {
+                            this.selectOption(filteredOptions[this.focusedIndex].value);
+                        }
+                    }
+                    break;
+            }
+        },
+        
+        focusNext() {
+            const options = this.grouped ? this.options.flatMap(g => g.options) : this.options;
+            const filteredOptions = options.filter(o => o.label.toLowerCase().includes(this.search.toLowerCase()));
+            
+            if (this.focusedIndex < filteredOptions.length - 1) {
+                this.focusedIndex++;
+            } else {
+                this.focusedIndex = 0;
+            }
+        },
+        
+        focusPrevious() {
+            const options = this.grouped ? this.options.flatMap(g => g.options) : this.options;
+            const filteredOptions = options.filter(o => o.label.toLowerCase().includes(this.search.toLowerCase()));
+            
+            if (this.focusedIndex > 0) {
+                this.focusedIndex--;
+            } else {
+                this.focusedIndex = filteredOptions.length - 1;
+            }
+        }
+    };
+};
+
+// Meet2Be: Country select component
+window.countrySelect = function(config) {
+    return {
+        // State
+        open: false,
+        search: '',
+        selected: config.value || '',
+        countries: config.countries || [],
+        flagLoaded: {},
+        
+        // Computed
+        get filteredCountries() {
+            if (!this.search) return this.countries;
+            
+            const searchLower = this.search.toLowerCase();
+            return this.countries.filter(country => 
+                country.name.toLowerCase().includes(searchLower) ||
+                country.iso2.toLowerCase().includes(searchLower) ||
+                country.iso3.toLowerCase().includes(searchLower)
+            );
+        },
+        
+        get selectedCountry() {
+            return this.countries.find(c => c.id === this.selected);
+        },
+        
+        get displayText() {
+            const country = this.selectedCountry;
+            return country ? country.name : config.placeholder || 'Select';
+        },
+        
+        // Methods
+        selectCountry(countryId) {
+            this.selected = countryId;
+            this.open = false;
+            this.search = '';
+        },
+        
+        // Initialize
+        init() {
+            // Preload flag images
+            this.countries.forEach(country => {
+                const img = new Image();
+                img.onload = () => {
+                    this.flagLoaded[country.iso2] = true;
+                };
+                img.onerror = () => {
+                    this.flagLoaded[country.iso2] = false;
+                };
+                img.src = `/assets/images/flags/32x24/${country.iso2.toLowerCase()}.png`;
+            });
+        }
+    };
+};
+
+// Meet2Be: Phone input component
+window.phoneInput = function(config) {
+    return {
+        // State
+        countryDropdownOpen: false,
+        countrySearch: '',
+        selectedCountryId: config.selectedCountryId || null,
+        phoneNumber: config.phoneNumber || '',
+        countries: config.countries || [],
+        flagLoaded: {},
+        focused: false,
+        
+        // Computed
+        get filteredCountries() {
+            if (!this.countrySearch) return this.countries;
+            
+            const searchLower = this.countrySearch.toLowerCase();
+            return this.countries.filter(country => 
+                country.name.toLowerCase().includes(searchLower) ||
+                country.iso2.toLowerCase().includes(searchLower) ||
+                country.iso3.toLowerCase().includes(searchLower) ||
+                country.phone_code.includes(searchLower)
+            );
+        },
+        
+        get selectedCountry() {
+            return this.countries.find(c => c.id === this.selectedCountryId);
+        },
+        
+        get fullPhoneNumber() {
+            const country = this.selectedCountry;
+            if (!country || !this.phoneNumber) return '';
+            return `+${country.phone_code}${this.phoneNumber}`;
+        },
+        
+        // Methods
+        selectCountry(countryId) {
+            this.selectedCountryId = countryId;
+            this.countryDropdownOpen = false;
+            this.countrySearch = '';
+            this.$nextTick(() => {
+                this.$refs.phoneInput?.focus();
+            });
+        },
+        
+        toggleDropdown() {
+            this.countryDropdownOpen = !this.countryDropdownOpen;
+            if (this.countryDropdownOpen) {
+                this.$nextTick(() => {
+                    this.$refs.countrySearchInput?.focus();
+                });
+            }
+        },
+        
+        closeDropdown() {
+            this.countryDropdownOpen = false;
+            this.countrySearch = '';
+        },
+        
+        // Initialize
+        init() {
+            // Preload flag images
+            this.countries.forEach(country => {
+                const img = new Image();
+                img.onload = () => {
+                    this.flagLoaded[country.iso2] = true;
+                };
+                img.onerror = () => {
+                    this.flagLoaded[country.iso2] = false;
+                };
+                img.src = `/assets/images/flags/32x24/${country.iso2.toLowerCase()}.png`;
+            });
+        }
+    };
+};
+
+// Meet2Be: Timezone select component
+window.timezoneSelect = function(config) {
+    return {
+        // State
+        open: false,
+        search: '',
+        selected: config.value || '',
+        timezones: config.timezones || [],
+        
+        // Computed
+        get filteredTimezones() {
+            if (!this.search) return this.timezones;
+            
+            const searchLower = this.search.toLowerCase();
+            const filtered = {};
+            
+            Object.entries(this.timezones).forEach(([region, zones]) => {
+                const filteredZones = zones.filter(zone => 
+                    zone.name.toLowerCase().includes(searchLower) ||
+                    zone.offset.toLowerCase().includes(searchLower)
+                );
+                
+                if (filteredZones.length > 0) {
+                    filtered[region] = filteredZones;
+                }
+            });
+            
+            return filtered;
+        },
+        
+        get selectedTimezone() {
+            for (const [region, zones] of Object.entries(this.timezones)) {
+                const zone = zones.find(z => z.id === this.selected);
+                if (zone) return zone;
+            }
+            return null;
+        },
+        
+        get displayText() {
+            const timezone = this.selectedTimezone;
+            return timezone ? `${timezone.name} (${timezone.offset})` : config.placeholder || 'Select a timezone';
+        },
+        
+        // Methods
+        selectTimezone(timezoneId) {
+            this.selected = timezoneId;
+            this.open = false;
+            this.search = '';
+        },
+        
+        toggleDropdown() {
+            this.open = !this.open;
+            if (this.open) {
+                this.$nextTick(() => {
+                    this.$refs.searchInput?.focus();
+                });
+            }
+        },
+        
+        closeDropdown() {
+            this.open = false;
+            this.search = '';
+        }
+    };
+};
+
 // Portal navigation configuration
 const navigationConfig = {
     items: [

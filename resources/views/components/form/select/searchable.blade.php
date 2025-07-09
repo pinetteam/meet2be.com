@@ -1,37 +1,44 @@
-{{-- Meet2Be: Searchable select component with Atlassian design --}}
+{{-- Meet2Be: Searchable select component --}}
 {{-- Author: Meet2Be Development Team --}}
-{{-- Advanced select with search and grouping support --}}
+{{-- Select dropdown with search functionality --}}
 
 @props([
-    'name',
+    'name' => '',
     'label' => null,
-    'value' => '',
-    'placeholder' => '',
+    'options' => [],
+    'selected' => null,
+    'placeholder' => null,
     'hint' => null,
     'required' => false,
     'disabled' => false,
     'model' => null,
-    'size' => 'md',
-    'wrapperClass' => '',
-    'grouped' => false,
     'searchPlaceholder' => null,
     'noResultsText' => null,
-    'loadingText' => null,
-    'ajax' => false, // For future AJAX support
-    'ajaxUrl' => null,
-    'autocomplete' => 'off'
+    'grouped' => false,
+    'wrapperClass' => '',
+    'size' => 'md'
 ])
 
 @php
     $searchPlaceholder = $searchPlaceholder ?? __('common.search');
     $noResultsText = $noResultsText ?? __('common.no_results');
-    $loadingText = $loadingText ?? __('common.loading');
-    
-    // Meet2Be: Extract x-model from attributes
-    $xModel = $attributes->get('x-model');
+    $placeholder = $placeholder ?? __('common.select');
     
     // Generate unique ID
-    $fieldId = $name . '_' . uniqid();
+    $fieldId = $attributes->get('id') ?? ($name ? $name . '_' . uniqid() : 'select_' . uniqid());
+    
+    // Prepare config for Alpine component
+    $config = [
+        'name' => $name,
+        'value' => old($name, $selected),
+        'placeholder' => $placeholder,
+        'grouped' => $grouped,
+        'disabled' => $disabled,
+        'size' => $size,
+        'ajax' => false,
+        'ajaxUrl' => null,
+        'xModel' => $model
+    ];
 @endphp
 
 <x-form.base.field-wrapper 
@@ -41,89 +48,96 @@
     :hint="$hint"
     :wrapper-class="$wrapperClass">
     
-    <div x-data="searchableSelect(@js([
-        'name' => $name,
-        'value' => old($name, $value),
-        'placeholder' => $placeholder,
-        'grouped' => $grouped,
-        'disabled' => $disabled,
-        'size' => $size,
-        'ajax' => $ajax,
-        'ajaxUrl' => $ajaxUrl,
-        'xModel' => $xModel
-    ]))" @if($xModel) x-modelable="selectedValue" x-model="{{ $xModel }}" @endif>
+    <div x-data="searchableSelect({{ Js::from($config) }})">
+        {{-- Hidden select for form submission and option parsing --}}
+        <select class="hidden">
+            @if($grouped)
+                @foreach($options as $group => $groupOptions)
+                    <optgroup label="{{ $group }}">
+                        @foreach($groupOptions as $value => $label)
+                            <option value="{{ $value }}" @if($value == old($name, $selected)) selected @endif>
+                                {{ $label }}
+                            </option>
+                        @endforeach
+                    </optgroup>
+                @endforeach
+            @else
+                @foreach($options as $value => $label)
+                    <option value="{{ $value }}" @if($value == old($name, $selected)) selected @endif>
+                        {{ $label }}
+                    </option>
+                @endforeach
+            @endif
+        </select>
+        
+        {{-- Custom dropdown --}}
         <div class="relative">
-            {{-- Select Button --}}
-            <button type="button"
-                    @click="toggleDropdown()"
-                    :disabled="disabled"
-                    class="relative w-full bg-white dark:bg-gray-700 border rounded-md shadow-sm text-left cursor-default focus:outline-none focus:ring-1 transition-colors duration-150"
-                    :class="{
-                        'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500': !errors,
-                        'border-red-500 dark:border-red-400 focus:border-red-500 focus:ring-red-500': errors,
-                        'bg-gray-50 dark:bg-gray-600 cursor-not-allowed': disabled,
-                        'px-2.5 py-1.5 text-xs': size === 'sm',
-                        'px-3 py-2 text-sm': size === 'md',
-                        'px-4 py-2.5 text-base': size === 'lg'
-                    }">
-                <span class="block truncate" x-html="selectedDisplay || placeholder || '{{ __('common.select') }}'"></span>
+            <button
+                type="button"
+                @click="toggleDropdown()"
+                :disabled="disabled"
+                class="relative w-full bg-white dark:bg-gray-700 border rounded-md shadow-sm text-left cursor-default focus:outline-none focus:ring-1 transition-colors duration-150"
+                :class="{
+                    'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500': !errors,
+                    'border-red-500 dark:border-red-400 focus:border-red-500 focus:ring-red-500': errors,
+                    'bg-gray-50 dark:bg-gray-600 cursor-not-allowed': disabled,
+                    'px-2.5 py-1.5 text-xs': size === 'sm',
+                    'px-3 py-2 text-sm': size === 'md',
+                    'px-4 py-2.5 text-base': size === 'lg'
+                }"
+            >
+                <span class="block truncate" x-html="selectedDisplay || placeholder || 'Select'"></span>
                 <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                     <i class="fa-solid fa-chevron-down text-gray-400 transition-transform duration-200" 
                        :class="{ 'rotate-180': showDropdown, 'text-xs': size === 'sm', 'text-sm': size !== 'sm' }"></i>
                 </span>
             </button>
             
-            {{-- Dropdown --}}
-            <div x-show="showDropdown"
-                 x-transition:enter="transition ease-out duration-100"
-                 x-transition:enter-start="transform opacity-0 scale-95"
-                 x-transition:enter-end="transform opacity-100 scale-100"
-                 x-transition:leave="transition ease-in duration-75"
-                 x-transition:leave-start="transform opacity-100 scale-100"
-                 x-transition:leave-end="transform opacity-0 scale-95"
-                 @click.away="closeDropdown()"
-                 class="absolute z-50 mt-1 w-full rounded-md bg-white dark:bg-gray-800 shadow-lg max-h-60 overflow-hidden"
-                 style="display: none;">
-                
-                {{-- Search Input --}}
-                <div class="sticky top-0 z-10 bg-white dark:bg-gray-800 px-2 py-2 border-b border-gray-200 dark:border-gray-700">
-                    <input type="text"
-                           x-ref="searchInput"
-                           x-model="search"
-                           @click.stop
-                           @keydown.escape="closeDropdown()"
-                           @keydown.enter.prevent="selectHighlighted()"
-                           @keydown.arrow-up.prevent="highlightPrevious()"
-                           @keydown.arrow-down.prevent="highlightNext()"
-                           class="w-full px-3 py-1.5 text-sm border-gray-300 dark:border-gray-600 rounded-md focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                           placeholder="{{ $searchPlaceholder }}">
+            <div
+                x-show="showDropdown"
+                x-transition:enter="transition ease-out duration-100"
+                x-transition:enter-start="transform opacity-0 scale-95"
+                x-transition:enter-end="transform opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-75"
+                x-transition:leave-start="transform opacity-100 scale-100"
+                x-transition:leave-end="transform opacity-0 scale-95"
+                @click.away="closeDropdown()"
+                class="absolute z-50 mt-1 w-full rounded-md bg-white dark:bg-gray-800 shadow-lg max-h-60 overflow-hidden"
+                style="display: none;"
+            >
+                {{-- Search input --}}
+                <div class="p-2 border-b border-gray-200 dark:border-gray-700">
+                    <input
+                        type="search"
+                        x-model="search"
+                        x-ref="searchInput"
+                        @keydown="handleKeydown"
+                        placeholder="{{ $searchPlaceholder }}"
+                        class="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    />
                 </div>
                 
-                {{-- Options List --}}
-                <div class="overflow-y-auto max-h-48" x-ref="optionsList">
-                    <div x-show="loading" class="px-3 py-8 text-center text-gray-500 dark:text-gray-400">
-                        <i class="fa-solid fa-spinner fa-spin mr-2"></i>{{ $loadingText }}
-                    </div>
+                {{-- Options list --}}
+                <ul class="max-h-48 overflow-y-auto">
                     <div x-show="!loading" x-html="filteredOptionsHtml"></div>
-                </div>
+                    <li x-show="loading" class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 text-center">
+                        <i class="fas fa-spinner fa-spin mr-2"></i>Loading...
+                    </li>
+                </ul>
             </div>
-            
-            {{-- Hidden input --}}
-            <input type="hidden" 
-                   name="{{ $name }}" 
-                   x-model="selectedValue"
-                   @if($xModel) x-modelable="selectedValue" @endif
-                   @if($required) required @endif
-                   id="{{ $fieldId }}"
-                   :value="selectedValue"
-                   autocomplete="{{ $autocomplete }}">
         </div>
+        
+        {{-- Hidden input for form submission --}}
+        <input 
+            type="hidden" 
+            name="{{ $name }}" 
+            x-model="selectedValue"
+            id="{{ $fieldId }}"
+            :value="selectedValue"
+            autocomplete="off"
+        />
     </div>
-
-    {{-- Options slot for server-side rendering --}}
-    <div style="display: none;" data-select-options>
-        {{ $slot }}
-    </div>
+    
 </x-form.base.field-wrapper>
 
 @push('scripts')

@@ -5,45 +5,41 @@
 @props([
     'name' => 'language_id',
     'label' => null,
-    'value' => '',
+    'value' => null,
     'placeholder' => null,
     'hint' => null,
     'required' => false,
     'disabled' => false,
-    'model' => null,
     'languages' => null,
-    'showNativeName' => true
+    'showNativeName' => true,
+    'wrapperClass' => ''
 ])
 
 @php
-    $label = $label ?? __('common.labels.language');
-    $placeholder = $placeholder ?? __('common.messages.select_option');
+    $label = $label ?? __('settings.fields.language');
+    $placeholder = $placeholder ?? __('common.select');
     $languages = $languages ?? \App\Models\System\Language::where('is_active', true)->orderBy('name_en')->get();
+    
+    // Build options array
+    $options = [];
+    foreach ($languages as $language) {
+        $displayName = $language->name_en;
+        if ($showNativeName && $language->name_native) {
+            $displayName .= ' (' . $language->name_native . ')';
+        }
+        $options[$language->id] = $displayName;
+    }
 @endphp
 
-<x-form.base.field-wrapper 
-    :name="$name" 
-    :label="$label" 
-    :required="$required" 
-    :hint="$hint">
-    
-    <x-form.base.select-base
-        :name="$name"
-        :value="$value"
-        :placeholder="$placeholder"
-        :required="$required"
-        :disabled="$disabled"
-        :model="$model">
-        
-        @foreach($languages as $language)
-            <option value="{{ $language->id }}" @if($value == $language->id) selected @endif>
-                {{ $language->name_en }}
-                @if($showNativeName && $language->name_native)
-                    ({{ $language->name_native }})
-                @endif
-            </option>
-        @endforeach
-        
-    </x-form.base.select-base>
-    
-</x-form.base.field-wrapper> 
+<x-form.select
+    :name="$name"
+    :label="$label"
+    :value="$value"
+    :placeholder="$placeholder"
+    :hint="$hint"
+    :required="$required"
+    :disabled="$disabled"
+    :options="$options"
+    :wrapper-class="$wrapperClass"
+    {{ $attributes }}
+/> 

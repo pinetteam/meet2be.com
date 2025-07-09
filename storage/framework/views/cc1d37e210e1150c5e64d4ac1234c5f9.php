@@ -1,8 +1,11 @@
-{{-- Meet2Be: Phone input with country selector --}}
-{{-- Author: Meet2Be Development Team --}}
-{{-- Advanced phone input with country code selection --}}
 
-@props([
+
+
+
+<?php $attributes ??= new \Illuminate\View\ComponentAttributeBag;
+
+$__newAttributes = [];
+$__propNames = \Illuminate\View\ComponentAttributeBag::extractPropNames(([
     'name',
     'label' => null,
     'value' => '',
@@ -15,9 +18,47 @@
     'countries' => null,
     'defaultCountry' => 'TR',
     'wrapperClass' => ''
-])
+]));
 
-@php
+foreach ($attributes->all() as $__key => $__value) {
+    if (in_array($__key, $__propNames)) {
+        $$__key = $$__key ?? $__value;
+    } else {
+        $__newAttributes[$__key] = $__value;
+    }
+}
+
+$attributes = new \Illuminate\View\ComponentAttributeBag($__newAttributes);
+
+unset($__propNames);
+unset($__newAttributes);
+
+foreach (array_filter(([
+    'name',
+    'label' => null,
+    'value' => '',
+    'placeholder' => null,
+    'hint' => null,
+    'required' => false,
+    'disabled' => false,
+    'readonly' => false,
+    'model' => null,
+    'countries' => null,
+    'defaultCountry' => 'TR',
+    'wrapperClass' => ''
+]), 'is_string', ARRAY_FILTER_USE_KEY) as $__key => $__value) {
+    $$__key = $$__key ?? $__value;
+}
+
+$__defined_vars = get_defined_vars();
+
+foreach ($attributes->all() as $__key => $__value) {
+    if (array_key_exists($__key, $__defined_vars)) unset($$__key);
+}
+
+unset($__defined_vars); ?>
+
+<?php
     $placeholder = $placeholder ?? __('common.phone_placeholder');
     $countries = $countries ?? App\Models\System\Country::orderBy('name_en')->get();
     
@@ -45,23 +86,26 @@
     
     // Generate unique ID
     $fieldId = $name . '_' . uniqid();
-@endphp
+?>
 
-<x-form.base.field-wrapper 
-    :name="$name" 
-    :label="$label" 
-    :required="$required" 
-    :hint="$hint"
-    :wrapper-class="$wrapperClass"
-    :field-id="$fieldId">
+<?php if (isset($component)) { $__componentOriginal4d88ce4e7a623f35fd84edb3500e008f = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal4d88ce4e7a623f35fd84edb3500e008f = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.form.base.field-wrapper','data' => ['name' => $name,'label' => $label,'required' => $required,'hint' => $hint,'wrapperClass' => $wrapperClass,'fieldId' => $fieldId]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('form.base.field-wrapper'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($name),'label' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($label),'required' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($required),'hint' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($hint),'wrapper-class' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($wrapperClass),'field-id' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($fieldId)]); ?>
     
     <div 
         x-data="{
             countryDropdownOpen: false,
             countrySearch: '',
-            selectedCountryId: '{{ $selectedCountryId }}',
-            phoneNumber: '{{ $phoneOnly }}',
-            countries: {{ Js::from($countries) }},
+            selectedCountryId: '<?php echo e($selectedCountryId); ?>',
+            phoneNumber: '<?php echo e($phoneOnly); ?>',
+            countries: <?php echo e(Js::from($countries)); ?>,
             flagLoaded: {},
             focused: false,
             
@@ -125,24 +169,27 @@
             }
         }"
         x-modelable="fullPhoneNumber"
-        {{ $attributes->whereStartsWith('x-model') }}
+        <?php echo e($attributes->whereStartsWith('x-model')); ?>
+
         @click.away="closeDropdown()"
         class="relative"
         :class="{ 'ring-2 ring-blue-500 rounded-md': focused }"
     >
         <div class="flex">
-            {{-- Country Selector --}}
+            
             <button
                 type="button"
                 @click="toggleDropdown()"
                 @focus="focused = true"
                 @blur="focused = false"
-                {{ $disabled ? 'disabled' : '' }}
-                class="relative inline-flex items-center px-3 py-2 border border-r-0 {{ $disabled ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-gray-700' }} border-gray-300 dark:border-gray-600 rounded-l-md focus:outline-none focus:z-10 transition-colors duration-150"
+                <?php echo e($disabled ? 'disabled' : ''); ?>
+
+                class="relative inline-flex items-center px-3 py-2 border border-r-0 <?php echo e($disabled ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-gray-700'); ?> border-gray-300 dark:border-gray-600 rounded-l-md focus:outline-none focus:z-10 transition-colors duration-150"
                 :class="{ 
                     'border-gray-300 dark:border-gray-600': !focused, 
                     'border-blue-500': focused,
-                    'cursor-not-allowed opacity-60': {{ $disabled ? 'true' : 'false' }}
+                    'cursor-not-allowed opacity-60': <?php echo e($disabled ? 'true' : 'false'); ?>
+
                 }"
             >
                 <template x-if="selectedCountry">
@@ -168,36 +215,37 @@
                 </template>
             </button>
             
-            {{-- Phone Number Input --}}
+            
             <input
                 type="tel"
-                name="{{ $name }}_display"
+                name="<?php echo e($name); ?>_display"
                 x-ref="phoneInput"
                 x-model="phoneNumber"
                 @focus="focused = true"
                 @blur="focused = false"
-                @if($placeholder) placeholder="{{ $placeholder }}" @endif
-                @if($required) required @endif
-                @if($disabled) disabled @endif
-                @if($readonly) readonly @endif
-                class="flex-1 px-3 py-2 border {{ $disabled ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-gray-700' }} border-gray-300 dark:border-gray-600 rounded-r-md focus:outline-none focus:z-10 dark:text-white sm:text-sm transition-colors duration-150"
+                <?php if($placeholder): ?> placeholder="<?php echo e($placeholder); ?>" <?php endif; ?>
+                <?php if($required): ?> required <?php endif; ?>
+                <?php if($disabled): ?> disabled <?php endif; ?>
+                <?php if($readonly): ?> readonly <?php endif; ?>
+                class="flex-1 px-3 py-2 border <?php echo e($disabled ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-gray-700'); ?> border-gray-300 dark:border-gray-600 rounded-r-md focus:outline-none focus:z-10 dark:text-white sm:text-sm transition-colors duration-150"
                 :class="{ 
                     'border-gray-300 dark:border-gray-600': !focused, 
                     'border-blue-500': focused,
-                    'cursor-not-allowed opacity-60': {{ $disabled ? 'true' : 'false' }}
+                    'cursor-not-allowed opacity-60': <?php echo e($disabled ? 'true' : 'false'); ?>
+
                 }"
             />
         </div>
         
-        {{-- Hidden input for full phone number --}}
+        
         <input 
             type="hidden" 
-            name="{{ $name }}" 
-            id="{{ $fieldId }}"
+            name="<?php echo e($name); ?>" 
+            id="<?php echo e($fieldId); ?>"
             :value="fullPhoneNumber"
         />
         
-        {{-- Country Dropdown --}}
+        
         <div
             x-show="countryDropdownOpen"
             x-transition:enter="transition ease-out duration-100"
@@ -215,7 +263,7 @@
                     x-model="countrySearch"
                     x-ref="countrySearchInput"
                     @click.stop
-                    placeholder="{{ __('common.search') }}"
+                    placeholder="<?php echo e(__('common.search')); ?>"
                     class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:text-white"
                 />
             </div>
@@ -255,10 +303,20 @@
                 </template>
                 
                 <li x-show="filteredCountries.length === 0" class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 text-center">
-                    {{ __('common.no_results') }}
+                    <?php echo e(__('common.no_results')); ?>
+
                 </li>
             </ul>
         </div>
     </div>
     
-</x-form.base.field-wrapper> 
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal4d88ce4e7a623f35fd84edb3500e008f)): ?>
+<?php $attributes = $__attributesOriginal4d88ce4e7a623f35fd84edb3500e008f; ?>
+<?php unset($__attributesOriginal4d88ce4e7a623f35fd84edb3500e008f); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal4d88ce4e7a623f35fd84edb3500e008f)): ?>
+<?php $component = $__componentOriginal4d88ce4e7a623f35fd84edb3500e008f; ?>
+<?php unset($__componentOriginal4d88ce4e7a623f35fd84edb3500e008f); ?>
+<?php endif; ?> <?php /**PATH C:\Users\Ali Erdem Sunar\Documents\Projects\meet2be.com\resources\views/components/form/specialized/phone-input.blade.php ENDPATH**/ ?>

@@ -5,51 +5,39 @@
 @props([
     'name' => 'time_format',
     'label' => null,
-    'value' => '',
+    'value' => null,
     'placeholder' => null,
     'hint' => null,
     'required' => false,
     'disabled' => false,
-    'model' => null
+    'wrapperClass' => ''
 ])
 
 @php
-    $label = $label ?? __('common.labels.time_format');
-    $placeholder = $placeholder ?? __('common.messages.select_option');
+    $label = $label ?? __('settings.fields.time_format');
+    $placeholder = $placeholder ?? __('common.select');
     
-    // Common time formats
-    $formats = [
-        'H:i' => __('settings.time_formats.24h'),
-        'H:i:s' => __('settings.time_formats.24h_seconds'),
-        'g:i A' => __('settings.time_formats.12h'),
-        'g:i:s A' => __('settings.time_formats.12h_seconds'),
-        'h:i A' => __('settings.time_formats.12h_leading'),
-        'h:i:s A' => __('settings.time_formats.12h_leading_seconds'),
-    ];
-    
+    // Common time formats with preview
     $now = now();
+    $options = [
+        'H:i' => __('settings.time_formats.24_hour') . ' (' . $now->format('H:i') . ')',
+        'H:i:s' => __('settings.time_formats.24_hour_seconds') . ' (' . $now->format('H:i:s') . ')',
+        'h:i A' => __('settings.time_formats.12_hour') . ' (' . $now->format('h:i A') . ')',
+        'h:i:s A' => __('settings.time_formats.12_hour_seconds') . ' (' . $now->format('h:i:s A') . ')',
+        'g:i A' => __('settings.time_formats.12_hour_no_leading') . ' (' . $now->format('g:i A') . ')',
+        'g:i:s A' => __('settings.time_formats.12_hour_no_leading_seconds') . ' (' . $now->format('g:i:s A') . ')',
+    ];
 @endphp
 
-<x-form.base.field-wrapper 
-    :name="$name" 
-    :label="$label" 
-    :required="$required" 
-    :hint="$hint">
-    
-    <x-form.base.select-base
-        :name="$name"
-        :value="$value"
-        :placeholder="$placeholder"
-        :required="$required"
-        :disabled="$disabled"
-        :model="$model">
-        
-        @foreach($formats as $format => $description)
-            <option value="{{ $format }}" @if($value == $format) selected @endif>
-                {{ $description }} ({{ $now->format($format) }})
-            </option>
-        @endforeach
-        
-    </x-form.base.select-base>
-    
-</x-form.base.field-wrapper> 
+<x-form.select
+    :name="$name"
+    :label="$label"
+    :value="$value"
+    :placeholder="$placeholder"
+    :hint="$hint"
+    :required="$required"
+    :disabled="$disabled"
+    :options="$options"
+    :wrapper-class="$wrapperClass"
+    {{ $attributes }}
+/> 

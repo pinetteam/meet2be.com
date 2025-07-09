@@ -104,12 +104,12 @@ return [
     
     // Saat Formatları
     'time_formats' => [
-        '24h' => '24 saat',
-        '24h_seconds' => '24 saat (saniyeli)',
-        '12h' => '12 saat',
-        '12h_seconds' => '12 saat (saniyeli)',
-        '12h_leading' => '12 saat (başında sıfır)',
-        '12h_leading_seconds' => '12 saat (başında sıfır ve saniyeli)',
+        '24_hour' => '24 saat',
+        '24_hour_seconds' => '24 saat (saniyeli)',
+        '12_hour' => '12 saat',
+        '12_hour_seconds' => '12 saat (saniyeli)',
+        '12_hour_no_leading' => '12 saat (başta sıfır yok)',
+        '12_hour_no_leading_seconds' => '12 saat (saniyeli, başta sıfır yok)',
     ],
     
     // Abonelik

@@ -5,54 +5,42 @@
 @props([
     'name' => 'date_format',
     'label' => null,
-    'value' => '',
+    'value' => null,
     'placeholder' => null,
     'hint' => null,
     'required' => false,
     'disabled' => false,
-    'model' => null
+    'wrapperClass' => ''
 ])
 
 @php
-    $label = $label ?? __('common.labels.date_format');
-    $placeholder = $placeholder ?? __('common.messages.select_option');
+    $label = $label ?? __('settings.fields.date_format');
+    $placeholder = $placeholder ?? __('common.select');
     
-    // Common date formats
-    $formats = [
-        'Y-m-d' => __('settings.date_formats.iso8601'),
-        'd/m/Y' => __('settings.date_formats.european'),
-        'm/d/Y' => __('settings.date_formats.us'),
-        'd.m.Y' => __('settings.date_formats.european_dot'),
-        'd-m-Y' => __('settings.date_formats.european_dash'),
-        'M j, Y' => __('settings.date_formats.long'),
-        'F j, Y' => __('settings.date_formats.full'),
-        'j M Y' => __('settings.date_formats.compact'),
-        'd M Y' => __('settings.date_formats.medium'),
-    ];
-    
+    // Common date formats with preview
     $now = now();
+    $options = [
+        'Y-m-d' => __('settings.date_formats.iso8601') . ' (' . $now->format('Y-m-d') . ')',
+        'd/m/Y' => __('settings.date_formats.european') . ' (' . $now->format('d/m/Y') . ')',
+        'm/d/Y' => __('settings.date_formats.us') . ' (' . $now->format('m/d/Y') . ')',
+        'd.m.Y' => __('settings.date_formats.european_dot') . ' (' . $now->format('d.m.Y') . ')',
+        'd-m-Y' => __('settings.date_formats.european_dash') . ' (' . $now->format('d-m-Y') . ')',
+        'M j, Y' => __('settings.date_formats.long') . ' (' . $now->format('M j, Y') . ')',
+        'F j, Y' => __('settings.date_formats.full') . ' (' . $now->format('F j, Y') . ')',
+        'j M Y' => __('settings.date_formats.compact') . ' (' . $now->format('j M Y') . ')',
+        'd M Y' => __('settings.date_formats.medium') . ' (' . $now->format('d M Y') . ')',
+    ];
 @endphp
 
-<x-form.base.field-wrapper 
-    :name="$name" 
-    :label="$label" 
-    :required="$required" 
-    :hint="$hint">
-    
-    <x-form.base.select-base
-        :name="$name"
-        :value="$value"
-        :placeholder="$placeholder"
-        :required="$required"
-        :disabled="$disabled"
-        :model="$model">
-        
-        @foreach($formats as $format => $description)
-            <option value="{{ $format }}" @if($value == $format) selected @endif>
-                {{ $description }} ({{ $now->format($format) }})
-            </option>
-        @endforeach
-        
-    </x-form.base.select-base>
-    
-</x-form.base.field-wrapper> 
+<x-form.select
+    :name="$name"
+    :label="$label"
+    :value="$value"
+    :placeholder="$placeholder"
+    :hint="$hint"
+    :required="$required"
+    :disabled="$disabled"
+    :options="$options"
+    :wrapper-class="$wrapperClass"
+    {{ $attributes }}
+/> 

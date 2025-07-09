@@ -104,12 +104,12 @@ return [
     
     // Time Formats
     'time_formats' => [
-        '24h' => '24-hour',
-        '24h_seconds' => '24-hour with seconds',
-        '12h' => '12-hour',
-        '12h_seconds' => '12-hour with seconds',
-        '12h_leading' => '12-hour with leading zero',
-        '12h_leading_seconds' => '12-hour with leading zero and seconds',
+        '24_hour' => '24-hour',
+        '24_hour_seconds' => '24-hour with seconds',
+        '12_hour' => '12-hour',
+        '12_hour_seconds' => '12-hour with seconds',
+        '12_hour_no_leading' => '12-hour (no leading zero)',
+        '12_hour_no_leading_seconds' => '12-hour with seconds (no leading zero)',
     ],
     
     // Subscription
