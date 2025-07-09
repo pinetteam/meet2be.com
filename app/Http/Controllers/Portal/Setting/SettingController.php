@@ -64,13 +64,13 @@ class SettingController extends Controller
             
             return response()->json([
                 'success' => true,
-                'message' => __('portal.settings.messages.updated_successfully'),
+                'message' => __('settings.messages.saved_successfully'),
                 'datetime_updated' => $timezoneChanged || $dateFormatChanged || $timeFormatChanged
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => __('portal.settings.messages.update_failed')
+                'message' => __('settings.messages.save_failed')
             ], 500);
         }
     }

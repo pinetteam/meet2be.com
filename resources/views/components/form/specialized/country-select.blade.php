@@ -1,6 +1,6 @@
 {{-- Meet2Be: Country select component with flags --}}
 {{-- Author: Meet2Be Development Team --}}
-{{-- Specialized country selector with flag display --}}
+{{-- Country selector with flag display --}}
 
 @props([
     'name' => 'country_id',
@@ -13,50 +13,147 @@
     'model' => null,
     'size' => 'md',
     'wrapperClass' => '',
-    'countries' => null, // Optional: provide countries collection
+    'countries' => null,
     'showFlag' => true,
-    'showPhoneCode' => false
+    'showCode' => false
 ])
 
 @php
     $label = $label ?? __('common.labels.country');
     $placeholder = $placeholder ?? __('common.messages.select_option');
-    $countries = $countries ?? \App\Models\System\Country::where('is_active', true)->orderBy('name_en')->get();
+    $countries = $countries ?? \App\Models\System\Country::orderBy('name_en')->get();
 @endphp
 
-<x-form.base.field-wrapper 
-    :name="$name" 
-    :label="$label" 
-    :required="$required" 
+<x-form.select
+    :name="$name"
+    :label="$label"
+    :value="$value"
+    :placeholder="$placeholder"
     :hint="$hint"
-    :wrapper-class="$wrapperClass">
+    :required="$required"
+    :disabled="$disabled"
+    :model="$model"
+    :size="$size"
+    :wrapper-class="$wrapperClass"
+    searchable>
     
-    <x-form.select.searchable
-        :name="$name"
-        :value="$value"
-        :placeholder="$placeholder"
-        :required="$required"
-        :disabled="$disabled"
-        :model="$model"
-        :size="$size">
-        
-        @foreach($countries as $country)
-            <option value="{{ $country->id }}" 
-                    data-flag="{{ $country->iso2 }}"
-                    data-phone-code="{{ $country->phone_code }}">
-                @if($showFlag)
-                    <span class="flag-icon flag-icon-{{ strtolower($country->iso2) }}"></span>
-                @endif
-                {{ $country->name_en }}
-                @if($showPhoneCode && $country->phone_code)
-                    (+{{ $country->phone_code }})
-                @endif
-            </option>
-        @endforeach
-        
-    </x-form.select.searchable>
+    @foreach($countries as $country)
+        <option value="{{ $country->id }}"
+                data-flag="{{ $country->iso2 }}">
+            {{ $country->name_en }}
+            @if($showCode)
+                ({{ $country->iso2 }})
+            @endif
+        </option>
+    @endforeach
     
-</x-form.base.field-wrapper>
+</x-form.select>
+
+<script>
+// Meet2Be: Country select component logic
+function countrySelect(initialData) {
+    return {
+        selectedValue: initialData.value,
+        showDropdown: false,
+        search: '',
+        focusedIndex: -1,
+        countries: @json($countries),
+        flagLoaded: {},
+        
+        init() {
+            // Meet2Be: Handle x-model binding
+            if (initialData.xModel) {
+                // Watch external model changes
+                this.$watch('$parent.' + initialData.xModel, (value) => {
+                    if (value !== this.selectedValue) {
+                        this.selectedValue = value;
+                    }
+                });
+                
+                // Update parent model when selection changes
+                this.$watch('selectedValue', (value) => {
+                    this.$parent[initialData.xModel] = value;
+                });
+            }
+            
+            // Meet2Be: Preload flag status for all countries
+            this.countries.forEach(country => {
+                const img = new Image();
+                img.onload = () => {
+                    this.flagLoaded[country.iso2] = true;
+                };
+                img.onerror = () => {
+                    this.flagLoaded[country.iso2] = false;
+                };
+                img.src = `/assets/images/flags/32x24/${country.iso2.toLowerCase()}.png`;
+            });
+        },
+        
+        get selectedCountry() {
+            return this.countries.find(c => c.id === this.selectedValue);
+        },
+        
+        get filteredCountries() {
+            if (!this.search) return this.countries;
+            
+            const searchLower = this.search.toLowerCase();
+            return this.countries.filter(country => 
+                country.name_en.toLowerCase().includes(searchLower) ||
+                country.iso2.toLowerCase().includes(searchLower) ||
+                country.iso3.toLowerCase().includes(searchLower)
+            );
+        },
+        
+        toggleDropdown() {
+            this.showDropdown = !this.showDropdown;
+            if (this.showDropdown) {
+                this.$nextTick(() => {
+                    this.$refs.searchInput?.focus();
+                    // Set focused index to selected item
+                    const selectedIndex = this.filteredCountries.findIndex(c => c.id === this.selectedValue);
+                    this.focusedIndex = selectedIndex >= 0 ? selectedIndex : 0;
+                });
+            } else {
+                this.search = '';
+                this.focusedIndex = -1;
+            }
+        },
+        
+        closeDropdown() {
+            this.showDropdown = false;
+            this.search = '';
+            this.focusedIndex = -1;
+        },
+        
+        selectCountry(country) {
+            this.selectedValue = country.id;
+            this.closeDropdown();
+        },
+        
+        selectFocused() {
+            if (this.focusedIndex >= 0 && this.focusedIndex < this.filteredCountries.length) {
+                this.selectCountry(this.filteredCountries[this.focusedIndex]);
+            }
+        },
+        
+        focusNext() {
+            if (this.focusedIndex < this.filteredCountries.length - 1) {
+                this.focusedIndex++;
+            } else {
+                this.focusedIndex = 0;
+            }
+        },
+        
+        focusPrevious() {
+            if (this.focusedIndex > 0) {
+                this.focusedIndex--;
+            } else {
+                this.focusedIndex = this.filteredCountries.length - 1;
+            }
+        }
+    }
+}
+</script>
 
 @push('styles')
 <style>

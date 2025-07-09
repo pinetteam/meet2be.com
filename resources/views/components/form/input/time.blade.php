@@ -1,6 +1,6 @@
-{{-- Meet2Be: Email input component --}}
+{{-- Meet2Be: Time input component --}}
 {{-- Author: Meet2Be Development Team --}}
-{{-- Email input with validation --}}
+{{-- Time picker input --}}
 
 @props([
     'name',
@@ -12,10 +12,12 @@
     'disabled' => false,
     'readonly' => false,
     'autofocus' => false,
-    'autocomplete' => 'email',
+    'min' => null,
+    'max' => null,
+    'step' => null,
     'model' => null,
     'size' => 'md',
-    'icon' => null,
+    'icon' => 'fa-solid fa-clock',
     'wrapperClass' => ''
 ])
 
@@ -28,14 +30,16 @@
     
     <x-form.base.input-base
         :name="$name"
-        type="email"
+        type="time"
         :value="$value"
         :placeholder="$placeholder"
         :required="$required"
         :disabled="$disabled"
         :readonly="$readonly"
         :autofocus="$autofocus"
-        :autocomplete="$autocomplete"
+        :min="$min"
+        :max="$max"
+        :step="$step"
         :model="$model"
         :size="$size"
         :icon="$icon"

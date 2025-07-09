@@ -25,6 +25,9 @@
     $searchPlaceholder = $searchPlaceholder ?? __('common.search');
     $noResultsText = $noResultsText ?? __('common.no_results');
     $loadingText = $loadingText ?? __('common.loading');
+    
+    // Meet2Be: Extract x-model from attributes
+    $xModel = $attributes->get('x-model');
 @endphp
 
 <x-form.base.field-wrapper 
@@ -42,8 +45,9 @@
         'disabled' => $disabled,
         'size' => $size,
         'ajax' => $ajax,
-        'ajaxUrl' => $ajaxUrl
-    ]))">
+        'ajaxUrl' => $ajaxUrl,
+        'xModel' => $xModel
+    ]))" @if($xModel) x-modelable="selectedValue" x-model="{{ $xModel }}" @endif>
         <div class="relative">
             {{-- Select Button --}}
             <button type="button"
@@ -58,7 +62,7 @@
                         'px-3 py-2 text-sm': size === 'md',
                         'px-4 py-2.5 text-base': size === 'lg'
                     }">
-                <span class="block truncate" x-text="selectedLabel || placeholder || '{{ __('common.select') }}'"></span>
+                <span class="block truncate" x-html="selectedDisplay || placeholder || '{{ __('common.select') }}'"></span>
                 <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                     <i class="fa-solid fa-chevron-down text-gray-400 transition-transform duration-200" 
                        :class="{ 'rotate-180': showDropdown, 'text-xs': size === 'sm', 'text-sm': size !== 'sm' }"></i>
@@ -104,6 +108,7 @@
             <input type="hidden" 
                    name="{{ $name }}" 
                    x-model="selectedValue"
+                   @if($xModel) x-modelable="selectedValue" @endif
                    @if($required) required @endif>
         </div>
     </div>
@@ -134,12 +139,33 @@ function searchableSelect(config) {
         init() {
             // Meet2Be: Parse options from slot content
             this.parseOptions();
+            
+            // Set initial value if provided
+            if (config.value) {
+                this.selectedValue = config.value;
+            }
+            
             this.updateSelectedLabel();
             
             // Watch for value changes
             this.$watch('selectedValue', () => {
                 this.updateSelectedLabel();
             });
+            
+            // Meet2Be: Handle x-model binding
+            if (config.xModel) {
+                // Watch external model changes
+                this.$watch('$parent.' + config.xModel, (value) => {
+                    if (value !== this.selectedValue) {
+                        this.selectedValue = value;
+                    }
+                });
+                
+                // Update parent model when selection changes
+                this.$watch('selectedValue', (value) => {
+                    this.$parent[config.xModel] = value;
+                });
+            }
         },
         
         parseOptions() {
@@ -161,7 +187,8 @@ function searchableSelect(config) {
                                 value: option.value,
                                 label: option.textContent.trim(),
                                 group: group.label,
-                                disabled: option.disabled || false
+                                disabled: option.disabled || false,
+                                data: this.getDataAttributes(option)
                             });
                         }
                     });
@@ -176,12 +203,24 @@ function searchableSelect(config) {
                         value: option.value,
                         label: option.textContent.trim(),
                         group: null,
-                        disabled: option.disabled || false
+                        disabled: option.disabled || false,
+                        data: this.getDataAttributes(option)
                     });
                 }
             });
             
             this.filterOptions();
+        },
+        
+        getDataAttributes(element) {
+            const data = {};
+            Array.from(element.attributes).forEach(attr => {
+                if (attr.name.startsWith('data-')) {
+                    const key = attr.name.replace('data-', '');
+                    data[key] = attr.value;
+                }
+            });
+            return data;
         },
         
         filterOptions() {
@@ -217,6 +256,23 @@ function searchableSelect(config) {
                 const isHighlighted = index === this.highlightedIndex;
                 const isDisabled = option.disabled;
                 
+                // Meet2Be: Check if this is a country select with flag
+                let optionContent = option.label;
+                if (option.data && option.data.flag) {
+                    const flagPath = `/assets/images/flags/32x24/${option.data.flag.toLowerCase()}.png`;
+                    optionContent = `
+                        <div class="flex items-center">
+                            <img src="${flagPath}" 
+                                 alt="${option.label}"
+                                 class="w-5 h-4 mr-3 rounded-sm"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                            <span class="hidden items-center justify-center w-5 h-4 mr-3 text-xs font-medium bg-gray-200 dark:bg-gray-600 rounded-sm text-gray-600 dark:text-gray-300">
+                                ${option.data.flag}
+                            </span>
+                            <span>${option.label}</span>
+                        </div>`;
+                }
+                
                 html += `
                     <button type="button"
                             @click="${!isDisabled ? `selectOption('${option.value}', '${option.label.replace(/'/g, "\\'")}')` : ''}"
@@ -235,7 +291,7 @@ function searchableSelect(config) {
                                     : ''
                             }"
                             ${isDisabled ? 'disabled' : ''}>
-                        ${option.label}
+                        ${optionContent}
                     </button>`;
             });
             
@@ -286,6 +342,32 @@ function searchableSelect(config) {
         updateSelectedLabel() {
             const selected = this.options.find(opt => opt.value === this.selectedValue);
             this.selectedLabel = selected ? selected.label : '';
+            
+            // Meet2Be: Update display with flag if available
+            if (selected && selected.data && selected.data.flag) {
+                const flagPath = `/assets/images/flags/32x24/${selected.data.flag.toLowerCase()}.png`;
+                this.selectedDisplay = `
+                    <div class="flex items-center">
+                        <img src="${flagPath}" 
+                             alt="${selected.label}"
+                             class="w-5 h-4 mr-2 rounded-sm inline-block"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                        <span class="hidden items-center justify-center w-5 h-4 mr-2 text-xs font-medium bg-gray-200 dark:bg-gray-600 rounded-sm text-gray-600 dark:text-gray-300">
+                            ${selected.data.flag}
+                        </span>
+                        <span>${selected.label}</span>
+                    </div>`;
+            } else {
+                this.selectedDisplay = this.selectedLabel;
+            }
+        },
+        
+        get selectedDisplay() {
+            return this._selectedDisplay || this.selectedLabel;
+        },
+        
+        set selectedDisplay(value) {
+            this._selectedDisplay = value;
         },
         
         highlightNext() {

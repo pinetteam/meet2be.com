@@ -1,6 +1,6 @@
 {{-- Meet2Be: Language select component --}}
 {{-- Author: Meet2Be Development Team --}}
-{{-- Language selector with native names --}}
+{{-- Language selector with native name display --}}
 
 @props([
     'name' => 'language_id',
@@ -14,8 +14,7 @@
     'size' => 'md',
     'wrapperClass' => '',
     'languages' => null,
-    'showNativeName' => true,
-    'showCode' => false
+    'showNativeName' => true
 ])
 
 @php
@@ -42,9 +41,6 @@
             {{ $language->name_en }}
             @if($showNativeName && $language->name_native)
                 ({{ $language->name_native }})
-            @endif
-            @if($showCode)
-                - {{ strtoupper($language->code) }}
             @endif
         </option>
     @endforeach

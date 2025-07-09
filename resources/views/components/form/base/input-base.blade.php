@@ -17,7 +17,6 @@
     'step' => null,
     'pattern' => null,
     'maxlength' => null,
-    'model' => null, // For Alpine.js x-model
     'inputClass' => '',
     'prefix' => null,
     'suffix' => null,
@@ -28,6 +27,9 @@
 ])
 
 @php
+    // Meet2Be: Extract x-model from attributes
+    $xModel = $attributes->get('x-model');
+    
     // Meet2Be: Size classes
     $sizeClasses = [
         'sm' => 'px-2.5 py-1.5 text-xs',
@@ -81,7 +83,7 @@
         type="{{ $type }}"
         name="{{ $name }}"
         id="{{ $name }}"
-        @if($model) x-model="{{ $model }}" @else value="{{ old($name, $value) }}" @endif
+        @if($xModel) x-model="{{ $xModel }}" @else value="{{ old($name, $value) }}" @endif
         @if($placeholder) placeholder="{{ $placeholder }}" @endif
         @if($required) required @endif
         @if($disabled) disabled @endif
@@ -93,7 +95,7 @@
         @if($step !== null) step="{{ $step }}" @endif
         @if($pattern) pattern="{{ $pattern }}" @endif
         @if($maxlength) maxlength="{{ $maxlength }}" @endif
-        {{ $attributes->merge(['class' => $finalClasses]) }}
+        {{ $attributes->except(['x-model'])->merge(['class' => $finalClasses]) }}
     >
     
     {{-- Trailing icon or suffix --}}

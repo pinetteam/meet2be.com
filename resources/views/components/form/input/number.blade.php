@@ -1,6 +1,6 @@
-{{-- Meet2Be: Email input component --}}
+{{-- Meet2Be: Number input component --}}
 {{-- Author: Meet2Be Development Team --}}
-{{-- Email input with validation --}}
+{{-- Number input with optional min/max/step --}}
 
 @props([
     'name',
@@ -12,10 +12,13 @@
     'disabled' => false,
     'readonly' => false,
     'autofocus' => false,
-    'autocomplete' => 'email',
+    'min' => null,
+    'max' => null,
+    'step' => null,
     'model' => null,
     'size' => 'md',
-    'icon' => null,
+    'prefix' => null,
+    'suffix' => null,
     'wrapperClass' => ''
 ])
 
@@ -28,17 +31,20 @@
     
     <x-form.base.input-base
         :name="$name"
-        type="email"
+        type="number"
         :value="$value"
         :placeholder="$placeholder"
         :required="$required"
         :disabled="$disabled"
         :readonly="$readonly"
         :autofocus="$autofocus"
-        :autocomplete="$autocomplete"
+        :min="$min"
+        :max="$max"
+        :step="$step"
         :model="$model"
         :size="$size"
-        :icon="$icon"
+        :prefix="$prefix"
+        :suffix="$suffix"
         {{ $attributes }} />
         
 </x-form.base.field-wrapper> 

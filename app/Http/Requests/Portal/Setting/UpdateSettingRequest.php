@@ -27,7 +27,6 @@ class UpdateSettingRequest extends FormRequest
             // Basic Information
             'name' => 'required|string|max:200',
             'legal_name' => 'nullable|string|max:200',
-            'slug' => ['required', 'string', 'max:100', Rule::unique('tenants')->ignore($tenant->id)],
             
             // Contact Information
             'email' => 'required|email|max:255',

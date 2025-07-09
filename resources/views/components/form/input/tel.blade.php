@@ -1,6 +1,6 @@
-{{-- Meet2Be: Email input component --}}
+{{-- Meet2Be: Tel input component --}}
 {{-- Author: Meet2Be Development Team --}}
-{{-- Email input with validation --}}
+{{-- Basic telephone input --}}
 
 @props([
     'name',
@@ -12,10 +12,9 @@
     'disabled' => false,
     'readonly' => false,
     'autofocus' => false,
-    'autocomplete' => 'email',
     'model' => null,
     'size' => 'md',
-    'icon' => null,
+    'icon' => 'fa-solid fa-phone',
     'wrapperClass' => ''
 ])
 
@@ -28,14 +27,13 @@
     
     <x-form.base.input-base
         :name="$name"
-        type="email"
+        type="tel"
         :value="$value"
         :placeholder="$placeholder"
         :required="$required"
         :disabled="$disabled"
         :readonly="$readonly"
         :autofocus="$autofocus"
-        :autocomplete="$autocomplete"
         :model="$model"
         :size="$size"
         :icon="$icon"

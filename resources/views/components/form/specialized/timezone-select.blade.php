@@ -1,6 +1,6 @@
 {{-- Meet2Be: Timezone select component --}}
 {{-- Author: Meet2Be Development Team --}}
-{{-- Timezone selector grouped by region --}}
+{{-- Timezone selector with UTC offset display --}}
 
 @props([
     'name' => 'timezone_id',
@@ -14,16 +14,25 @@
     'size' => 'md',
     'wrapperClass' => '',
     'timezones' => null,
-    'showOffset' => true
+    'showOffset' => true,
+    'groupByRegion' => true
 ])
 
 @php
     $label = $label ?? __('common.labels.timezone');
     $placeholder = $placeholder ?? __('common.messages.select_option');
-    $timezones = $timezones ?? \App\Models\System\Timezone::where('is_active', true)->orderBy('region')->orderBy('offset')->get();
+    $timezones = $timezones ?? \App\Models\System\Timezone::where('is_active', true)->orderBy('offset')->get();
     
-    // Group timezones by region
-    $groupedTimezones = $timezones->groupBy('region');
+    // Group timezones by region if enabled
+    $groupedTimezones = [];
+    if ($groupByRegion) {
+        foreach ($timezones as $timezone) {
+            $parts = explode('/', $timezone->name);
+            $region = $parts[0] ?? 'Other';
+            $groupedTimezones[$region][] = $timezone;
+        }
+        ksort($groupedTimezones);
+    }
 @endphp
 
 <x-form.select
@@ -37,20 +46,30 @@
     :model="$model"
     :size="$size"
     :wrapper-class="$wrapperClass"
-    searchable
-    grouped>
+    searchable>
     
-    @foreach($groupedTimezones as $region => $regionTimezones)
-        <optgroup label="{{ ucfirst($region) }}">
-            @foreach($regionTimezones as $timezone)
-                <option value="{{ $timezone->id }}">
-                    {{ $timezone->name }}
-                    @if($showOffset)
-                        (UTC{{ $timezone->offset >= 0 ? '+' : '' }}{{ number_format($timezone->offset, 2) }})
-                    @endif
-                </option>
-            @endforeach
-        </optgroup>
-    @endforeach
+    @if($groupByRegion)
+        @foreach($groupedTimezones as $region => $regionTimezones)
+            <optgroup label="{{ $region }}">
+                @foreach($regionTimezones as $timezone)
+                    <option value="{{ $timezone->id }}">
+                        {{ $timezone->name }}
+                        @if($showOffset)
+                            (UTC {{ $timezone->offset >= 0 ? '+' : '' }}{{ $timezone->offset }})
+                        @endif
+                    </option>
+                @endforeach
+            </optgroup>
+        @endforeach
+    @else
+        @foreach($timezones as $timezone)
+            <option value="{{ $timezone->id }}">
+                {{ $timezone->name }}
+                @if($showOffset)
+                    (UTC {{ $timezone->offset >= 0 ? '+' : '' }}{{ $timezone->offset }})
+                @endif
+            </option>
+        @endforeach
+    @endif
     
 </x-form.select> 
