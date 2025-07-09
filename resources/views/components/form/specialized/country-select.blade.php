@@ -23,6 +23,17 @@
     
     // Generate unique ID
     $fieldId = $name . '_' . uniqid();
+    
+    // Prepare countries data with localized names
+    $countriesData = $countries->map(function($country) {
+        return [
+            'id' => $country->id,
+            'iso2' => $country->iso2,
+            'iso3' => $country->iso3,
+            'name' => $country->getName(),
+            'name_en' => $country->name_en,
+        ];
+    });
 @endphp
 
 <x-form.base.field-wrapper 
@@ -38,7 +49,7 @@
             open: false,
             search: '',
             selectedId: '{{ $selectedValue }}',
-            countries: {{ Js::from($countries) }},
+            countries: {{ Js::from($countriesData) }},
             flagLoaded: {},
             
             init() {
@@ -60,7 +71,7 @@
                 
                 const searchLower = this.search.toLowerCase();
                 return this.countries.filter(country => 
-                    country.name_en.toLowerCase().includes(searchLower) ||
+                    country.name.toLowerCase().includes(searchLower) ||
                     country.iso2.toLowerCase().includes(searchLower) ||
                     country.iso3.toLowerCase().includes(searchLower)
                 );
@@ -114,7 +125,7 @@
                         <template x-if="flagLoaded[selectedCountry.iso2] !== false">
                             <img 
                                 :src="`/assets/images/flags/32x24/${selectedCountry.iso2.toLowerCase()}.png`" 
-                                :alt="selectedCountry.name_en"
+                                :alt="selectedCountry.name"
                                 x-on:error="flagLoaded[selectedCountry.iso2] = false"
                                 class="w-5 h-4 mr-2 flex-shrink-0"
                             />
@@ -126,7 +137,7 @@
                             </span>
                         </template>
                         
-                        <span class="block truncate text-gray-900 dark:text-white" x-text="selectedCountry.name_en"></span>
+                        <span class="block truncate text-gray-900 dark:text-white" x-text="selectedCountry.name"></span>
                     </span>
                 </template>
             </span>
@@ -183,7 +194,7 @@
                             <template x-if="flagLoaded[country.iso2] !== false">
                                 <img 
                                     :src="`/assets/images/flags/32x24/${country.iso2.toLowerCase()}.png`" 
-                                    :alt="country.name_en"
+                                    :alt="country.name"
                                     x-on:error="flagLoaded[country.iso2] = false"
                                     class="w-5 h-4 mr-3 flex-shrink-0"
                                 />
@@ -195,7 +206,7 @@
                                 </span>
                             </template>
                             
-                            <span class="flex-1 text-sm text-gray-900 dark:text-white" x-text="country.name_en"></span>
+                            <span class="flex-1 text-sm text-gray-900 dark:text-white" x-text="country.name"></span>
                             
                             <i x-show="selectedId === country.id" class="fas fa-check ml-2 text-blue-600 dark:text-blue-400"></i>
                         </button>

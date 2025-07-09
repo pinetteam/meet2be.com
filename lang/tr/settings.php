@@ -105,6 +105,12 @@ return [
     
     // Saat Formatları
     'time_formats' => [
+        '24_hour' => '24 saat',
+        '24_hour_seconds' => '24 saat (saniyeli)',
+        '12_hour' => '12 saat',
+        '12_hour_padded' => '12 saat (başta sıfırlı)',
+        '12_hour_seconds' => '12 saat (saniyeli)',
+        '12_hour_padded_seconds' => '12 saat (saniyeli, başta sıfırlı)',
         '12' => '12 saat',
         '24' => '24 saat',
     ],

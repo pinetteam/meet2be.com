@@ -1,27 +1,47 @@
 <?php
 
 return [
-    'title' => 'Kiracılar',
-    'subtitle' => 'Kiracı hesaplarını ve aboneliklerini yönetin',
+    'title' => 'Kiracı Yönetimi',
+    'singular' => 'Kiracı',
+    'plural' => 'Kiracılar',
+    
+    // Tipler
+    'types' => [
+        'individual' => 'Bireysel',
+        'business' => 'İşletme',
+        'enterprise' => 'Kurumsal',
+    ],
     
     // Durumlar
     'statuses' => [
         'active' => 'Aktif',
-        'trial' => 'Deneme',
+        'inactive' => 'Pasif',
         'suspended' => 'Askıya Alınmış',
-        'cancelled' => 'İptal Edilmiş',
         'expired' => 'Süresi Dolmuş',
+        'trial' => 'Deneme',
+    ],
+    
+    // Planlar
+    'plans' => [
+        'basic' => 'Temel',
+        'pro' => 'Profesyonel',
+        'enterprise' => 'Kurumsal',
     ],
     
     // Alanlar
     'fields' => [
-        'name' => 'Kiracı Adı',
-        'code' => 'Kiracı Kodu',
+        'name' => 'İsim',
+        'code' => 'Kod',
+        'type' => 'Tip',
+        'status' => 'Durum',
+        'plan' => 'Plan',
+        'email' => 'E-posta',
+        'phone' => 'Telefon',
+        'created_at' => 'Oluşturulma Tarihi',
         'legal_name' => 'Yasal Adı',
         'tax_number' => 'Vergi Numarası',
         'tax_office' => 'Vergi Dairesi',
         'owner' => 'Sahip',
-        'status' => 'Durum',
         'subscription_plan' => 'Abonelik Planı',
         'subscription_starts_at' => 'Abonelik Başlangıcı',
         'subscription_ends_at' => 'Abonelik Bitişi',
@@ -34,17 +54,24 @@ return [
         'current_storage' => 'Kullanılan Depolama',
     ],
     
+    // İşlemler
+    'actions' => [
+        'create' => 'Kiracı Oluştur',
+        'edit' => 'Kiracı Düzenle',
+        'delete' => 'Kiracı Sil',
+        'view' => 'Kiracı Görüntüle',
+    ],
+    
     // Mesajlar
     'messages' => [
-        'not_found' => 'Kiracı bulunamadı veya erişim yetkiniz yok',
+        'created' => 'Kiracı başarıyla oluşturuldu.',
+        'updated' => 'Kiracı başarıyla güncellendi.',
+        'deleted' => 'Kiracı başarıyla silindi.',
+        'not_found' => 'Kiracı bulunamadı.',
         'access_denied' => 'Bu kiracıya erişim yetkiniz yok',
         'subscription_expired' => 'Abonelik süresi dolmuş',
         'trial_expired' => 'Deneme süresi dolmuş',
-        'suspended' => 'Kiracı hesabı askıya alınmış',
         'limit_exceeded' => 'Limit aşıldı',
-        'created_successfully' => 'Kiracı başarıyla oluşturuldu',
-        'updated_successfully' => 'Kiracı başarıyla güncellendi',
-        'deleted_successfully' => 'Kiracı başarıyla silindi',
     ],
     
     // Limitler

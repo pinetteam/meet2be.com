@@ -386,17 +386,17 @@ class Tenant extends Model
 
     public function getTypeName(): string
     {
-        return self::TYPES[$this->type] ?? 'Unknown';
+        return __('tenant.types.' . $this->type) ?? 'Unknown';
     }
 
     public function getStatusName(): string
     {
-        return self::STATUSES[$this->status] ?? 'Unknown';
+        return __('tenant.statuses.' . $this->status) ?? 'Unknown';
     }
 
     public function getPlanName(): string
     {
-        return self::PLANS[$this->plan] ?? 'Unknown';
+        return __('tenant.plans.' . $this->plan) ?? 'Unknown';
     }
 
     public function getStatusColor(): string
@@ -409,6 +409,38 @@ class Tenant extends Model
             self::STATUS_TRIAL => 'blue',
             default => 'gray'
         };
+    }
+
+    public function getDateFormatLabel(): string
+    {
+        $labels = [
+            self::DATE_FORMAT_DMY_SLASH => __('settings.date_formats.european'),
+            self::DATE_FORMAT_MDY_SLASH => __('settings.date_formats.us'),
+            self::DATE_FORMAT_YMD_DASH => __('settings.date_formats.iso8601'),
+            self::DATE_FORMAT_DMY_DOT => __('settings.date_formats.european_dot'),
+            self::DATE_FORMAT_DMY_DASH => __('settings.date_formats.european_dash'),
+            self::DATE_FORMAT_MDY_DASH => __('settings.date_formats.us_dash'),
+            self::DATE_FORMAT_SHORT_MONTH => __('settings.date_formats.short'),
+            self::DATE_FORMAT_FULL_MONTH => __('settings.date_formats.long'),
+            self::DATE_FORMAT_DAY_MONTH_YEAR => __('settings.date_formats.compact'),
+            self::DATE_FORMAT_DAY_MONTH_YEAR_PADDED => __('settings.date_formats.medium'),
+        ];
+        
+        return $labels[$this->date_format] ?? $this->date_format;
+    }
+    
+    public function getTimeFormatLabel(): string
+    {
+        $labels = [
+            self::TIME_FORMAT_24_HOUR => __('settings.time_formats.24_hour'),
+            self::TIME_FORMAT_24_HOUR_SECONDS => __('settings.time_formats.24_hour_seconds'),
+            self::TIME_FORMAT_12_HOUR => __('settings.time_formats.12_hour'),
+            self::TIME_FORMAT_12_HOUR_PADDED => __('settings.time_formats.12_hour_padded'),
+            self::TIME_FORMAT_12_HOUR_SECONDS => __('settings.time_formats.12_hour_seconds'),
+            self::TIME_FORMAT_12_HOUR_PADDED_SECONDS => __('settings.time_formats.12_hour_padded_seconds'),
+        ];
+        
+        return $labels[$this->time_format] ?? $this->time_format;
     }
 
     protected static function boot()

@@ -84,4 +84,17 @@ class Country extends Model
     {
         return '+' . ltrim($this->phone_code, '+');
     }
+
+    public function getName(): string
+    {
+        $locale = app()->getLocale();
+        
+        // Eğer Türkçe ise ve native name varsa onu döndür
+        if ($locale === 'tr' && $this->name_native) {
+            return $this->name_native;
+        }
+        
+        // Diğer durumlar için İngilizce isim döndür
+        return $this->name_en;
+    }
 } 

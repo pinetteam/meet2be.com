@@ -23,6 +23,16 @@
     
     // Get current time for preview
     $currentTime = now();
+    
+    // Map formats to translation keys
+    $formatLabels = [
+        Tenant::TIME_FORMAT_24_HOUR => __('settings.time_formats.24_hour'),
+        Tenant::TIME_FORMAT_24_HOUR_SECONDS => __('settings.time_formats.24_hour_seconds'),
+        Tenant::TIME_FORMAT_12_HOUR => __('settings.time_formats.12_hour'),
+        Tenant::TIME_FORMAT_12_HOUR_PADDED => __('settings.time_formats.12_hour_padded'),
+        Tenant::TIME_FORMAT_12_HOUR_SECONDS => __('settings.time_formats.12_hour_seconds'),
+        Tenant::TIME_FORMAT_12_HOUR_PADDED_SECONDS => __('settings.time_formats.12_hour_padded_seconds'),
+    ];
 @endphp
 
 <x-form.base.field-wrapper 
@@ -32,7 +42,7 @@
     :hint="$hint"
     :wrapper-class="$wrapperClass">
     
-    <x-form.base.select 
+    <x-form.base.select-base 
         :name="$name"
         :value="$selectedValue"
         :required="$required"
@@ -41,10 +51,10 @@
         
         @foreach($formats as $format => $display)
             <option value="{{ $format }}" @if($selectedValue == $format) selected @endif>
-                {{ $display }} - {{ $currentTime->format($format) }}
+                {{ $formatLabels[$format] ?? $display }} - {{ $currentTime->format($format) }}
             </option>
         @endforeach
         
-    </x-form.base.select>
+    </x-form.base.select-base>
     
 </x-form.base.field-wrapper> 

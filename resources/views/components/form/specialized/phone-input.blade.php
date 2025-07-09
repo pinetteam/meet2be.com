@@ -45,6 +45,18 @@
     
     // Generate unique ID
     $fieldId = $name . '_' . uniqid();
+    
+    // Prepare countries data with localized names
+    $countriesData = $countries->map(function($country) {
+        return [
+            'id' => $country->id,
+            'iso2' => $country->iso2,
+            'iso3' => $country->iso3,
+            'name' => $country->getName(),
+            'name_en' => $country->name_en,
+            'phone_code' => $country->phone_code,
+        ];
+    });
 @endphp
 
 <x-form.base.field-wrapper 
@@ -61,7 +73,7 @@
             countrySearch: '',
             selectedCountryId: '{{ $selectedCountryId }}',
             phoneNumber: '{{ $phoneOnly }}',
-            countries: {{ Js::from($countries) }},
+            countries: {{ Js::from($countriesData) }},
             flagLoaded: {},
             focused: false,
             
@@ -84,7 +96,7 @@
                 
                 const searchLower = this.countrySearch.toLowerCase();
                 return this.countries.filter(country => 
-                    country.name_en.toLowerCase().includes(searchLower) ||
+                    country.name.toLowerCase().includes(searchLower) ||
                     country.iso2.toLowerCase().includes(searchLower) ||
                     country.iso3.toLowerCase().includes(searchLower) ||
                     country.phone_code.includes(searchLower)
@@ -150,7 +162,7 @@
                         <template x-if="flagLoaded[selectedCountry.iso2] !== false">
                             <img 
                                 :src="`/assets/images/flags/32x24/${selectedCountry.iso2.toLowerCase()}.png`" 
-                                :alt="selectedCountry.name_en"
+                                :alt="selectedCountry.name"
                                 x-on:error="flagLoaded[selectedCountry.iso2] = false"
                                 class="w-5 h-4 mr-2 flex-shrink-0"
                             />
@@ -237,7 +249,7 @@
                             <template x-if="flagLoaded[country.iso2] !== false">
                                 <img 
                                     :src="`/assets/images/flags/32x24/${country.iso2.toLowerCase()}.png`" 
-                                    :alt="country.name_en"
+                                    :alt="country.name"
                                     x-on:error="flagLoaded[country.iso2] = false"
                                     class="w-5 h-4 mr-3 flex-shrink-0"
                                 />
@@ -250,7 +262,7 @@
                             </template>
                             
                             <span class="flex-1">
-                                <span class="block text-sm font-medium text-gray-900 dark:text-white" x-text="country.name_en"></span>
+                                <span class="block text-sm font-medium text-gray-900 dark:text-white" x-text="country.name"></span>
                                 <span class="block text-xs text-gray-500 dark:text-gray-400" x-text="`+${country.phone_code}`"></span>
                             </span>
                             

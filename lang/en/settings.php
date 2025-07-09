@@ -105,6 +105,12 @@ return [
     
     // Time Formats
     'time_formats' => [
+        '24_hour' => '24-hour',
+        '24_hour_seconds' => '24-hour with seconds',
+        '12_hour' => '12-hour',
+        '12_hour_padded' => '12-hour (padded)',
+        '12_hour_seconds' => '12-hour with seconds',
+        '12_hour_padded_seconds' => '12-hour with seconds (padded)',
         '12' => '12-hour',
         '24' => '24-hour',
     ],
