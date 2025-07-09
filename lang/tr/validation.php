@@ -165,6 +165,11 @@ return [
     'url' => ':attribute alanı geçerli bir URL olmalıdır.',
     'ulid' => ':attribute alanı geçerli bir ULID olmalıdır.',
     'uuid' => ':attribute alanı geçerli bir UUID olmalıdır.',
+    
+    // Özel doğrulama mesajları
+    'phone_format' => ':attribute ülke kodu ile geçerli bir uluslararası telefon numarası olmalıdır (örn: +901234567890).',
+    'invalid_date_format' => 'Seçilen tarih formatı geçersiz.',
+    'invalid_time_format' => 'Seçilen saat formatı geçersiz.',
 
     /*
     |--------------------------------------------------------------------------

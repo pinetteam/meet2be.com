@@ -56,6 +56,28 @@ class Tenant extends Model
         self::PLAN_ENTERPRISE => 'Enterprise',
     ];
 
+    // Date format constants
+    const DATE_FORMAT_DMY_SLASH = 'd/m/Y';
+    const DATE_FORMAT_MDY_SLASH = 'm/d/Y';
+    const DATE_FORMAT_YMD_DASH = 'Y-m-d';
+    const DATE_FORMAT_DMY_DOT = 'd.m.Y';
+    
+    const DATE_FORMATS = [
+        self::DATE_FORMAT_DMY_SLASH => 'DD/MM/YYYY',
+        self::DATE_FORMAT_MDY_SLASH => 'MM/DD/YYYY',
+        self::DATE_FORMAT_YMD_DASH => 'YYYY-MM-DD',
+        self::DATE_FORMAT_DMY_DOT => 'DD.MM.YYYY',
+    ];
+    
+    // Time format constants
+    const TIME_FORMAT_12 = '12';
+    const TIME_FORMAT_24 = '24';
+    
+    const TIME_FORMATS = [
+        self::TIME_FORMAT_12 => '12-hour',
+        self::TIME_FORMAT_24 => '24-hour',
+    ];
+
     protected $fillable = [
         // Basic Information
         'code',

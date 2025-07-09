@@ -1,12 +1,11 @@
 {{-- Meet2Be: Time format select component --}}
 {{-- Author: Meet2Be Development Team --}}
-{{-- Time format selector with preview --}}
+{{-- Time format selector --}}
 
 @props([
     'name' => 'time_format',
     'label' => null,
     'value' => null,
-    'placeholder' => null,
     'hint' => null,
     'required' => false,
     'disabled' => false,
@@ -14,30 +13,44 @@
 ])
 
 @php
-    $label = $label ?? __('settings.fields.time_format');
-    $placeholder = $placeholder ?? __('common.select');
+    use App\Models\Tenant\Tenant;
     
-    // Common time formats with preview
-    $now = now();
-    $options = [
-        'H:i' => __('settings.time_formats.24_hour') . ' (' . $now->format('H:i') . ')',
-        'H:i:s' => __('settings.time_formats.24_hour_seconds') . ' (' . $now->format('H:i:s') . ')',
-        'h:i A' => __('settings.time_formats.12_hour') . ' (' . $now->format('h:i A') . ')',
-        'h:i:s A' => __('settings.time_formats.12_hour_seconds') . ' (' . $now->format('h:i:s A') . ')',
-        'g:i A' => __('settings.time_formats.12_hour_no_leading') . ' (' . $now->format('g:i A') . ')',
-        'g:i:s A' => __('settings.time_formats.12_hour_no_leading_seconds') . ' (' . $now->format('g:i:s A') . ')',
+    $label = $label ?? __('settings.fields.time_format');
+    $selectedValue = old($name, $value);
+    
+    // Get time formats from Tenant model
+    $formats = Tenant::TIME_FORMATS;
+    
+    // Get current time for preview
+    $currentTime = now();
+    
+    // Time format examples
+    $examples = [
+        Tenant::TIME_FORMAT_12 => $currentTime->format('g:i A'),
+        Tenant::TIME_FORMAT_24 => $currentTime->format('H:i'),
     ];
 @endphp
 
-<x-form.select
-    :name="$name"
-    :label="$label"
-    :value="$value"
-    :placeholder="$placeholder"
+<x-form.base.field-wrapper 
+    :name="$name" 
+    :label="$label" 
+    :required="$required" 
     :hint="$hint"
-    :required="$required"
-    :disabled="$disabled"
-    :options="$options"
-    :wrapper-class="$wrapperClass"
-    {{ $attributes }}
-/> 
+    :wrapper-class="$wrapperClass">
+    
+    <x-form.base.select 
+        :name="$name"
+        :value="$selectedValue"
+        :required="$required"
+        :disabled="$disabled"
+        {{ $attributes }}>
+        
+        @foreach($formats as $format => $display)
+            <option value="{{ $format }}" @if($selectedValue == $format) selected @endif>
+                {{ __('settings.time_formats.' . $format) }} - {{ $examples[$format] ?? '' }}
+            </option>
+        @endforeach
+        
+    </x-form.base.select>
+    
+</x-form.base.field-wrapper> 

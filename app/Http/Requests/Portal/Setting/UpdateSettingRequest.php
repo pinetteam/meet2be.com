@@ -30,7 +30,7 @@ class UpdateSettingRequest extends FormRequest
             
             // Contact Information
             'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:20',
+            'phone' => ['nullable', 'string', 'regex:/^\+\d{1,4}\d{4,15}$/'],
             'website' => 'nullable|url|max:255',
             
             // Address Information
@@ -42,17 +42,28 @@ class UpdateSettingRequest extends FormRequest
             'country_id' => 'nullable|uuid|exists:system_countries,id',
             
             // Localization Settings
-            'language_id' => 'nullable|uuid|exists:system_languages,id',
-            'currency_id' => 'nullable|uuid|exists:system_currencies,id',
-            'timezone_id' => 'nullable|uuid|exists:system_timezones,id',
-            'date_format' => 'required|string|max:20',
-            'time_format' => 'required|string|max:20',
+            'language_id' => 'required|uuid|exists:system_languages,id',
+            'timezone_id' => 'required|uuid|exists:system_timezones,id',
+            'date_format' => ['required', 'string', Rule::in(array_keys(Tenant::DATE_FORMATS))],
+            'time_format' => ['required', 'string', Rule::in(array_keys(Tenant::TIME_FORMATS))],
             
             // Subscription & Limits (only for admins)
             'plan' => ['sometimes', 'string', Rule::in(array_keys(Tenant::PLANS))],
             'max_users' => 'sometimes|integer|min:1|max:10000',
             'max_storage_mb' => 'sometimes|integer|min:100|max:1000000',
             'max_events' => 'sometimes|integer|min:1|max:100000',
+        ];
+    }
+    
+    /**
+     * Get custom error messages
+     */
+    public function messages(): array
+    {
+        return [
+            'phone.regex' => __('validation.phone_format'),
+            'date_format.in' => __('validation.invalid_date_format'),
+            'time_format.in' => __('validation.invalid_time_format'),
         ];
     }
 } 

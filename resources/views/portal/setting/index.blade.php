@@ -280,8 +280,6 @@
                                     x-model="form.language_id" />
                             </div>
 
-
-
                             {{-- Timezone --}}
                             <div>
                                 <x-form.specialized.timezone-select
@@ -550,8 +548,8 @@ function settingsForm() {
                         window.notify('{{ __('common.success') }}', data.message || '{{ __('settings.messages.saved_successfully') }}', 'success');
                     }
                     
-                    // If datetime settings changed, reload page to update all datetime displays
-                    if (data.datetime_updated) {
+                    // If datetime settings changed or language/currency changed, reload page
+                    if (data.datetime_updated || data.reload_required) {
                         setTimeout(() => {
                             window.location.reload();
                         }, 1500);

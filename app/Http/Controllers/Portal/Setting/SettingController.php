@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Portal\Setting;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Portal\Setting\UpdateSettingRequest;
 use App\Models\System\Country;
-use App\Models\System\Currency;
 use App\Models\System\Language;
 use App\Models\System\Timezone;
 use App\Services\DateTime\DateTimeManager;
@@ -20,21 +19,19 @@ class SettingController extends Controller
     /**
      * Display tenant settings
      */
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $tenant = $request->user()->tenant;
-        $tenant->load(['country', 'language', 'currency', 'timezone']);
+        $tenant->load(['country', 'language', 'timezone']);
         
         $countries = Country::orderBy('name_en')->get();
         $languages = Language::where('is_active', true)->orderBy('name_en')->get();
-        $currencies = Currency::where('is_active', true)->orderBy('code')->get();
         $timezones = Timezone::orderBy('offset')->get();
         
         return view('portal.setting.index', compact(
             'tenant',
             'countries',
             'languages',
-            'currencies',
             'timezones'
         ));
     }
@@ -48,10 +45,12 @@ class SettingController extends Controller
         
         try {
             // Check if timezone or date/time format changed
-            $timezoneChanged = $request->has('timezone_id') && $tenant->timezone_id != $request->timezone_id;
-            $dateFormatChanged = $request->has('date_format') && $tenant->date_format != $request->date_format;
-            $timeFormatChanged = $request->has('time_format') && $tenant->time_format != $request->time_format;
+            $timezoneChanged = $request->has('timezone_id') && $tenant->timezone_id !== $request->timezone_id;
+            $dateFormatChanged = $request->has('date_format') && $tenant->date_format !== $request->date_format;
+            $timeFormatChanged = $request->has('time_format') && $tenant->time_format !== $request->time_format;
+            $languageChanged = $request->has('language_id') && $tenant->language_id !== $request->language_id;
             
+            // Update tenant
             $tenant->update($request->validated());
             
             // Clear DateTime cache if any date/time settings changed
@@ -62,15 +61,26 @@ class SettingController extends Controller
                 session(['datetime_settings_updated' => now()->timestamp]);
             }
             
+            // Update locale if language changed
+            if ($languageChanged) {
+                $tenant->load('language');
+                if ($tenant->language) {
+                    session(['locale' => $tenant->language->iso_639_1]);
+                }
+            }
+            
             return response()->json([
                 'success' => true,
                 'message' => __('settings.messages.saved_successfully'),
-                'datetime_updated' => $timezoneChanged || $dateFormatChanged || $timeFormatChanged
+                'datetime_updated' => $timezoneChanged || $dateFormatChanged || $timeFormatChanged,
+                'language_updated' => $languageChanged,
+                'reload_required' => $languageChanged
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => __('settings.messages.save_failed')
+                'message' => __('settings.messages.save_failed'),
+                'error' => config('app.debug') ? $e->getMessage() : null
             ], 500);
         }
     }
