@@ -1,138 +1,140 @@
 @extends('layouts.portal')
 
-@section('title', __('portal.settings.title'))
+@section('title', __('settings.title'))
 
 @section('content')
-<div x-data="{ activeTab: 'general' }">
-    {{-- Header --}}
-    <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('portal.settings.title') }}</h1>
-        <p class="text-gray-600 dark:text-gray-400">{{ __('portal.settings.subtitle') }}</p>
+<div class="max-w-7xl mx-auto" x-data="settingsForm()">
+    {{-- Page Header --}}
+    <div class="mb-8">
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+            {{ __('settings.title') }}
+        </h1>
+        <p class="mt-2 text-gray-600 dark:text-gray-400">
+            {{ __('settings.subtitle') }}
+        </p>
     </div>
 
-    {{-- Mobile Tab Selector --}}
-    <div class="sm:hidden bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6 p-4">
-        <label for="mobile-tab-selector" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            {{ __('portal.settings.select_category') }}
-        </label>
-        <select id="mobile-tab-selector" 
-                x-model="activeTab" 
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-            <option value="general">{{ __('portal.settings.tabs.general') }}</option>
-            <option value="contact">{{ __('portal.settings.tabs.contact') }}</option>
-            <option value="localization">{{ __('portal.settings.tabs.localization') }}</option>
-            <option value="subscription">{{ __('portal.settings.tabs.subscription') }}</option>
-        </select>
-    </div>
-
-    {{-- Desktop Tab Navigation --}}
-    <div class="hidden sm:block bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
-        <div class="flex border-b border-gray-200 dark:border-gray-700">
-            <button @click="activeTab = 'general'" 
-                    :class="activeTab === 'general' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
-                    class="px-6 py-3 text-sm font-medium border-b-2 -mb-px transition-colors focus:outline-none">
-                <i class="fas fa-info-circle mr-2"></i>
-                {{ __('portal.settings.tabs.general') }}
-            </button>
-            <button @click="activeTab = 'contact'" 
-                    :class="activeTab === 'contact' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
-                    class="px-6 py-3 text-sm font-medium border-b-2 -mb-px transition-colors focus:outline-none">
-                <i class="fas fa-address-book mr-2"></i>
-                {{ __('portal.settings.tabs.contact') }}
-            </button>
-            <button @click="activeTab = 'localization'" 
-                    :class="activeTab === 'localization' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
-                    class="px-6 py-3 text-sm font-medium border-b-2 -mb-px transition-colors focus:outline-none">
-                <i class="fas fa-globe mr-2"></i>
-                {{ __('portal.settings.tabs.localization') }}
-            </button>
-            <button @click="activeTab = 'subscription'" 
-                    :class="activeTab === 'subscription' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
-                    class="px-6 py-3 text-sm font-medium border-b-2 -mb-px transition-colors focus:outline-none">
-                <i class="fas fa-crown mr-2"></i>
-                {{ __('portal.settings.tabs.subscription') }}
-            </button>
+    {{-- Tab Navigation - Atlassian Style --}}
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+        {{-- Desktop Tabs --}}
+        <div class="hidden sm:block border-b border-gray-200 dark:border-gray-700">
+            <nav class="-mb-px flex" aria-label="Tabs">
+                <button @click="activeTab = 'general'" 
+                        :class="activeTab === 'general' 
+                            ? 'border-blue-500 text-blue-600 dark:text-blue-400' 
+                            : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'"
+                        class="whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm transition-colors duration-150 focus:outline-none">
+                    <i class="fa-solid fa-circle-info mr-2"></i>
+                    {{ __('settings.tabs.general') }}
+                </button>
+                
+                <button @click="activeTab = 'contact'" 
+                        :class="activeTab === 'contact' 
+                            ? 'border-blue-500 text-blue-600 dark:text-blue-400' 
+                            : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'"
+                        class="whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm transition-colors duration-150 focus:outline-none">
+                    <i class="fa-solid fa-address-book mr-2"></i>
+                    {{ __('settings.tabs.contact') }}
+                </button>
+                
+                <button @click="activeTab = 'localization'" 
+                        :class="activeTab === 'localization' 
+                            ? 'border-blue-500 text-blue-600 dark:text-blue-400' 
+                            : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'"
+                        class="whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm transition-colors duration-150 focus:outline-none">
+                    <i class="fa-solid fa-globe mr-2"></i>
+                    {{ __('settings.tabs.localization') }}
+                </button>
+                
+                <button @click="activeTab = 'subscription'" 
+                        :class="activeTab === 'subscription' 
+                            ? 'border-blue-500 text-blue-600 dark:text-blue-400' 
+                            : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'"
+                        class="whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm transition-colors duration-150 focus:outline-none">
+                    <i class="fa-solid fa-crown mr-2"></i>
+                    {{ __('settings.tabs.subscription') }}
+                </button>
+            </nav>
         </div>
-    </div>
 
-    {{-- Tab Content --}}
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-        <form x-data="settingsForm()" @submit.prevent="submitForm" class="p-4 sm:p-6">
+        {{-- Mobile Tab Selector --}}
+        <div class="sm:hidden p-4 border-b border-gray-200 dark:border-gray-700">
+            <label for="mobile-tabs" class="sr-only">{{ __('settings.select_tab') }}</label>
+            <select id="mobile-tabs" 
+                    x-model="activeTab"
+                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 py-2 pl-3 pr-10 text-base focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white">
+                <option value="general">{{ __('settings.tabs.general') }}</option>
+                <option value="contact">{{ __('settings.tabs.contact') }}</option>
+                <option value="localization">{{ __('settings.tabs.localization') }}</option>
+                <option value="subscription">{{ __('settings.tabs.subscription') }}</option>
+            </select>
+        </div>
+
+        {{-- Tab Content --}}
+        <form @submit.prevent="submitForm" class="p-6">
             @csrf
             @method('PUT')
 
             {{-- General Tab --}}
             <div x-show="activeTab === 'general'" x-cloak>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {{-- Name --}}
+                <div class="space-y-6">
+                    {{-- Organization Information Section --}}
                     <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{ __('portal.settings.fields.name') }} <span class="text-red-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-building text-gray-400"></i>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                            {{ __('settings.sections.organization_info') }}
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {{-- Organization Name --}}
+                            <div>
+                                <x-form.input 
+                                    name="name"
+                                    :label="__('settings.fields.organization_name')"
+                                    :value="$tenant->name"
+                                    :placeholder="__('settings.placeholders.organization_name')"
+                                    :hint="__('settings.hints.organization_name')"
+                                    model="form.name"
+                                    required />
                             </div>
-                            <input type="text" 
-                                   id="name" 
-                                   name="name" 
-                                   x-model="form.name"
-                                   class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                                   required>
-                        </div>
-                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('portal.settings.hints.name') }}</p>
-                    </div>
 
-                    {{-- Legal Name --}}
-                    <div>
-                        <label for="legal_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{ __('portal.settings.fields.legal_name') }}
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-file-contract text-gray-400"></i>
+                            {{-- Legal Name --}}
+                            <div>
+                                <x-form.input 
+                                    name="legal_name"
+                                    :label="__('settings.fields.legal_name')"
+                                    :value="$tenant->legal_name"
+                                    :placeholder="__('settings.placeholders.legal_name')"
+                                    model="form.legal_name" />
                             </div>
-                            <input type="text" 
-                                   id="legal_name" 
-                                   name="legal_name" 
-                                   x-model="form.legal_name"
-                                   class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-                        </div>
-                    </div>
 
-                    {{-- Code --}}
-                    <div>
-                        <label for="code" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{ __('portal.settings.fields.code') }}
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-hashtag text-gray-400"></i>
+                            {{-- Organization Code --}}
+                            <div>
+                                <x-form.input 
+                                    name="code"
+                                    :label="__('settings.fields.organization_code')"
+                                    :value="$tenant->code"
+                                    :hint="__('settings.hints.organization_code')"
+                                    disabled />
                             </div>
-                            <input type="text" 
-                                   id="code" 
-                                   value="{{ $tenant->code }}"
-                                   class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-600 dark:text-gray-300"
-                                   disabled>
-                        </div>
-                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('portal.settings.hints.code') }}</p>
-                    </div>
 
-                    {{-- Slug --}}
-                    <div>
-                        <label for="slug" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{ __('portal.settings.fields.slug') }} <span class="text-red-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-link text-gray-400"></i>
+                            {{-- URL Slug --}}
+                            <div>
+                                <label for="slug" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    {{ __('settings.fields.url_slug') }}
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <div class="mt-1 flex rounded-md shadow-sm">
+                                    <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-400 sm:text-sm">
+                                        {{ config('app.url') }}/
+                                    </span>
+                                    <input type="text" 
+                                           id="slug" 
+                                           name="slug" 
+                                           x-model="form.slug"
+                                           class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
+                                           placeholder="your-organization"
+                                           required>
+                                </div>
                             </div>
-                            <input type="text" 
-                                   id="slug" 
-                                   name="slug" 
-                                   x-model="form.slug"
-                                   class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                                   required>
                         </div>
                     </div>
                 </div>
@@ -140,163 +142,119 @@
 
             {{-- Contact Tab --}}
             <div x-show="activeTab === 'contact'" x-cloak>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {{-- Email --}}
+                <div class="space-y-6">
+                    {{-- Contact Information Section --}}
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{ __('portal.settings.fields.email') }} <span class="text-red-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-envelope text-gray-400"></i>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                            {{ __('settings.sections.contact_info') }}
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {{-- Email --}}
+                            <div>
+                                <x-form.input 
+                                    type="email"
+                                    name="email"
+                                    :label="__('settings.fields.email')"
+                                    :value="$tenant->email"
+                                    :placeholder="__('settings.placeholders.email')"
+                                    model="form.email"
+                                    required />
                             </div>
-                            <input type="email" 
-                                   id="email" 
-                                   name="email" 
-                                   x-model="form.email"
-                                   class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                                   required>
+
+                            {{-- Phone --}}
+                            <div>
+                                <x-form.phone-input 
+                                    name="phone" 
+                                    :label="__('settings.fields.phone')"
+                                    :value="$tenant->phone"
+                                    :hint="__('settings.hints.phone')"
+                                    :countries="$countries" />
+                            </div>
+
+                            {{-- Website --}}
+                            <div class="md:col-span-2">
+                                <x-form.input 
+                                    type="url"
+                                    name="website"
+                                    :label="__('settings.fields.website')"
+                                    :value="$tenant->website"
+                                    :placeholder="__('settings.placeholders.website')"
+                                    model="form.website" />
+                            </div>
                         </div>
                     </div>
 
-                    {{-- Phone --}}
-                    <div>
-                        <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{ __('portal.settings.fields.phone') }}
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-phone text-gray-400"></i>
+                    {{-- Address Section --}}
+                    <div class="mt-6">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                            {{ __('settings.sections.address') }}
+                        </h3>
+                        <div class="space-y-4">
+                            {{-- Address Line 1 --}}
+                            <div>
+                                <x-form.input 
+                                    name="address_line_1"
+                                    :label="__('settings.fields.address_line_1')"
+                                    :value="$tenant->address_line_1"
+                                    :placeholder="__('settings.placeholders.address_line_1')"
+                                    model="form.address_line_1" />
                             </div>
-                            <input type="tel" 
-                                   id="phone" 
-                                   name="phone" 
-                                   x-model="form.phone"
-                                   class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-                        </div>
-                    </div>
 
-                    {{-- Website --}}
-                    <div class="md:col-span-2">
-                        <label for="website" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{ __('portal.settings.fields.website') }}
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-globe text-gray-400"></i>
+                            {{-- Address Line 2 --}}
+                            <div>
+                                <x-form.input 
+                                    name="address_line_2"
+                                    :label="__('settings.fields.address_line_2')"
+                                    :value="$tenant->address_line_2"
+                                    :placeholder="__('settings.placeholders.address_line_2')"
+                                    model="form.address_line_2" />
                             </div>
-                            <input type="url" 
-                                   id="website" 
-                                   name="website" 
-                                   x-model="form.website"
-                                   placeholder="https://"
-                                   class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-                        </div>
-                    </div>
 
-                    {{-- Address Line 1 --}}
-                    <div class="md:col-span-2">
-                        <label for="address_line_1" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{ __('portal.settings.fields.address_line_1') }}
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-map-marker-alt text-gray-400"></i>
-                            </div>
-                            <input type="text" 
-                                   id="address_line_1" 
-                                   name="address_line_1" 
-                                   x-model="form.address_line_1"
-                                   class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-                        </div>
-                    </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {{-- City --}}
+                                <div>
+                                    <x-form.input 
+                                        name="city"
+                                        :label="__('settings.fields.city')"
+                                        :value="$tenant->city"
+                                        :placeholder="__('settings.placeholders.city')"
+                                        model="form.city" />
+                                </div>
 
-                    {{-- Address Line 2 --}}
-                    <div class="md:col-span-2">
-                        <label for="address_line_2" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{ __('portal.settings.fields.address_line_2') }}
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-map text-gray-400"></i>
-                            </div>
-                            <input type="text" 
-                                   id="address_line_2" 
-                                   name="address_line_2" 
-                                   x-model="form.address_line_2"
-                                   class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-                        </div>
-                    </div>
+                                {{-- State/Province --}}
+                                <div>
+                                    <x-form.input 
+                                        name="state"
+                                        :label="__('settings.fields.state')"
+                                        :value="$tenant->state"
+                                        :placeholder="__('settings.placeholders.state')"
+                                        model="form.state" />
+                                </div>
 
-                    {{-- City --}}
-                    <div>
-                        <label for="city" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{ __('portal.settings.fields.city') }}
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-city text-gray-400"></i>
-                            </div>
-                            <input type="text" 
-                                   id="city" 
-                                   name="city" 
-                                   x-model="form.city"
-                                   class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-                        </div>
-                    </div>
+                                {{-- Postal Code --}}
+                                <div>
+                                    <x-form.input 
+                                        name="postal_code"
+                                        :label="__('settings.fields.postal_code')"
+                                        :value="$tenant->postal_code"
+                                        :placeholder="__('settings.placeholders.postal_code')"
+                                        model="form.postal_code" />
+                                </div>
 
-                    {{-- State --}}
-                    <div>
-                        <label for="state" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{ __('portal.settings.fields.state') }}
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-map-signs text-gray-400"></i>
+                                {{-- Country --}}
+                                <div>
+                                    <x-form.select 
+                                        name="country_id"
+                                        :label="__('settings.fields.country')"
+                                        :value="$tenant->country_id"
+                                        :placeholder="__('settings.placeholders.select_country')"
+                                        model="form.country_id">
+                                        @foreach($countries as $country)
+                                            <option value="{{ $country->id }}">{{ $country->name_en }}</option>
+                                        @endforeach
+                                    </x-form.select>
+                                </div>
                             </div>
-                            <input type="text" 
-                                   id="state" 
-                                   name="state" 
-                                   x-model="form.state"
-                                   class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-                        </div>
-                    </div>
-
-                    {{-- Postal Code --}}
-                    <div>
-                        <label for="postal_code" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{ __('portal.settings.fields.postal_code') }}
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-mail-bulk text-gray-400"></i>
-                            </div>
-                            <input type="text" 
-                                   id="postal_code" 
-                                   name="postal_code" 
-                                   x-model="form.postal_code"
-                                   class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-                        </div>
-                    </div>
-
-                    {{-- Country --}}
-                    <div>
-                        <label for="country_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{ __('portal.settings.fields.country') }}
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-flag text-gray-400"></i>
-                            </div>
-                            <select id="country_id" 
-                                    name="country_id" 
-                                    x-model="form.country_id"
-                                    class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-                                <option value="">{{ __('portal.settings.placeholders.select_country') }}</option>
-                                @foreach($countries as $country)
-                                    <option value="{{ $country->id }}">{{ $country->name_en }}</option>
-                                @endforeach
-                            </select>
                         </div>
                     </div>
                 </div>
@@ -304,109 +262,102 @@
 
             {{-- Localization Tab --}}
             <div x-show="activeTab === 'localization'" x-cloak>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {{-- Language --}}
+                <div class="space-y-6">
+                    {{-- Regional Settings Section --}}
                     <div>
-                        <label for="language_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{ __('portal.settings.fields.language') }}
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-language text-gray-400"></i>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                            {{ __('settings.sections.regional_settings') }}
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {{-- Language --}}
+                            <div>
+                                <label for="language_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    {{ __('settings.fields.language') }}
+                                </label>
+                                <select id="language_id" 
+                                        name="language_id" 
+                                        x-model="form.language_id"
+                                        class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white">
+                                    <option value="">{{ __('settings.placeholders.select_language') }}</option>
+                                    @foreach($languages as $language)
+                                        <option value="{{ $language->id }}">{{ $language->name_en }}</option>
+                                    @endforeach
+                                </select>
                             </div>
-                            <select id="language_id" 
-                                    name="language_id" 
-                                    x-model="form.language_id"
-                                    class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-                                <option value="">{{ __('portal.settings.placeholders.select_language') }}</option>
-                                @foreach($languages as $language)
-                                    <option value="{{ $language->id }}">{{ $language->name_en }}</option>
-                                @endforeach
-                            </select>
+
+                            {{-- Currency --}}
+                            <div>
+                                <label for="currency_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    {{ __('settings.fields.currency') }}
+                                </label>
+                                <select id="currency_id" 
+                                        name="currency_id" 
+                                        x-model="form.currency_id"
+                                        class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white">
+                                    <option value="">{{ __('settings.placeholders.select_currency') }}</option>
+                                    @foreach($currencies as $currency)
+                                        <option value="{{ $currency->id }}">{{ $currency->code }} - {{ $currency->name_en }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            {{-- Timezone --}}
+                            <div>
+                                <label for="timezone_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    {{ __('settings.fields.timezone') }}
+                                </label>
+                                <select id="timezone_id" 
+                                        name="timezone_id" 
+                                        x-model="form.timezone_id"
+                                        class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white">
+                                    <option value="">{{ __('settings.placeholders.select_timezone') }}</option>
+                                    @foreach($timezones as $timezone)
+                                        <option value="{{ $timezone->id }}">{{ $timezone->name }} (UTC{{ $timezone->offset >= 0 ? '+' : '' }}{{ $timezone->offset }})</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                     </div>
 
-                    {{-- Currency --}}
+                    {{-- Date & Time Formats Section --}}
                     <div>
-                        <label for="currency_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{ __('portal.settings.fields.currency') }}
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-dollar-sign text-gray-400"></i>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                            {{ __('settings.sections.datetime_formats') }}
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {{-- Date Format --}}
+                            <div>
+                                <label for="date_format" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    {{ __('settings.fields.date_format') }}
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <select id="date_format" 
+                                        name="date_format" 
+                                        x-model="form.date_format"
+                                        class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
+                                        required>
+                                    <option value="Y-m-d">{{ now()->format('Y-m-d') }} (Y-m-d)</option>
+                                    <option value="d/m/Y">{{ now()->format('d/m/Y') }} (d/m/Y)</option>
+                                    <option value="m/d/Y">{{ now()->format('m/d/Y') }} (m/d/Y)</option>
+                                    <option value="d.m.Y">{{ now()->format('d.m.Y') }} (d.m.Y)</option>
+                                </select>
                             </div>
-                            <select id="currency_id" 
-                                    name="currency_id" 
-                                    x-model="form.currency_id"
-                                    class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-                                <option value="">{{ __('portal.settings.placeholders.select_currency') }}</option>
-                                @foreach($currencies as $currency)
-                                    <option value="{{ $currency->id }}">{{ $currency->code }} - {{ $currency->name_en }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
 
-                    {{-- Timezone --}}
-                    <div>
-                        <label for="timezone_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{ __('portal.settings.fields.timezone') }}
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-clock text-gray-400"></i>
+                            {{-- Time Format --}}
+                            <div>
+                                <label for="time_format" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    {{ __('settings.fields.time_format') }}
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <select id="time_format" 
+                                        name="time_format" 
+                                        x-model="form.time_format"
+                                        class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
+                                        required>
+                                    <option value="H:i">{{ now()->format('H:i') }} (24 hour)</option>
+                                    <option value="h:i A">{{ now()->format('h:i A') }} (12 hour)</option>
+                                </select>
                             </div>
-                            <select id="timezone_id" 
-                                    name="timezone_id" 
-                                    x-model="form.timezone_id"
-                                    class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-                                <option value="">{{ __('portal.settings.placeholders.select_timezone') }}</option>
-                                @foreach($timezones as $timezone)
-                                    <option value="{{ $timezone->id }}">{{ $timezone->name }} (UTC{{ $timezone->offset >= 0 ? '+' : '' }}{{ $timezone->offset }})</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    {{-- Date Format --}}
-                    <div>
-                        <label for="date_format" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{ __('portal.settings.fields.date_format') }} <span class="text-red-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-calendar text-gray-400"></i>
-                            </div>
-                            <select id="date_format" 
-                                    name="date_format" 
-                                    x-model="form.date_format"
-                                    class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                                    required>
-                                <option value="Y-m-d">{{ now()->format('Y-m-d') }} (Y-m-d)</option>
-                                <option value="d/m/Y">{{ now()->format('d/m/Y') }} (d/m/Y)</option>
-                                <option value="m/d/Y">{{ now()->format('m/d/Y') }} (m/d/Y)</option>
-                                <option value="d.m.Y">{{ now()->format('d.m.Y') }} (d.m.Y)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    {{-- Time Format --}}
-                    <div>
-                        <label for="time_format" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{ __('portal.settings.fields.time_format') }} <span class="text-red-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-clock text-gray-400"></i>
-                            </div>
-                            <select id="time_format" 
-                                    name="time_format" 
-                                    x-model="form.time_format"
-                                    class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                                    required>
-                                <option value="H:i">{{ now()->format('H:i') }} (24 hour)</option>
-                                <option value="h:i A">{{ now()->format('h:i A') }} (12 hour)</option>
-                            </select>
                         </div>
                     </div>
                 </div>
@@ -414,86 +365,150 @@
 
             {{-- Subscription Tab --}}
             <div x-show="activeTab === 'subscription'" x-cloak>
-                {{-- Current Plan Info --}}
-                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
-                    <div class="flex items-center">
-                        <i class="fas fa-info-circle text-blue-500 dark:text-blue-400 mr-2"></i>
-                        <h3 class="text-lg font-medium text-blue-900 dark:text-blue-100">{{ __('portal.settings.subscription.current_plan') }}</h3>
-                    </div>
-                    <div class="mt-2 text-sm text-blue-700 dark:text-blue-300">
-                        <p>{{ __('portal.settings.subscription.plan') }}: <span class="font-semibold">{{ $tenant->getPlanName() }}</span></p>
-                        <p>{{ __('portal.settings.subscription.status') }}: <span class="font-semibold">{{ $tenant->getStatusName() }}</span></p>
-                        @if($tenant->subscription_ends_at)
-                            <p>{{ __('portal.settings.subscription.expires') }}: <span class="font-semibold">@dt($tenant->subscription_ends_at)</span></p>
-                        @endif
-                    </div>
-                </div>
-
-                {{-- Usage Statistics --}}
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {{-- Users Usage --}}
-                    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                        <div class="flex items-center justify-between mb-2">
-                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('portal.settings.subscription.users') }}</h4>
-                            <i class="fas fa-users text-gray-400 dark:text-gray-500"></i>
-                        </div>
-                        <div class="text-2xl font-semibold text-gray-900 dark:text-white">
-                            {{ $tenant->current_users }} / {{ $tenant->max_users }}
-                        </div>
-                        <div class="mt-2">
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                                <div class="bg-blue-500 h-2 rounded-full" style="width: {{ $tenant->getUserUsagePercentage() }}%"></div>
+                <div class="space-y-6">
+                    {{-- Current Plan Info --}}
+                    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <i class="fa-solid fa-circle-info text-blue-500 dark:text-blue-400 text-xl"></i>
                             </div>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $tenant->getUserUsagePercentage() }}% {{ __('portal.settings.subscription.used') }}</p>
-                        </div>
-                    </div>
-
-                    {{-- Storage Usage --}}
-                    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                        <div class="flex items-center justify-between mb-2">
-                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('portal.settings.subscription.storage') }}</h4>
-                            <i class="fas fa-hdd text-gray-400 dark:text-gray-500"></i>
-                        </div>
-                        <div class="text-2xl font-semibold text-gray-900 dark:text-white">
-                            {{ number_format($tenant->current_storage_mb / 1024, 1) }} GB / {{ number_format($tenant->max_storage_mb / 1024, 1) }} GB
-                        </div>
-                        <div class="mt-2">
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                                <div class="bg-green-500 h-2 rounded-full" style="width: {{ $tenant->getStorageUsagePercentage() }}%"></div>
+                            <div class="ml-3 flex-1">
+                                <h3 class="text-lg font-medium text-blue-900 dark:text-blue-100">
+                                    {{ __('settings.subscription.current_plan') }}
+                                </h3>
+                                <div class="mt-2 text-sm text-blue-700 dark:text-blue-300">
+                                    <dl class="space-y-1">
+                                        <div class="flex items-center">
+                                            <dt class="font-medium">{{ __('settings.subscription.plan') }}:</dt>
+                                            <dd class="ml-2">{{ $tenant->getPlanName() }}</dd>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <dt class="font-medium">{{ __('settings.subscription.status') }}:</dt>
+                                            <dd class="ml-2">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                                    {{ $tenant->getStatusName() }}
+                                                </span>
+                                            </dd>
+                                        </div>
+                                        @if($tenant->subscription_ends_at)
+                                            <div class="flex items-center">
+                                                <dt class="font-medium">{{ __('settings.subscription.expires') }}:</dt>
+                                                <dd class="ml-2">@dt($tenant->subscription_ends_at)</dd>
+                                            </div>
+                                        @endif
+                                    </dl>
+                                </div>
                             </div>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $tenant->getStorageUsagePercentage() }}% {{ __('portal.settings.subscription.used') }}</p>
                         </div>
                     </div>
 
-                    {{-- Events Usage --}}
-                    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                        <div class="flex items-center justify-between mb-2">
-                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('portal.settings.subscription.events') }}</h4>
-                            <i class="fas fa-calendar-alt text-gray-400 dark:text-gray-500"></i>
-                        </div>
-                        <div class="text-2xl font-semibold text-gray-900 dark:text-white">
-                            {{ $tenant->current_events }} / {{ $tenant->max_events }}
-                        </div>
-                        <div class="mt-2">
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                                <div class="bg-purple-500 h-2 rounded-full" style="width: {{ $tenant->getEventUsagePercentage() }}%"></div>
+                    {{-- Usage Statistics --}}
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                            {{ __('settings.subscription.usage_statistics') }}
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {{-- Users Usage --}}
+                            <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        {{ __('settings.subscription.users') }}
+                                    </h4>
+                                    <i class="fa-solid fa-users text-gray-400"></i>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-baseline justify-between">
+                                        <span class="text-2xl font-semibold text-gray-900 dark:text-white">
+                                            {{ $tenant->current_users }}
+                                        </span>
+                                        <span class="text-sm text-gray-500 dark:text-gray-400">
+                                            / {{ $tenant->max_users }}
+                                        </span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 overflow-hidden">
+                                        <div class="bg-blue-500 h-2 rounded-full transition-all duration-300" 
+                                             style="width: {{ min($tenant->getUserUsagePercentage(), 100) }}%"></div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                                        {{ $tenant->getUserUsagePercentage() }}% {{ __('settings.subscription.used') }}
+                                    </p>
+                                </div>
                             </div>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $tenant->getEventUsagePercentage() }}% {{ __('portal.settings.subscription.used') }}</p>
+
+                            {{-- Storage Usage --}}
+                            <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        {{ __('settings.subscription.storage') }}
+                                    </h4>
+                                    <i class="fa-solid fa-hard-drive text-gray-400"></i>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-baseline justify-between">
+                                        <span class="text-2xl font-semibold text-gray-900 dark:text-white">
+                                            {{ number_format($tenant->current_storage_mb / 1024, 1) }}
+                                        </span>
+                                        <span class="text-sm text-gray-500 dark:text-gray-400">
+                                            / {{ number_format($tenant->max_storage_mb / 1024, 1) }} GB
+                                        </span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 overflow-hidden">
+                                        <div class="bg-green-500 h-2 rounded-full transition-all duration-300" 
+                                             style="width: {{ min($tenant->getStorageUsagePercentage(), 100) }}%"></div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                                        {{ $tenant->getStorageUsagePercentage() }}% {{ __('settings.subscription.used') }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {{-- Events Usage --}}
+                            <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        {{ __('settings.subscription.events') }}
+                                    </h4>
+                                    <i class="fa-solid fa-calendar-days text-gray-400"></i>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-baseline justify-between">
+                                        <span class="text-2xl font-semibold text-gray-900 dark:text-white">
+                                            {{ $tenant->current_events }}
+                                        </span>
+                                        <span class="text-sm text-gray-500 dark:text-gray-400">
+                                            / {{ $tenant->max_events }}
+                                        </span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 overflow-hidden">
+                                        <div class="bg-purple-500 h-2 rounded-full transition-all duration-300" 
+                                             style="width: {{ min($tenant->getEventUsagePercentage(), 100) }}%"></div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                                        {{ $tenant->getEventUsagePercentage() }}% {{ __('settings.subscription.used') }}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             {{-- Form Actions --}}
-            <div class="flex justify-end mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    <i class="fa-solid fa-circle-info mr-1"></i>
+                    {{ __('settings.hints.save_changes') }}
+                </p>
                 <button type="submit" 
-                        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
                         :disabled="loading">
-                    <span x-show="!loading">
-                        <i class="fas fa-save mr-2"></i>{{ __('portal.settings.buttons.save') }}
+                    <span x-show="!loading" class="inline-flex items-center">
+                        <i class="fa-solid fa-save mr-2"></i>
+                        {{ __('common.actions.save_changes') }}
                     </span>
-                    <span x-show="loading" x-cloak>
-                        <i class="fas fa-spinner fa-spin mr-2"></i>{{ __('portal.settings.buttons.saving') }}
+                    <span x-show="loading" x-cloak class="inline-flex items-center">
+                        <i class="fa-solid fa-spinner fa-spin mr-2"></i>
+                        {{ __('common.actions.saving') }}
                     </span>
                 </button>
             </div>
@@ -504,6 +519,7 @@
 <script>
 function settingsForm() {
     return {
+        activeTab: 'general',
         loading: false,
         form: {
             // Basic Information
@@ -547,20 +563,34 @@ function settingsForm() {
                 
                 const data = await response.json();
                 
-                if (data.success) {
-                    window.notify('{{ __('portal.general.success') }}', data.message, 'success');
+                if (response.ok && data.success) {
+                    // Show success notification
+                    if (window.notify) {
+                        window.notify('{{ __('common.success') }}', data.message || '{{ __('settings.messages.saved_successfully') }}', 'success');
+                    }
                     
                     // If datetime settings changed, reload page to update all datetime displays
                     if (data.datetime_updated) {
                         setTimeout(() => {
                             window.location.reload();
-                        }, 1000);
+                        }, 1500);
                     }
                 } else {
-                    window.notify('{{ __('portal.general.error') }}', data.message || '{{ __('portal.settings.messages.update_failed') }}', 'error');
+                    // Show error notification
+                    if (window.notify) {
+                        window.notify('{{ __('common.error') }}', data.message || '{{ __('settings.messages.save_failed') }}', 'error');
+                    }
+                    
+                    // Handle validation errors
+                    if (data.errors) {
+                        console.error('Validation errors:', data.errors);
+                    }
                 }
             } catch (error) {
-                window.notify('{{ __('portal.general.error') }}', '{{ __('portal.settings.messages.update_failed') }}', 'error');
+                console.error('Settings update error:', error);
+                if (window.notify) {
+                    window.notify('{{ __('common.error') }}', '{{ __('settings.messages.save_failed') }}', 'error');
+                }
             } finally {
                 this.loading = false;
             }

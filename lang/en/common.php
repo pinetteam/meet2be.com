@@ -31,7 +31,16 @@ return [
         'login' => 'Login',
         'logout' => 'Logout',
         'create_user' => 'Create User',
+        'saving' => 'Saving...',
     ],
+    
+    // Common
+    'select' => 'Select',
+    'search' => 'Search',
+    'phone_placeholder' => 'Phone number',
+    'success' => 'Success',
+    'error' => 'Error',
+    'no_results' => 'No results found',
     
     // Statuses
     'status' => [

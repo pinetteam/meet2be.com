@@ -31,7 +31,16 @@ return [
         'login' => 'Giriş Yap',
         'logout' => 'Çıkış Yap',
         'create_user' => 'Kullanıcı Oluştur',
+        'saving' => 'Kaydediliyor...',
     ],
+    
+    // Genel
+    'select' => 'Seç',
+    'search' => 'Ara',
+    'phone_placeholder' => 'Telefon numarası',
+    'success' => 'Başarılı',
+    'error' => 'Hata',
+    'no_results' => 'Sonuç bulunamadı',
     
     // Durumlar
     'status' => [
