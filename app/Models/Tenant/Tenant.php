@@ -61,21 +61,51 @@ class Tenant extends Model
     const DATE_FORMAT_MDY_SLASH = 'm/d/Y';
     const DATE_FORMAT_YMD_DASH = 'Y-m-d';
     const DATE_FORMAT_DMY_DOT = 'd.m.Y';
+    const DATE_FORMAT_DMY_DASH = 'd-m-Y';
+    const DATE_FORMAT_MDY_DASH = 'm-d-Y';
+    const DATE_FORMAT_SHORT_MONTH = 'M j, Y';
+    const DATE_FORMAT_FULL_MONTH = 'F j, Y';
+    const DATE_FORMAT_DAY_MONTH_YEAR = 'j M Y';
+    const DATE_FORMAT_DAY_MONTH_YEAR_PADDED = 'd M Y';
     
     const DATE_FORMATS = [
         self::DATE_FORMAT_DMY_SLASH => 'DD/MM/YYYY',
         self::DATE_FORMAT_MDY_SLASH => 'MM/DD/YYYY',
         self::DATE_FORMAT_YMD_DASH => 'YYYY-MM-DD',
         self::DATE_FORMAT_DMY_DOT => 'DD.MM.YYYY',
+        self::DATE_FORMAT_DMY_DASH => 'DD-MM-YYYY',
+        self::DATE_FORMAT_MDY_DASH => 'MM-DD-YYYY',
+        self::DATE_FORMAT_SHORT_MONTH => 'MMM D, YYYY',
+        self::DATE_FORMAT_FULL_MONTH => 'MMMM D, YYYY',
+        self::DATE_FORMAT_DAY_MONTH_YEAR => 'D MMM YYYY',
+        self::DATE_FORMAT_DAY_MONTH_YEAR_PADDED => 'DD MMM YYYY',
     ];
     
     // Time format constants
-    const TIME_FORMAT_12 = '12';
-    const TIME_FORMAT_24 = '24';
+    const TIME_FORMAT_12_HOUR = 'g:i A';
+    const TIME_FORMAT_12_HOUR_PADDED = 'h:i A';
+    const TIME_FORMAT_12_HOUR_SECONDS = 'g:i:s A';
+    const TIME_FORMAT_12_HOUR_PADDED_SECONDS = 'h:i:s A';
+    const TIME_FORMAT_24_HOUR = 'H:i';
+    const TIME_FORMAT_24_HOUR_SECONDS = 'H:i:s';
     
     const TIME_FORMATS = [
-        self::TIME_FORMAT_12 => '12-hour',
-        self::TIME_FORMAT_24 => '24-hour',
+        self::TIME_FORMAT_24_HOUR => '24-hour',
+        self::TIME_FORMAT_24_HOUR_SECONDS => '24-hour with seconds',
+        self::TIME_FORMAT_12_HOUR => '12-hour',
+        self::TIME_FORMAT_12_HOUR_PADDED => '12-hour (padded)',
+        self::TIME_FORMAT_12_HOUR_SECONDS => '12-hour with seconds',
+        self::TIME_FORMAT_12_HOUR_PADDED_SECONDS => '12-hour with seconds (padded)',
+    ];
+    
+    // Simple time format keys for form submission
+    const TIME_FORMAT_KEY_12 = '12';
+    const TIME_FORMAT_KEY_24 = '24';
+    
+    // Map simple keys to actual formats
+    const TIME_FORMAT_MAP = [
+        self::TIME_FORMAT_KEY_12 => self::TIME_FORMAT_12_HOUR,
+        self::TIME_FORMAT_KEY_24 => self::TIME_FORMAT_24_HOUR,
     ];
 
     protected $fillable = [
@@ -395,8 +425,8 @@ class Tenant extends Model
             }
             
             // Set default date/time formats if not provided
-            $tenant->date_format = $tenant->date_format ?? 'Y-m-d';
-            $tenant->time_format = $tenant->time_format ?? 'H:i';
+            $tenant->date_format = $tenant->date_format ?? self::DATE_FORMAT_YMD_DASH;
+            $tenant->time_format = $tenant->time_format ?? self::TIME_FORMAT_24_HOUR;
         });
     }
 

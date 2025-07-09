@@ -23,12 +23,6 @@
     
     // Get current time for preview
     $currentTime = now();
-    
-    // Time format examples
-    $examples = [
-        Tenant::TIME_FORMAT_12 => $currentTime->format('g:i A'),
-        Tenant::TIME_FORMAT_24 => $currentTime->format('H:i'),
-    ];
 @endphp
 
 <x-form.base.field-wrapper 
@@ -47,7 +41,7 @@
         
         @foreach($formats as $format => $display)
             <option value="{{ $format }}" @if($selectedValue == $format) selected @endif>
-                {{ __('settings.time_formats.' . $format) }} - {{ $examples[$format] ?? '' }}
+                {{ $display }} - {{ $currentTime->format($format) }}
             </option>
         @endforeach
         
