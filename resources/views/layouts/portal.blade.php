@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <!-- Theme Detection (MUST BE FIRST - Prevents Flash) -->
+    <script>
+        // Immediately apply saved theme to prevent flash
+        (function() {
+            const savedTheme = localStorage.getItem('theme_dark');
+            if (savedTheme === 'true' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
     <!-- Current Locale -->
     <meta name="current-locale" content="{{ app()->getLocale() }}">
 

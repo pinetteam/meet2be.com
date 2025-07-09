@@ -30,7 +30,7 @@ class UpdateSettingRequest extends FormRequest
             
             // Contact Information
             'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:30',
+            'phone' => ['nullable', 'string', 'max:30', 'regex:/^[\d\s\-\+\(\)]+$/'],
             'website' => 'nullable|url|max:255',
             
             // Address Information
