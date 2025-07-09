@@ -103,14 +103,27 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {{-- Organization Name --}}
                             <div>
-                                <x-form.input 
-                                    name="name"
-                                    :label="__('settings.fields.organization_name')"
-                                    :value="$tenant->name"
-                                    :placeholder="__('settings.placeholders.organization_name')"
-                                    :hint="__('settings.hints.organization_name')"
-                                    x-model="form.name"
-                                    required />
+                                <div class="space-y-1">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        {{ __('settings.fields.organization_name') }}
+                                        <span class="text-red-500 ml-0.5">*</span>
+                                    </label>
+                                    <input 
+                                        type="text"
+                                        name="name"
+                                        x-model="form.name"
+                                        @input="clearError('name')"
+                                        :class="{
+                                            'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500': !errors.name,
+                                            'border-red-300 dark:border-red-400 focus:border-red-500 focus:ring-red-500': errors.name
+                                        }"
+                                        class="block w-full rounded-md shadow-sm transition-colors duration-150 dark:bg-gray-700 dark:text-white px-3 py-2 text-sm"
+                                        placeholder="{{ __('settings.placeholders.organization_name') }}"
+                                        required
+                                    />
+                                    <p x-show="errors.name" x-text="errors.name ? errors.name[0] : ''" class="text-sm text-red-600 dark:text-red-400"></p>
+                                    <p x-show="!errors.name" class="text-sm text-gray-500 dark:text-gray-400">{{ __('settings.hints.organization_name') }}</p>
+                                </div>
                             </div>
 
                             {{-- Legal Name --}}
@@ -121,7 +134,9 @@
                                     :value="$tenant->legal_name"
                                     :placeholder="__('settings.placeholders.legal_name')"
                                     :hint="__('settings.hints.legal_name')"
-                                    x-model="form.legal_name" />
+                                    x-model="form.legal_name"
+                                    @input="clearError('legal_name')"
+                                    ::error="getError('legal_name')" />
                             </div>
 
                             {{-- Organization Code --}}
@@ -161,15 +176,27 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {{-- Email --}}
                             <div>
-                                <x-form.input
-                                    type="email"
-                                    name="email"
-                                    :label="__('settings.fields.email')"
-                                    :value="$tenant->email"
-                                    :placeholder="__('settings.placeholders.email')"
-                                    :hint="__('settings.hints.email')"
-                                    x-model="form.email"
-                                    required />
+                                <div class="space-y-1">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        {{ __('settings.fields.email') }}
+                                        <span class="text-red-500 ml-0.5">*</span>
+                                    </label>
+                                    <input 
+                                        type="email"
+                                        name="email"
+                                        x-model="form.email"
+                                        @input="clearError('email')"
+                                        :class="{
+                                            'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500': !errors.email,
+                                            'border-red-300 dark:border-red-400 focus:border-red-500 focus:ring-red-500': errors.email
+                                        }"
+                                        class="block w-full rounded-md shadow-sm transition-colors duration-150 dark:bg-gray-700 dark:text-white px-3 py-2 text-sm"
+                                        placeholder="{{ __('settings.placeholders.email') }}"
+                                        required
+                                    />
+                                    <p x-show="errors.email" x-text="errors.email ? errors.email[0] : ''" class="text-sm text-red-600 dark:text-red-400"></p>
+                                    <p x-show="!errors.email" class="text-sm text-gray-500 dark:text-gray-400">{{ __('settings.hints.email') }}</p>
+                                </div>
                             </div>
 
                             {{-- Phone --}}
@@ -185,14 +212,25 @@
 
                             {{-- Website --}}
                             <div class="md:col-span-2">
-                                <x-form.input
-                                    type="url"
-                                    name="website"
-                                    :label="__('settings.fields.website')"
-                                    :value="$tenant->website"
-                                    :placeholder="__('settings.placeholders.website')"
-                                    :hint="__('settings.hints.website')"
-                                    x-model="form.website" />
+                                <div class="space-y-1">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        {{ __('settings.fields.website') }}
+                                    </label>
+                                    <input 
+                                        type="url"
+                                        name="website"
+                                        x-model="form.website"
+                                        @input="clearError('website')"
+                                        :class="{
+                                            'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500': !errors.website,
+                                            'border-red-300 dark:border-red-400 focus:border-red-500 focus:ring-red-500': errors.website
+                                        }"
+                                        class="block w-full rounded-md shadow-sm transition-colors duration-150 dark:bg-gray-700 dark:text-white px-3 py-2 text-sm"
+                                        placeholder="{{ __('settings.placeholders.website') }}"
+                                    />
+                                    <p x-show="errors.website" x-text="errors.website ? errors.website[0] : ''" class="text-sm text-red-600 dark:text-red-400"></p>
+                                    <p x-show="!errors.website" class="text-sm text-gray-500 dark:text-gray-400">{{ __('settings.hints.website') }}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -503,6 +541,7 @@ function settingsForm() {
         loading: false,
         hasChanges: false,
         originalForm: null,
+        errors: {},
         form: {
             // Basic Information
             name: @json($tenant->name),
@@ -538,10 +577,27 @@ function settingsForm() {
             }, { deep: true });
         },
         
+        hasError(field) {
+            return this.errors.hasOwnProperty(field);
+        },
+        
+        getError(field) {
+            return this.errors[field] ? this.errors[field][0] : null;
+        },
+        
+        clearError(field) {
+            delete this.errors[field];
+        },
+        
+        clearAllErrors() {
+            this.errors = {};
+        },
+        
         async submitForm() {
             if (!this.hasChanges) return;
             
             this.loading = true;
+            this.clearAllErrors();
             
             try {
                 const response = await fetch('{{ route('portal.setting.update', $tenant) }}', {
@@ -575,6 +631,11 @@ function settingsForm() {
                 } else if (response.status === 422) {
                     // Validation errors
                     if (data.errors) {
+                        // Set errors for form fields
+                        this.errors = data.errors;
+                        console.log('Validation errors:', this.errors);
+                        console.log('Website error:', this.errors.website);
+                        
                         // Show validation errors using global alert system
                         const errorMessages = [];
                         for (const field in data.errors) {
@@ -590,8 +651,15 @@ function settingsForm() {
                             duration: 0
                         });
                         
-                        // Scroll to top to show errors
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        // Scroll to first error field
+                        this.$nextTick(() => {
+                            const firstErrorField = Object.keys(this.errors)[0];
+                            const errorElement = document.querySelector(`[name="${firstErrorField}"]`);
+                            if (errorElement) {
+                                errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                errorElement.focus();
+                            }
+                        });
                     }
                 } else {
                     // Other errors

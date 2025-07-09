@@ -37,6 +37,39 @@ document.addEventListener('alpine:init', () => {
         
         clear() {
             this.items = [];
+        },
+        
+        // Helper methods
+        success(message, options = {}) {
+            return this.add({
+                type: 'success',
+                message,
+                ...options
+            });
+        },
+        
+        error(message, options = {}) {
+            return this.add({
+                type: 'error',
+                message,
+                ...options
+            });
+        },
+        
+        warning(message, options = {}) {
+            return this.add({
+                type: 'warning',
+                message,
+                ...options
+            });
+        },
+        
+        info(message, options = {}) {
+            return this.add({
+                type: 'info',
+                message,
+                ...options
+            });
         }
     });
 }); 

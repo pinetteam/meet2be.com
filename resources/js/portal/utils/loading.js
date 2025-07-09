@@ -3,20 +3,27 @@
  * Controls global loading indicators and overlays
  */
 
-const loading = {
+import Alpine from 'alpinejs';
+
+Alpine.store('loading', {
+    isLoading: false,
+    message: null,
+    
     /**
      * Show loading overlay with optional message
      * @param {string} message - Optional loading message
      */
     show(message = null) {
-        window.dispatchEvent(new CustomEvent('loading', { detail: { message } }));
+        this.isLoading = true;
+        this.message = message;
     },
     
     /**
      * Hide loading overlay
      */
     hide() {
-        window.dispatchEvent(new Event('loaded'));
+        this.isLoading = false;
+        this.message = null;
     },
     
     /**
@@ -38,19 +45,19 @@ const loading = {
      * Show loading bar at top of page
      */
     showBar() {
-        window.dispatchEvent(new Event('loading'));
+        this.isLoading = true;
     },
     
     /**
      * Hide loading bar
      */
     hideBar() {
-        window.dispatchEvent(new Event('loaded'));
+        this.isLoading = false;
     }
-};
+});
 
 // Global access
-window.loading = loading;
+window.loading = Alpine.store('loading');
 
 // Auto-hide loading on page navigation
 document.addEventListener('DOMContentLoaded', () => {
@@ -63,41 +70,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 100);
 });
 
-// Auto-show on form submissions
-document.addEventListener('submit', e => {
-    if (e.target.tagName === 'FORM' && !e.target.hasAttribute('data-no-loading')) {
-        loading.show();
-    }
-});
-
-// Show loading on AJAX requests
-if (window.axios) {
-    // Request interceptor
-    window.axios.interceptors.request.use(
-        (config) => {
-            if (!config.noLoading) {
-                loading.showBar();
-            }
-            return config;
-        },
-        (error) => {
-            loading.hideBar();
-            return Promise.reject(error);
-        }
-    );
-    
-    // Response interceptor
-    window.axios.interceptors.response.use(
-        (response) => {
-            loading.hideBar();
-            return response;
-        },
-        (error) => {
-            loading.hideBar();
-            return Promise.reject(error);
-        }
-    );
-}
-
 // Export for module usage
-export default loading; 
+export default Alpine.store('loading'); 

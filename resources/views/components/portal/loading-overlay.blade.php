@@ -9,13 +9,11 @@
 ])
 
 <div x-data="{ 
-        loading: false,
         message: @js($message)
      }" 
-     x-show="loading" 
+     x-show="$store.loading.isLoading" 
      x-cloak
-     @loading.window="loading = true; message = $event.detail?.message || message"
-     @loaded.window="loading = false"
+     @loading.window="message = $event.detail?.message || message"
      x-transition:enter="transition-all ease-out duration-300"
      x-transition:enter-start="opacity-0"
      x-transition:enter-end="opacity-100"
@@ -68,8 +66,8 @@
             @endif
             
             {{-- Loading Message --}}
-            <p x-show="message" 
-               x-text="message" 
+            <p x-show="message || $store.loading.message" 
+               x-text="message || $store.loading.message" 
                class="mt-4 text-sm text-gray-600 dark:text-gray-400 font-medium text-center"></p>
         </div>
     </div>

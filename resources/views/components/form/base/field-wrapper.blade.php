@@ -19,8 +19,8 @@
     // Generate a unique ID if not provided
     $fieldId = $fieldId ?? ($name ? $name . '_' . uniqid() : 'field_' . uniqid());
     
-    // Get error from validation errors bag
-    $error = $error ?? $errors->first($name);
+    // Get error from validation errors bag (server-side)
+    $serverError = $errors->first($name);
 @endphp
 
 <div class="space-y-1 {{ $wrapperClass }}" {{ $attributes->only(['x-data', 'x-show', 'x-if']) }}>
@@ -40,9 +40,21 @@
         {{ $slot }}
     </div>
     
-    @if($error)
-        <p class="text-sm text-red-600 dark:text-red-400 {{ $errorClass }}">{{ $error }}</p>
-    @elseif($hint)
-        <p class="text-sm text-gray-500 dark:text-gray-400 {{ $hintClass }}">{{ $hint }}</p>
+    {{-- Dynamic error display --}}
+    @if($attributes->has(':error') || $attributes->has('::error'))
+        <p x-show="{{ $attributes->get(':error') ?? $attributes->get('::error') }}" 
+           x-text="{{ $attributes->get(':error') ?? $attributes->get('::error') }}"
+           class="text-sm text-red-600 dark:text-red-400 {{ $errorClass }}"></p>
+        @if($hint)
+            <p x-show="!{{ $attributes->get(':error') ?? $attributes->get('::error') }}" 
+               class="text-sm text-gray-500 dark:text-gray-400 {{ $hintClass }}">{{ $hint }}</p>
+        @endif
+    @else
+        {{-- Static error display --}}
+        @if($error || $serverError)
+            <p class="text-sm text-red-600 dark:text-red-400 {{ $errorClass }}">{{ $error ?? $serverError }}</p>
+        @elseif($hint)
+            <p class="text-sm text-gray-500 dark:text-gray-400 {{ $hintClass }}">{{ $hint }}</p>
+        @endif
     @endif
 </div> 

@@ -38,7 +38,7 @@
     $inputId = $id ?? ($name ? $name . '_' . uniqid() : 'input_' . uniqid());
     
     // Determine if there's an error
-    $hasError = $error || $errors->has($name);
+    $hasError = $error || $errors->has($name) || ($attributes->has(':error') || $attributes->has('::error'));
     
     // Build base classes
     $baseClasses = 'block w-full rounded-md shadow-sm transition-colors duration-150 dark:bg-gray-700 dark:text-white';
@@ -103,7 +103,15 @@
         @if($autocomplete) autocomplete="{{ $autocomplete }}" @endif
         @if($maxlength) maxlength="{{ $maxlength }}" @endif
         @if($pattern) pattern="{{ $pattern }}" @endif
-        {{ $attributes->except(['class'])->merge(['class' => $finalClasses]) }}
+        @if($attributes->has(':error') || $attributes->has('::error'))
+            :class="{
+                '{{ $finalClasses }}': !{{ $attributes->get(':error') ?? $attributes->get('::error') }},
+                '{{ str_replace($borderClasses, 'border-red-300 dark:border-red-400 focus:border-red-500 focus:ring-red-500', $finalClasses) }}': {{ $attributes->get(':error') ?? $attributes->get('::error') }}
+            }"
+        @else
+            class="{{ $finalClasses }}"
+        @endif
+        {{ $attributes->except(['class', ':error', '::error']) }}
     />
     
     @if($suffix)

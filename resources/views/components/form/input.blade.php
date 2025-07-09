@@ -12,7 +12,8 @@
     'required' => false,
     'disabled' => false,
     'readonly' => false,
-    'wrapperClass' => ''
+    'wrapperClass' => '',
+    'error' => null
 ])
 
 @php
@@ -46,6 +47,7 @@
     :label="$label" 
     :required="$required" 
     :hint="$hint"
+    :error="$error"
     :wrapper-class="$wrapperClass"
     :field-id="$fieldId">
     
@@ -59,6 +61,7 @@
         :disabled="$disabled"
         :readonly="$readonly"
         :autocomplete="$autocomplete"
+        :error="$error"
         {{ $attributes }}
     />
     
