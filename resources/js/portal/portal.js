@@ -4,7 +4,11 @@
  */
 
 import Alpine from 'alpinejs';
+import persist from '@alpinejs/persist';
 import axios from 'axios';
+
+// Register Alpine plugins
+Alpine.plugin(persist);
 
 // Core utilities
 import './utils/csrf';
