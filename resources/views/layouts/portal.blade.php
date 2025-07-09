@@ -35,13 +35,23 @@
     <!-- Translations for JavaScript -->
     <script>
         window.translations = {
-            navigation: @json(__('portal.navigation')),
-            header: @json(__('portal.header')),
-            profile_menu: @json(__('portal.profile_menu')),
-            footer: @json(__('portal.footer')),
-            general: @json(__('portal.general'))
+            common: @json(__('common')),
+            validation: @json(__('validation')),
+            portal: @json(__('portal')),
+            settings: @json(__('settings')),
+            user: @json(__('user')),
+            profile: @json(__('profile'))
         };
         window.locale = '{{ app()->getLocale() }}';
+        @php
+            $defaultDateTime = [
+                'timezone' => 'UTC',
+                'dateFormat' => 'Y-m-d',
+                'timeFormat' => 'H:i',
+                'locale' => 'en'
+            ];
+        @endphp
+        window.datetimeFormats = @json($tenantDateTime ?? $defaultDateTime);
     </script>
 
     <title>@yield('title', __('portal.title')) - {{ config('app.name', 'Meet2Be') }}</title>
@@ -307,8 +317,8 @@
                         <button @click="toggleTheme()"
                                 class="p-1.5 sm:p-2 rounded-lg transition-colors duration-150"
                                 aria-label="{{ __('portal.header.toggle_theme') }}">
-                            <i x-show="!darkMode" class="fa-solid fa-moon text-base sm:text-lg text-gray-600 dark:text-gray-400"></i>
-                            <i x-show="darkMode" class="fa-solid fa-sun text-base sm:text-lg text-gray-600 dark:text-gray-400"></i>
+                            <i x-show="!$store.theme.dark" class="fa-solid fa-moon text-base sm:text-lg text-gray-600 dark:text-gray-400"></i>
+                            <i x-show="$store.theme.dark" class="fa-solid fa-sun text-base sm:text-lg text-gray-600 dark:text-gray-400"></i>
                         </button>
 
                         <!-- Notifications -->
