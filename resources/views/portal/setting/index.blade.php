@@ -3,7 +3,7 @@
 @section('title', __('settings.title'))
 
 @section('content')
-<div class="max-w-7xl mx-auto" x-data="settingsForm()">
+<div class="max-w-7xl mx-auto" x-data="settingsForm()" @update-country.window="form.country_id = $event.detail.countryId">
     {{-- Page Header --}}
     <div class="mb-8">
         <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
@@ -103,6 +103,7 @@
                                     :label="__('settings.fields.legal_name')"
                                     :value="$tenant->legal_name"
                                     :placeholder="__('settings.placeholders.legal_name')"
+                                    :hint="__('settings.hints.legal_name')"
                                     model="form.legal_name" />
                             </div>
 
@@ -116,25 +117,17 @@
                                     disabled />
                             </div>
 
-                            {{-- URL Slug --}}
+                            {{-- Organization ID --}}
                             <div>
-                                <label for="slug" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    {{ __('settings.fields.url_slug') }}
-                                    <span class="text-red-500">*</span>
-                                </label>
-                                <div class="mt-1 flex rounded-md shadow-sm">
-                                    <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-400 sm:text-sm">
-                                        {{ config('app.url') }}/
-                                    </span>
-                                    <input type="text" 
-                                           id="slug" 
-                                           name="slug" 
-                                           x-model="form.slug"
-                                           class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
-                                           placeholder="your-organization"
-                                           required>
-                                </div>
+                                <x-form.input 
+                                    name="tenant_id"
+                                    :label="__('settings.fields.organization_id')"
+                                    :value="$tenant->id"
+                                    :hint="__('settings.hints.organization_id')"
+                                    disabled />
                             </div>
+
+
                         </div>
                     </div>
                 </div>
@@ -157,13 +150,14 @@
                                     :label="__('settings.fields.email')"
                                     :value="$tenant->email"
                                     :placeholder="__('settings.placeholders.email')"
+                                    :hint="__('settings.hints.email')"
                                     model="form.email"
                                     required />
                             </div>
 
                             {{-- Phone --}}
                             <div>
-                                <x-form.phone-input 
+                                <x-form.specialized.phone-input 
                                     name="phone" 
                                     :label="__('settings.fields.phone')"
                                     :value="$tenant->phone"
@@ -179,6 +173,7 @@
                                     :label="__('settings.fields.website')"
                                     :value="$tenant->website"
                                     :placeholder="__('settings.placeholders.website')"
+                                    :hint="__('settings.hints.website')"
                                     model="form.website" />
                             </div>
                         </div>
@@ -197,6 +192,7 @@
                                     :label="__('settings.fields.address_line_1')"
                                     :value="$tenant->address_line_1"
                                     :placeholder="__('settings.placeholders.address_line_1')"
+                                    :hint="__('settings.hints.address_line_1')"
                                     model="form.address_line_1" />
                             </div>
 
@@ -207,6 +203,7 @@
                                     :label="__('settings.fields.address_line_2')"
                                     :value="$tenant->address_line_2"
                                     :placeholder="__('settings.placeholders.address_line_2')"
+                                    :hint="__('settings.hints.address_line_2')"
                                     model="form.address_line_2" />
                             </div>
 
@@ -218,6 +215,7 @@
                                         :label="__('settings.fields.city')"
                                         :value="$tenant->city"
                                         :placeholder="__('settings.placeholders.city')"
+                                        :hint="__('settings.hints.city')"
                                         model="form.city" />
                                 </div>
 
@@ -228,6 +226,7 @@
                                         :label="__('settings.fields.state')"
                                         :value="$tenant->state"
                                         :placeholder="__('settings.placeholders.state')"
+                                        :hint="__('settings.hints.state')"
                                         model="form.state" />
                                 </div>
 
@@ -238,22 +237,168 @@
                                         :label="__('settings.fields.postal_code')"
                                         :value="$tenant->postal_code"
                                         :placeholder="__('settings.placeholders.postal_code')"
+                                        :hint="__('settings.hints.postal_code')"
                                         model="form.postal_code" />
                                 </div>
 
                                 {{-- Country --}}
-                                <div>
-                                    <x-form.select 
-                                        name="country_id"
-                                        :label="__('settings.fields.country')"
-                                        :value="$tenant->country_id"
-                                        :placeholder="__('settings.placeholders.select_country')"
-                                        model="form.country_id">
-                                        @foreach($countries as $country)
-                                            <option value="{{ $country->id }}">{{ $country->name_en }}</option>
-                                        @endforeach
-                                    </x-form.select>
+                                <div x-data="countrySelect(@js([
+                                    'countryId' => $tenant->country_id,
+                                    'countries' => $countries
+                                ]))">
+                                    <label for="country_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        {{ __('settings.fields.country') }}
+                                    </label>
+                                    
+                                    <div class="relative">
+                                        <button type="button"
+                                                @click="toggleDropdown()"
+                                                class="relative w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                            <span class="flex items-center">
+                                                <template x-if="selectedCountry">
+                                                    <div class="flex items-center">
+                                                        <template x-if="flagLoaded[selectedCountry.iso2]">
+                                                            <img :src="`/assets/images/flags/32x24/${selectedCountry.iso2.toLowerCase()}.png`" 
+                                                                 :alt="selectedCountry.name_en"
+                                                                 class="w-5 h-4 mr-2 rounded-sm">
+                                                        </template>
+                                                        <template x-if="!flagLoaded[selectedCountry.iso2]">
+                                                            <span class="inline-flex items-center justify-center w-5 h-4 mr-2 text-xs font-medium bg-gray-200 dark:bg-gray-600 rounded-sm text-gray-600 dark:text-gray-300"
+                                                                  x-text="selectedCountry.iso2"></span>
+                                                        </template>
+                                                        <span x-text="selectedCountry.name_en"></span>
+                                                    </div>
+                                                </template>
+                                                <template x-if="!selectedCountry">
+                                                    <span class="text-gray-500">{{ __('settings.placeholders.select_country') }}</span>
+                                                </template>
+                                            </span>
+                                            <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                                <i class="fa-solid fa-chevron-down text-gray-400 text-xs transition-transform duration-200" 
+                                                   :class="{ 'rotate-180': showDropdown }"></i>
+                                            </span>
+                                        </button>
+                                        
+                                        {{-- Dropdown --}}
+                                        <div x-show="showDropdown"
+                                             x-transition:enter="transition ease-out duration-100"
+                                             x-transition:enter-start="transform opacity-0 scale-95"
+                                             x-transition:enter-end="transform opacity-100 scale-100"
+                                             x-transition:leave="transition ease-in duration-75"
+                                             x-transition:leave-start="transform opacity-100 scale-100"
+                                             x-transition:leave-end="transform opacity-0 scale-95"
+                                             @click.away="closeDropdown()"
+                                             class="absolute z-50 mt-1 w-full rounded-md bg-white dark:bg-gray-800 shadow-lg max-h-60 overflow-hidden"
+                                             style="display: none;">
+                                            
+                                            {{-- Search Input --}}
+                                            <div class="sticky top-0 z-10 bg-white dark:bg-gray-800 px-2 py-2 border-b border-gray-200 dark:border-gray-700">
+                                                <input type="text"
+                                                       x-ref="searchInput"
+                                                       x-model="search"
+                                                       @click.stop
+                                                       @keydown.escape="closeDropdown()"
+                                                       class="w-full px-3 py-1.5 text-sm border-gray-300 dark:border-gray-600 rounded-md focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                                       placeholder="{{ __('common.search') }}...">
+                                            </div>
+                                            
+                                            {{-- Countries List --}}
+                                            <div class="overflow-y-auto max-h-48">
+                                                <template x-for="country in filteredCountries" :key="country.id">
+                                                    <button type="button"
+                                                            @click="selectCountry(country)"
+                                                            class="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none"
+                                                            :class="{ 'bg-blue-50 dark:bg-blue-900/20': country.id === countryId }">
+                                                        <div class="flex items-center">
+                                                            <template x-if="flagLoaded[country.iso2]">
+                                                                <img :src="`/assets/images/flags/32x24/${country.iso2.toLowerCase()}.png`" 
+                                                                     :alt="country.name_en"
+                                                                     class="w-5 h-4 mr-3 rounded-sm">
+                                                            </template>
+                                                            <template x-if="!flagLoaded[country.iso2]">
+                                                                <span class="inline-flex items-center justify-center w-5 h-4 mr-3 text-xs font-medium bg-gray-200 dark:bg-gray-600 rounded-sm text-gray-600 dark:text-gray-300"
+                                                                      x-text="country.iso2"></span>
+                                                            </template>
+                                                            <span x-text="country.name_en"></span>
+                                                        </div>
+                                                    </button>
+                                                </template>
+                                                <div x-show="filteredCountries.length === 0" class="px-3 py-8 text-center text-gray-500 dark:text-gray-400">
+                                                    {{ __('common.no_results') }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        {{-- Hidden input --}}
+                                        <input type="hidden" 
+                                               name="country_id" 
+                                               x-model="countryId">
+                                    </div>
+                                    
+                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('settings.hints.country') }}</p>
                                 </div>
+
+                                <script>
+                                function countrySelect(config) {
+                                    return {
+                                        showDropdown: false,
+                                        search: '',
+                                        countryId: config.countryId || '',
+                                        countries: config.countries || [],
+                                        flagLoaded: {},
+                                        
+                                        init() {
+                                            // Meet2Be: Preload flag status
+                                            this.countries.forEach(country => {
+                                                const img = new Image();
+                                                img.onload = () => {
+                                                    this.flagLoaded[country.iso2] = true;
+                                                };
+                                                img.onerror = () => {
+                                                    this.flagLoaded[country.iso2] = false;
+                                                };
+                                                img.src = `/assets/images/flags/32x24/${country.iso2.toLowerCase()}.png`;
+                                            });
+                                        },
+                                        
+                                        get selectedCountry() {
+                                            return this.countries.find(c => c.id === this.countryId);
+                                        },
+                                        
+                                        get filteredCountries() {
+                                            if (!this.search) return this.countries;
+                                            
+                                            const searchLower = this.search.toLowerCase();
+                                            return this.countries.filter(country => 
+                                                country.name_en.toLowerCase().includes(searchLower) ||
+                                                country.iso2.toLowerCase().includes(searchLower) ||
+                                                country.iso3.toLowerCase().includes(searchLower)
+                                            );
+                                        },
+                                        
+                                        toggleDropdown() {
+                                            this.showDropdown = !this.showDropdown;
+                                            if (this.showDropdown) {
+                                                this.$nextTick(() => {
+                                                    this.$refs.searchInput?.focus();
+                                                });
+                                            }
+                                        },
+                                        
+                                        closeDropdown() {
+                                            this.showDropdown = false;
+                                            this.search = '';
+                                        },
+                                        
+                                        selectCountry(country) {
+                                            this.countryId = country.id;
+                                            this.closeDropdown();
+                                            // Update form data
+                                            this.$dispatch('update-country', { countryId: country.id });
+                                        }
+                                    }
+                                }
+                                </script>
                             </div>
                         </div>
                     </div>
@@ -271,50 +416,63 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {{-- Language --}}
                             <div>
-                                <label for="language_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    {{ __('settings.fields.language') }}
-                                </label>
-                                <select id="language_id" 
-                                        name="language_id" 
-                                        x-model="form.language_id"
-                                        class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white">
-                                    <option value="">{{ __('settings.placeholders.select_language') }}</option>
+                                <x-form.select 
+                                    name="language_id"
+                                    :label="__('settings.fields.language')"
+                                    :value="$tenant->language_id"
+                                    :placeholder="__('settings.placeholders.select_language')"
+                                    :hint="__('settings.hints.language')"
+                                    :searchable="true"
+                                    model="form.language_id">
                                     @foreach($languages as $language)
-                                        <option value="{{ $language->id }}">{{ $language->name_en }}</option>
+                                        <option value="{{ $language->id }}">{{ $language->name_en }} ({{ $language->name_native }})</option>
                                     @endforeach
-                                </select>
+                                </x-form.select>
                             </div>
 
                             {{-- Currency --}}
                             <div>
-                                <label for="currency_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    {{ __('settings.fields.currency') }}
-                                </label>
-                                <select id="currency_id" 
-                                        name="currency_id" 
-                                        x-model="form.currency_id"
-                                        class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white">
-                                    <option value="">{{ __('settings.placeholders.select_currency') }}</option>
+                                <x-form.select 
+                                    name="currency_id"
+                                    :label="__('settings.fields.currency')"
+                                    :value="$tenant->currency_id"
+                                    :placeholder="__('settings.placeholders.select_currency')"
+                                    :hint="__('settings.hints.currency')"
+                                    :searchable="true"
+                                    model="form.currency_id">
                                     @foreach($currencies as $currency)
-                                        <option value="{{ $currency->id }}">{{ $currency->code }} - {{ $currency->name_en }}</option>
+                                        <option value="{{ $currency->id }}">{{ $currency->code }} - {{ $currency->name_en }} ({{ $currency->symbol }})</option>
                                     @endforeach
-                                </select>
+                                </x-form.select>
                             </div>
 
                             {{-- Timezone --}}
                             <div>
-                                <label for="timezone_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    {{ __('settings.fields.timezone') }}
-                                </label>
-                                <select id="timezone_id" 
-                                        name="timezone_id" 
-                                        x-model="form.timezone_id"
-                                        class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white">
-                                    <option value="">{{ __('settings.placeholders.select_timezone') }}</option>
-                                    @foreach($timezones as $timezone)
-                                        <option value="{{ $timezone->id }}">{{ $timezone->name }} (UTC{{ $timezone->offset >= 0 ? '+' : '' }}{{ $timezone->offset }})</option>
+                                <x-form.select 
+                                    name="timezone_id"
+                                    :label="__('settings.fields.timezone')"
+                                    :value="$tenant->timezone_id"
+                                    :placeholder="__('settings.placeholders.select_timezone')"
+                                    :hint="__('settings.hints.timezone')"
+                                    :searchable="true"
+                                    :grouped="true"
+                                    model="form.timezone_id">
+                                    @php
+                                        $groupedTimezones = $timezones->groupBy(function($timezone) {
+                                            $parts = explode('/', $timezone->name);
+                                            return $parts[0] ?? 'Other';
+                                        });
+                                    @endphp
+                                    @foreach($groupedTimezones->sortKeys() as $region => $regionTimezones)
+                                        <optgroup label="{{ $region }}">
+                                            @foreach($regionTimezones->sortBy('offset') as $timezone)
+                                                <option value="{{ $timezone->id }}">
+                                                    {{ $timezone->display_name }} ({{ $timezone->utc_offset }})
+                                                </option>
+                                            @endforeach
+                                        </optgroup>
                                     @endforeach
-                                </select>
+                                </x-form.select>
                             </div>
                         </div>
                     </div>
@@ -327,36 +485,56 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {{-- Date Format --}}
                             <div>
-                                <label for="date_format" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    {{ __('settings.fields.date_format') }}
-                                    <span class="text-red-500">*</span>
-                                </label>
-                                <select id="date_format" 
-                                        name="date_format" 
-                                        x-model="form.date_format"
-                                        class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
-                                        required>
-                                    <option value="Y-m-d">{{ now()->format('Y-m-d') }} (Y-m-d)</option>
-                                    <option value="d/m/Y">{{ now()->format('d/m/Y') }} (d/m/Y)</option>
-                                    <option value="m/d/Y">{{ now()->format('m/d/Y') }} (m/d/Y)</option>
-                                    <option value="d.m.Y">{{ now()->format('d.m.Y') }} (d.m.Y)</option>
-                                </select>
+                                <x-form.select 
+                                    name="date_format"
+                                    :label="__('settings.fields.date_format')"
+                                    :value="$tenant->date_format"
+                                    :hint="__('settings.hints.date_format')"
+                                    model="form.date_format"
+                                    required>
+                                    {{-- ISO 8601 (International) --}}
+                                    <option value="Y-m-d">{{ now()->format('Y-m-d') }} (YYYY-MM-DD)</option>
+                                    
+                                    {{-- European formats --}}
+                                    <option value="d/m/Y">{{ now()->format('d/m/Y') }} (DD/MM/YYYY)</option>
+                                    <option value="d.m.Y">{{ now()->format('d.m.Y') }} (DD.MM.YYYY)</option>
+                                    <option value="d-m-Y">{{ now()->format('d-m-Y') }} (DD-MM-YYYY)</option>
+                                    
+                                    {{-- US format --}}
+                                    <option value="m/d/Y">{{ now()->format('m/d/Y') }} (MM/DD/YYYY)</option>
+                                    
+                                    {{-- Long formats --}}
+                                    <option value="j F Y">{{ now()->format('j F Y') }} ({{ __('settings.date_formats.full') }})</option>
+                                    <option value="F j, Y">{{ now()->format('F j, Y') }} ({{ __('settings.date_formats.full_us') }})</option>
+                                    <option value="d M Y">{{ now()->format('d M Y') }} ({{ __('settings.date_formats.medium') }})</option>
+                                    <option value="M d, Y">{{ now()->format('M d, Y') }} ({{ __('settings.date_formats.medium_us') }})</option>
+                                    
+                                    {{-- Compact formats --}}
+                                    <option value="Y/m/d">{{ now()->format('Y/m/d') }} (YYYY/MM/DD)</option>
+                                    <option value="d/m/y">{{ now()->format('d/m/y') }} (DD/MM/YY)</option>
+                                    <option value="m/d/y">{{ now()->format('m/d/y') }} (MM/DD/YY)</option>
+                                </x-form.select>
                             </div>
 
                             {{-- Time Format --}}
                             <div>
-                                <label for="time_format" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    {{ __('settings.fields.time_format') }}
-                                    <span class="text-red-500">*</span>
-                                </label>
-                                <select id="time_format" 
-                                        name="time_format" 
-                                        x-model="form.time_format"
-                                        class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
-                                        required>
-                                    <option value="H:i">{{ now()->format('H:i') }} (24 hour)</option>
-                                    <option value="h:i A">{{ now()->format('h:i A') }} (12 hour)</option>
-                                </select>
+                                <x-form.select 
+                                    name="time_format"
+                                    :label="__('settings.fields.time_format')"
+                                    :value="$tenant->time_format"
+                                    :hint="__('settings.hints.time_format')"
+                                    model="form.time_format"
+                                    required>
+                                    {{-- 24-hour formats --}}
+                                    <option value="H:i">{{ now()->format('H:i') }} (24-hour)</option>
+                                    <option value="H:i:s">{{ now()->format('H:i:s') }} (24-hour with seconds)</option>
+                                    
+                                    {{-- 12-hour formats --}}
+                                    <option value="h:i A">{{ now()->format('h:i A') }} (12-hour)</option>
+                                    <option value="h:i:s A">{{ now()->format('h:i:s A') }} (12-hour with seconds)</option>
+                                    <option value="g:i A">{{ now()->format('g:i A') }} (12-hour no leading zero)</option>
+                                    <option value="g:i a">{{ now()->format('g:i a') }} (12-hour lowercase)</option>
+                                </x-form.select>
                             </div>
                         </div>
                     </div>
@@ -525,7 +703,6 @@ function settingsForm() {
             // Basic Information
             name: @json($tenant->name),
             legal_name: @json($tenant->legal_name),
-            slug: @json($tenant->slug),
             
             // Contact Information
             email: @json($tenant->email),

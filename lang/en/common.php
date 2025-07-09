@@ -78,6 +78,12 @@ return [
         'per_page' => 'Per page',
         'page' => 'Page',
         'total' => 'Total',
+        'country' => 'Country',
+        'language' => 'Language',
+        'timezone' => 'Timezone',
+        'currency' => 'Currency',
+        'date_format' => 'Date Format',
+        'time_format' => 'Time Format',
     ],
     
     // Messages
@@ -97,6 +103,8 @@ return [
         'please_try_again' => 'Please try again.',
         'invalid_data' => 'Invalid data.',
         'required_fields' => 'Please fill in required fields.',
+        'select_option' => 'Select an option',
+        'loading' => 'Loading...',
     ],
     
     // Fields

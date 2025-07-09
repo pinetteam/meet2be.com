@@ -1,69 +1,60 @@
-{{-- Meet2Be: Reusable form input component --}}
+{{-- Meet2Be: Main input component router --}}
 {{-- Author: Meet2Be Development Team --}}
-{{-- Usage: <x-form.input name="email" label="Email" type="email" required /> --}}
+{{-- Routes to appropriate input type component --}}
 
 @props([
-    'name',
-    'label',
-    'type' => 'text',
-    'value' => '',
-    'placeholder' => '',
-    'required' => false,
-    'disabled' => false,
-    'readonly' => false,
-    'hint' => '',
-    'prefix' => '', // For URL inputs like "https://"
-    'model' => null // For Alpine.js x-model binding
+    'type' => 'text'
 ])
 
-<div>
-    <label for="{{ $name }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-        {{ $label }}
-        @if($required)
-            <span class="text-red-500">*</span>
-        @endif
-    </label>
-    
-    @if($prefix)
-        {{-- Input with prefix --}}
-        <div class="flex rounded-md shadow-sm">
-            <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-400 sm:text-sm">
-                {{ $prefix }}
-            </span>
-            <input 
-                type="{{ $type }}"
-                id="{{ $name }}"
-                name="{{ $name }}"
-                value="{{ old($name, $value) }}"
-                placeholder="{{ $placeholder }}"
-                @if($model) x-model="{{ $model }}" @endif
-                @if($required) required @endif
-                @if($disabled) disabled @endif
-                @if($readonly) readonly @endif
-                {{ $attributes->merge(['class' => 'flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white' . ($disabled || $readonly ? ' bg-gray-50 dark:bg-gray-600' : '')]) }}
-            >
-        </div>
-    @else
-        {{-- Regular input --}}
-        <input 
-            type="{{ $type }}"
-            id="{{ $name }}"
-            name="{{ $name }}"
-            value="{{ old($name, $value) }}"
-            placeholder="{{ $placeholder }}"
-            @if($model) x-model="{{ $model }}" @endif
-            @if($required) required @endif
-            @if($disabled) disabled @endif
-            @if($readonly) readonly @endif
-            {{ $attributes->merge(['class' => 'block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white' . ($disabled || $readonly ? ' bg-gray-50 dark:bg-gray-600' : '')]) }}
-        >
-    @endif
-    
-    @if($hint)
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ $hint }}</p>
-    @endif
-    
-    @error($name)
-        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-    @enderror
-</div> 
+@switch($type)
+    @case('email')
+        <x-form.input.email {{ $attributes }} />
+        @break
+        
+    @case('password')
+        <x-form.input.password {{ $attributes }} />
+        @break
+        
+    @case('number')
+        <x-form.input.number {{ $attributes }} />
+        @break
+        
+    @case('url')
+        <x-form.input.url {{ $attributes }} />
+        @break
+        
+    @case('tel')
+        <x-form.input.tel {{ $attributes }} />
+        @break
+        
+    @case('date')
+        <x-form.input.date {{ $attributes }} />
+        @break
+        
+    @case('time')
+        <x-form.input.time {{ $attributes }} />
+        @break
+        
+    @case('datetime-local')
+        <x-form.input.datetime {{ $attributes }} />
+        @break
+        
+    @case('file')
+        <x-form.input.file {{ $attributes }} />
+        @break
+        
+    @case('color')
+        <x-form.input.color {{ $attributes }} />
+        @break
+        
+    @case('range')
+        <x-form.input.range {{ $attributes }} />
+        @break
+        
+    @case('search')
+        <x-form.input.search {{ $attributes }} />
+        @break
+        
+    @default
+        <x-form.input.text {{ $attributes->merge(['type' => $type]) }} />
+@endswitch 

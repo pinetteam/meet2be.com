@@ -28,6 +28,7 @@ return [
         'organization_name' => 'Kuruluş Adı',
         'legal_name' => 'Yasal Adı',
         'organization_code' => 'Kuruluş Kodu',
+        'organization_id' => 'Kuruluş ID',
         'url_slug' => 'URL Kısa Adı',
         
         // İletişim
@@ -71,9 +72,32 @@ return [
     // İpuçları
     'hints' => [
         'organization_name' => 'Bu ad tüm kullanıcılara görünür olacaktır',
+        'legal_name' => 'Yasal belgeler ve faturalar için resmi kayıtlı isim',
         'organization_code' => 'Sistem tarafından otomatik oluşturulur',
+        'organization_id' => 'Kuruluşunuzun sistemdeki benzersiz tanımlayıcısı',
         'phone' => 'Uluslararası numaralar için ülke kodunu dahil edin',
+        'email' => 'Kuruluşunuz için birincil iletişim e-postası',
+        'website' => 'Kuruluşunuzun web sitesi URL\'si',
+        'address_line_1' => 'Sokak adresi, posta kutusu, şirket adı',
+        'address_line_2' => 'Daire, süit, birim, bina, kat vb.',
+        'city' => 'Şehir veya ilçe adı',
+        'state' => 'Eyalet, il veya bölge',
+        'postal_code' => 'Posta kodu',
+        'country' => 'Kuruluşunuzun ülkesini seçin',
+        'language' => 'Kuruluşunuz için varsayılan dil',
+        'currency' => 'İşlemler için birincil para birimi',
+        'timezone' => 'Zamanlama ve zaman damgaları için saat dilimi',
+        'date_format' => 'Tarihler sistem genelinde nasıl görüntülenecek',
+        'time_format' => '12 saat veya 24 saat formatı arasında seçim yapın',
         'save_changes' => 'Tüm değişiklikler hemen geçerli olacaktır',
+    ],
+    
+    // Tarih formatları
+    'date_formats' => [
+        'full' => 'Tam tarih',
+        'full_us' => 'Tam tarih (ABD)',
+        'medium' => 'Orta tarih',
+        'medium_us' => 'Orta tarih (ABD)',
     ],
     
     // Abonelik

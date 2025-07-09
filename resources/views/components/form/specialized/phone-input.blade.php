@@ -57,14 +57,14 @@
                     :disabled="@js($disabled)">
                 <template x-if="selectedCountry">
                     <div class="flex items-center">
-                        <template x-if="flagLoaded[selectedCountry.code]">
-                            <img :src="`/assets/images/flags/32x24/${selectedCountry.code.toLowerCase()}.png`" 
+                        <template x-if="flagLoaded[selectedCountry.iso2]">
+                            <img :src="`/assets/images/flags/32x24/${selectedCountry.iso2.toLowerCase()}.png`" 
                                  :alt="selectedCountry.name_en"
                                  class="w-5 h-4 mr-2 rounded-sm">
                         </template>
-                        <template x-if="!flagLoaded[selectedCountry.code]">
+                        <template x-if="!flagLoaded[selectedCountry.iso2]">
                             <span class="inline-flex items-center justify-center w-5 h-4 mr-2 text-xs font-medium bg-gray-200 dark:bg-gray-600 rounded-sm text-gray-600 dark:text-gray-300"
-                                  x-text="selectedCountry.code.toUpperCase()"></span>
+                                  x-text="selectedCountry.iso2.toUpperCase()"></span>
                         </template>
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-300" x-text="`+${selectedCountry.phone_code}`"></span>
                     </div>
@@ -107,14 +107,14 @@
                                 class="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none transition-colors duration-150"
                                 :class="{ 'bg-blue-50 dark:bg-blue-900/20': country.id === countryId }">
                             <div class="flex items-center">
-                                <template x-if="flagLoaded[country.code]">
-                                    <img :src="`/assets/images/flags/32x24/${country.code.toLowerCase()}.png`" 
+                                <template x-if="flagLoaded[country.iso2]">
+                                    <img :src="`/assets/images/flags/32x24/${country.iso2.toLowerCase()}.png`" 
                                          :alt="country.name_en"
                                          class="w-5 h-4 mr-3 rounded-sm">
                                 </template>
-                                <template x-if="!flagLoaded[country.code]">
+                                <template x-if="!flagLoaded[country.iso2]">
                                     <span class="inline-flex items-center justify-center w-5 h-4 mr-3 text-xs font-medium bg-gray-200 dark:bg-gray-600 rounded-sm text-gray-600 dark:text-gray-300"
-                                          x-text="country.code.toUpperCase()"></span>
+                                          x-text="country.iso2.toUpperCase()"></span>
                                 </template>
                                 <span class="text-sm text-gray-900 dark:text-white" x-text="country.name_en"></span>
                                 <span class="ml-auto text-sm text-gray-500 dark:text-gray-400" x-text="`+${country.phone_code}`"></span>
@@ -178,12 +178,12 @@ function phoneInput(initialData) {
             this.countries.forEach(country => {
                 const img = new Image();
                 img.onload = () => {
-                    this.flagLoaded[country.code] = true;
+                    this.flagLoaded[country.iso2] = true;
                 };
                 img.onerror = () => {
-                    this.flagLoaded[country.code] = false;
+                    this.flagLoaded[country.iso2] = false;
                 };
-                img.src = `/assets/images/flags/32x24/${country.code.toLowerCase()}.png`;
+                img.src = `/assets/images/flags/32x24/${country.iso2.toLowerCase()}.png`;
             });
         },
         
@@ -197,7 +197,8 @@ function phoneInput(initialData) {
             const search = this.countrySearch.toLowerCase();
             return this.countries.filter(country => 
                 country.name_en.toLowerCase().includes(search) ||
-                country.code.toLowerCase().includes(search) ||
+                country.iso2.toLowerCase().includes(search) ||
+                country.iso3.toLowerCase().includes(search) ||
                 country.phone_code.includes(search)
             );
         },
