@@ -167,7 +167,7 @@ return [
     'uuid' => ':attribute alanı geçerli bir UUID olmalıdır.',
     
     // Özel doğrulama mesajları
-    'phone_format' => ':attribute ülke kodu ile geçerli bir uluslararası telefon numarası olmalıdır (örn: +901234567890).',
+    'phone_format' => 'Lütfen ülke kodu ile başlayan geçerli bir telefon numarası girin (örn: +905551234567).',
     'invalid_date_format' => 'Seçilen tarih formatı geçersiz.',
     'invalid_time_format' => 'Seçilen saat formatı geçersiz.',
 

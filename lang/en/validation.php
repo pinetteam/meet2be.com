@@ -166,7 +166,7 @@ return [
     'uuid' => 'The :attribute field must be a valid UUID.',
     
     // Custom validation messages
-    'phone_format' => 'The :attribute must be a valid international phone number with country code (e.g., +1234567890).',
+    'phone_format' => 'Please enter a valid phone number starting with country code (e.g., +905551234567).',
     'invalid_date_format' => 'The selected date format is invalid.',
     'invalid_time_format' => 'The selected time format is invalid.',
 

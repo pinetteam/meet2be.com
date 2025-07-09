@@ -109,7 +109,7 @@
             
             get fullPhoneNumber() {
                 const country = this.selectedCountry;
-                if (!country || !this.phoneNumber) return '';
+                if (!country || !this.phoneNumber || this.phoneNumber.trim() === '') return '';
                 return `+${country.phone_code}${this.phoneNumber}`;
             },
             

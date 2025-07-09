@@ -9,6 +9,26 @@ use App\Models\Tenant\Tenant;
 class UpdateSettingRequest extends FormRequest
 {
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        // Convert empty phone to null
+        if ($this->has('phone') && trim($this->phone) === '') {
+            $this->merge([
+                'phone' => null
+            ]);
+        }
+        
+        // Convert empty website to null
+        if ($this->has('website') && trim($this->website) === '') {
+            $this->merge([
+                'website' => null
+            ]);
+        }
+    }
+
+    /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
@@ -30,7 +50,11 @@ class UpdateSettingRequest extends FormRequest
             
             // Contact Information
             'email' => 'required|email|max:255',
-            'phone' => ['nullable', 'string', 'max:30', 'regex:/^[\d\s\-\+\(\)]+$/'],
+            'phone' => [
+                'nullable', 
+                'string', 
+                'regex:/^\+[1-9]\d{1,3}\d{4,14}$/'
+            ],
             'website' => 'nullable|url|max:255',
             
             // Address Information
@@ -65,7 +89,7 @@ class UpdateSettingRequest extends FormRequest
             'email.required' => __('validation.custom.tenant.email_required'),
             'email.email' => __('validation.custom.tenant.email_invalid'),
             'phone.regex' => __('validation.custom.tenant.phone_format'),
-            'website.regex' => __('validation.custom.tenant.website_format'),
+            'website.url' => __('validation.custom.tenant.website_format'),
             'language_id.required' => __('validation.custom.tenant.language_required'),
             'timezone_id.required' => __('validation.custom.tenant.timezone_required'),
             'date_format.required' => __('validation.custom.tenant.date_format_required'),
