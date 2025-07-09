@@ -30,6 +30,7 @@ return [
         'submit' => 'Gönder',
         'login' => 'Giriş Yap',
         'logout' => 'Çıkış Yap',
+        'create_user' => 'Kullanıcı Oluştur',
     ],
     
     // Durumlar
@@ -167,6 +168,7 @@ return [
     'user' => 'Kullanıcı',
     'admin' => 'Yönetici',
     'increment' => 'Artır',
+    'event' => 'Etkinlik',
     
     // Tarihler
     'dates' => [

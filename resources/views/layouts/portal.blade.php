@@ -299,9 +299,9 @@
             <!-- Page content -->
             <main class="flex-1 bg-gray-50 dark:bg-gray-900 overflow-hidden">
                 <div class="h-full overflow-y-auto p-4 sm:p-6 lg:p-8 pb-16">
-                    @yield('content')
-                </div>
-            </main>
+            @yield('content')
+        </div>
+    </main>
 
             <!-- Fixed Footer -->
             <footer class="fixed bottom-0 left-0 right-0 z-20 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 lg:left-64">

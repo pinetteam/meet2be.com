@@ -30,6 +30,7 @@ return [
         'submit' => 'Submit',
         'login' => 'Login',
         'logout' => 'Logout',
+        'create_user' => 'Create User',
     ],
     
     // Statuses
@@ -167,6 +168,7 @@ return [
     'user' => 'User',
     'admin' => 'Admin',
     'increment' => 'Increment',
+    'event' => 'Event',
     
     // Dates
     'dates' => [
