@@ -6,14 +6,16 @@
 
 $__newAttributes = [];
 $__propNames = \Illuminate\View\ComponentAttributeBag::extractPropNames(([
-    'name' => 'timezone_id',
+    'name',
     'label' => null,
     'value' => null,
     'placeholder' => null,
     'hint' => null,
     'required' => false,
     'disabled' => false,
-    'timezones' => null,
+    'readonly' => false,
+    'model' => null,
+    'countries' => null,
     'wrapperClass' => ''
 ]));
 
@@ -31,14 +33,16 @@ unset($__propNames);
 unset($__newAttributes);
 
 foreach (array_filter(([
-    'name' => 'timezone_id',
+    'name',
     'label' => null,
     'value' => null,
     'placeholder' => null,
     'hint' => null,
     'required' => false,
     'disabled' => false,
-    'timezones' => null,
+    'readonly' => false,
+    'model' => null,
+    'countries' => null,
     'wrapperClass' => ''
 ]), 'is_string', ARRAY_FILTER_USE_KEY) as $__key => $__value) {
     $$__key = $$__key ?? $__value;
@@ -53,12 +57,9 @@ foreach ($attributes->all() as $__key => $__value) {
 unset($__defined_vars); ?>
 
 <?php
-    $label = $label ?? __('settings.fields.timezone');
     $placeholder = $placeholder ?? __('common.select');
+    $countries = $countries ?? App\Models\System\Country::orderBy('name_en')->get();
     $selectedValue = old($name, $value);
-    
-    // Get all timezones if not provided
-    $timezones = $timezones ?? App\Models\System\Timezone::orderBy('name')->get();
     
     // Generate unique ID
     $fieldId = $name . '_' . uniqid();
@@ -80,38 +81,40 @@ unset($__defined_vars); ?>
             open: false,
             search: '',
             selectedId: '<?php echo e($selectedValue); ?>',
-            timezones: <?php echo e(Js::from($timezones)); ?>,
+            countries: <?php echo e(Js::from($countries)); ?>,
+            flagLoaded: {},
             
-            get filteredTimezones() {
-                if (!this.search) return this.timezones;
+            init() {
+                // Preload flag images
+                this.countries.forEach(country => {
+                    const img = new Image();
+                    img.onload = () => {
+                        this.flagLoaded[country.iso2] = true;
+                    };
+                    img.onerror = () => {
+                        this.flagLoaded[country.iso2] = false;
+                    };
+                    img.src = `/assets/images/flags/32x24/${country.iso2.toLowerCase()}.png`;
+                });
+            },
+            
+            get filteredCountries() {
+                if (!this.search) return this.countries;
                 
                 const searchLower = this.search.toLowerCase();
-                return this.timezones.filter(tz => 
-                    tz.name.toLowerCase().includes(searchLower) ||
-                    tz.offset.toString().includes(searchLower)
+                return this.countries.filter(country => 
+                    country.name_en.toLowerCase().includes(searchLower) ||
+                    country.iso2.toLowerCase().includes(searchLower) ||
+                    country.iso3.toLowerCase().includes(searchLower)
                 );
             },
             
-            get groupedTimezones() {
-                const groups = {};
-                this.filteredTimezones.forEach(tz => {
-                    const parts = tz.name.split('/');
-                    const region = parts[0] || 'Other';
-                    
-                    if (!groups[region]) {
-                        groups[region] = [];
-                    }
-                    groups[region].push(tz);
-                });
-                return groups;
+            get selectedCountry() {
+                return this.countries.find(c => c.id === this.selectedId);
             },
             
-            get selectedTimezone() {
-                return this.timezones.find(tz => tz.id === this.selectedId);
-            },
-            
-            selectTimezone(timezoneId) {
-                this.selectedId = timezoneId;
+            selectCountry(countryId) {
+                this.selectedId = countryId;
                 this.open = false;
                 this.search = '';
             },
@@ -128,11 +131,6 @@ unset($__defined_vars); ?>
             closeDropdown() {
                 this.open = false;
                 this.search = '';
-            },
-            
-            formatTimezone(tz) {
-                const offset = tz.offset >= 0 ? '+' + tz.offset.toFixed(1) : tz.offset.toFixed(1);
-                return tz.name + ' (UTC' + offset + ')';
             }
         }"
         x-modelable="selectedId"
@@ -150,12 +148,33 @@ unset($__defined_vars); ?>
             class="relative w-full px-3 py-2 text-left <?php echo e($disabled ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-gray-700'); ?> border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-150"
             :class="{ 'cursor-not-allowed opacity-60': <?php echo e($disabled ? 'true' : 'false'); ?> }"
         >
-            <span x-show="!selectedTimezone" class="block truncate text-gray-400 dark:text-gray-500">
-                <?php echo e($placeholder); ?>
+            <span class="flex items-center">
+                <span x-show="!selectedCountry" class="text-gray-400 dark:text-gray-500">
+                    <?php echo e($placeholder); ?>
 
+                </span>
+                
+                <template x-if="selectedCountry">
+                    <span class="flex items-center flex-1">
+                        <template x-if="flagLoaded[selectedCountry.iso2] !== false">
+                            <img 
+                                :src="`/assets/images/flags/32x24/${selectedCountry.iso2.toLowerCase()}.png`" 
+                                :alt="selectedCountry.name_en"
+                                x-on:error="flagLoaded[selectedCountry.iso2] = false"
+                                class="w-5 h-4 mr-2 flex-shrink-0"
+                            />
+                        </template>
+                        
+                        <template x-if="flagLoaded[selectedCountry.iso2] === false">
+                            <span class="inline-flex items-center justify-center w-5 h-4 mr-2 text-xs font-medium bg-gray-200 dark:bg-gray-600 rounded flex-shrink-0">
+                                <span x-text="selectedCountry.iso2"></span>
+                            </span>
+                        </template>
+                        
+                        <span class="block truncate text-gray-900 dark:text-white" x-text="selectedCountry.name_en"></span>
+                    </span>
+                </template>
             </span>
-            
-            <span x-show="selectedTimezone" class="block truncate text-gray-900 dark:text-white" x-text="selectedTimezone ? formatTimezone(selectedTimezone) : ''"></span>
             
             <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                 <i class="fas fa-chevron-down text-gray-400"></i>
@@ -183,7 +202,6 @@ unset($__defined_vars); ?>
             class="absolute z-50 mt-1 w-full bg-white dark:bg-gray-700 shadow-lg rounded-md border border-gray-200 dark:border-gray-600"
             style="display: none;"
         >
-            
             <div class="p-2 border-b border-gray-200 dark:border-gray-600">
                 <input
                     type="text"
@@ -195,28 +213,38 @@ unset($__defined_vars); ?>
                 />
             </div>
             
-            
             <ul class="max-h-60 overflow-auto py-1">
-                <template x-for="(timezones, region) in groupedTimezones" :key="region">
+                <template x-for="country in filteredCountries" :key="country.id">
                     <li>
-                        <div class="px-3 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-800">
-                            <span x-text="region"></span>
-                        </div>
-                        <template x-for="timezone in timezones" :key="timezone.id">
-                            <button
-                                type="button"
-                                @click="selectTimezone(timezone.id)"
-                                class="w-full px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-600 transition-colors duration-150 flex items-center justify-between"
-                                :class="{ 'bg-blue-50 dark:bg-blue-900/50': selectedId === timezone.id }"
-                            >
-                                <span class="text-sm text-gray-900 dark:text-white" x-text="formatTimezone(timezone)"></span>
-                                <i x-show="selectedId === timezone.id" class="fas fa-check ml-2 text-blue-600 dark:text-blue-400"></i>
-                            </button>
-                        </template>
+                        <button
+                            type="button"
+                            @click="selectCountry(country.id)"
+                            class="w-full px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-600 transition-colors duration-150 flex items-center"
+                            :class="{ 'bg-blue-50 dark:bg-blue-900/50': selectedId === country.id }"
+                        >
+                            <template x-if="flagLoaded[country.iso2] !== false">
+                                <img 
+                                    :src="`/assets/images/flags/32x24/${country.iso2.toLowerCase()}.png`" 
+                                    :alt="country.name_en"
+                                    x-on:error="flagLoaded[country.iso2] = false"
+                                    class="w-5 h-4 mr-3 flex-shrink-0"
+                                />
+                            </template>
+                            
+                            <template x-if="flagLoaded[country.iso2] === false">
+                                <span class="inline-flex items-center justify-center w-5 h-4 mr-3 text-xs font-medium bg-gray-200 dark:bg-gray-600 rounded flex-shrink-0">
+                                    <span x-text="country.iso2"></span>
+                                </span>
+                            </template>
+                            
+                            <span class="flex-1 text-sm text-gray-900 dark:text-white" x-text="country.name_en"></span>
+                            
+                            <i x-show="selectedId === country.id" class="fas fa-check ml-2 text-blue-600 dark:text-blue-400"></i>
+                        </button>
                     </li>
                 </template>
                 
-                <li x-show="Object.keys(groupedTimezones).length === 0" class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 text-center">
+                <li x-show="filteredCountries.length === 0" class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 text-center">
                     <?php echo e(__('common.no_results')); ?>
 
                 </li>
@@ -233,4 +261,4 @@ unset($__defined_vars); ?>
 <?php if (isset($__componentOriginal4d88ce4e7a623f35fd84edb3500e008f)): ?>
 <?php $component = $__componentOriginal4d88ce4e7a623f35fd84edb3500e008f; ?>
 <?php unset($__componentOriginal4d88ce4e7a623f35fd84edb3500e008f); ?>
-<?php endif; ?> <?php /**PATH C:\Users\Ali Erdem Sunar\Documents\Projects\meet2be.com\resources\views/components/form/specialized/timezone-select.blade.php ENDPATH**/ ?>
+<?php endif; ?> <?php /**PATH C:\Users\Ali Erdem Sunar\Documents\Projects\meet2be.com\resources\views\components\form\specialized\country-select.blade.php ENDPATH**/ ?>

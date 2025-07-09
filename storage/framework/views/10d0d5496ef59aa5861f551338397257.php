@@ -1,0 +1,487 @@
+
+
+
+
+<?php $attributes ??= new \Illuminate\View\ComponentAttributeBag;
+
+$__newAttributes = [];
+$__propNames = \Illuminate\View\ComponentAttributeBag::extractPropNames(([
+    'name' => '',
+    'label' => null,
+    'options' => [],
+    'selected' => null,
+    'placeholder' => null,
+    'hint' => null,
+    'required' => false,
+    'disabled' => false,
+    'model' => null,
+    'searchPlaceholder' => null,
+    'noResultsText' => null,
+    'grouped' => false,
+    'wrapperClass' => '',
+    'size' => 'md'
+]));
+
+foreach ($attributes->all() as $__key => $__value) {
+    if (in_array($__key, $__propNames)) {
+        $$__key = $$__key ?? $__value;
+    } else {
+        $__newAttributes[$__key] = $__value;
+    }
+}
+
+$attributes = new \Illuminate\View\ComponentAttributeBag($__newAttributes);
+
+unset($__propNames);
+unset($__newAttributes);
+
+foreach (array_filter(([
+    'name' => '',
+    'label' => null,
+    'options' => [],
+    'selected' => null,
+    'placeholder' => null,
+    'hint' => null,
+    'required' => false,
+    'disabled' => false,
+    'model' => null,
+    'searchPlaceholder' => null,
+    'noResultsText' => null,
+    'grouped' => false,
+    'wrapperClass' => '',
+    'size' => 'md'
+]), 'is_string', ARRAY_FILTER_USE_KEY) as $__key => $__value) {
+    $$__key = $$__key ?? $__value;
+}
+
+$__defined_vars = get_defined_vars();
+
+foreach ($attributes->all() as $__key => $__value) {
+    if (array_key_exists($__key, $__defined_vars)) unset($$__key);
+}
+
+unset($__defined_vars); ?>
+
+<?php
+    $searchPlaceholder = $searchPlaceholder ?? __('common.search');
+    $noResultsText = $noResultsText ?? __('common.no_results');
+    $placeholder = $placeholder ?? __('common.select');
+    
+    // Generate unique ID
+    $fieldId = $attributes->get('id') ?? ($name ? $name . '_' . uniqid() : 'select_' . uniqid());
+    
+    // Prepare config for Alpine component
+    $config = [
+        'name' => $name,
+        'value' => old($name, $selected),
+        'placeholder' => $placeholder,
+        'grouped' => $grouped,
+        'disabled' => $disabled,
+        'size' => $size,
+        'ajax' => false,
+        'ajaxUrl' => null,
+        'xModel' => $model
+    ];
+?>
+
+<?php if (isset($component)) { $__componentOriginal4d88ce4e7a623f35fd84edb3500e008f = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal4d88ce4e7a623f35fd84edb3500e008f = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.form.base.field-wrapper','data' => ['name' => $name,'label' => $label,'required' => $required,'hint' => $hint,'wrapperClass' => $wrapperClass]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('form.base.field-wrapper'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($name),'label' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($label),'required' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($required),'hint' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($hint),'wrapper-class' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($wrapperClass)]); ?>
+    
+    <div x-data="searchableSelect(<?php echo e(Js::from($config)); ?>)">
+        
+        <select class="hidden">
+            <?php if($grouped): ?>
+                <?php $__currentLoopData = $options; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $group => $groupOptions): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <optgroup label="<?php echo e($group); ?>">
+                        <?php $__currentLoopData = $groupOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($value); ?>" <?php if($value == old($name, $selected)): ?> selected <?php endif; ?>>
+                                <?php echo e($label); ?>
+
+                            </option>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </optgroup>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            <?php else: ?>
+                <?php $__currentLoopData = $options; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($value); ?>" <?php if($value == old($name, $selected)): ?> selected <?php endif; ?>>
+                        <?php echo e($label); ?>
+
+                    </option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            <?php endif; ?>
+        </select>
+        
+        
+        <div class="relative">
+            <button
+                type="button"
+                @click="toggleDropdown()"
+                :disabled="disabled"
+                class="relative w-full bg-white dark:bg-gray-700 border rounded-md shadow-sm text-left cursor-default focus:outline-none focus:ring-1 transition-colors duration-150"
+                :class="{
+                    'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500': !errors,
+                    'border-red-500 dark:border-red-400 focus:border-red-500 focus:ring-red-500': errors,
+                    'bg-gray-50 dark:bg-gray-600 cursor-not-allowed': disabled,
+                    'px-2.5 py-1.5 text-xs': size === 'sm',
+                    'px-3 py-2 text-sm': size === 'md',
+                    'px-4 py-2.5 text-base': size === 'lg'
+                }"
+            >
+                <span class="block truncate" x-html="selectedDisplay || placeholder || 'Select'"></span>
+                <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                    <i class="fa-solid fa-chevron-down text-gray-400 transition-transform duration-200" 
+                       :class="{ 'rotate-180': showDropdown, 'text-xs': size === 'sm', 'text-sm': size !== 'sm' }"></i>
+                </span>
+            </button>
+            
+            <div
+                x-show="showDropdown"
+                x-transition:enter="transition ease-out duration-100"
+                x-transition:enter-start="transform opacity-0 scale-95"
+                x-transition:enter-end="transform opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-75"
+                x-transition:leave-start="transform opacity-100 scale-100"
+                x-transition:leave-end="transform opacity-0 scale-95"
+                @click.away="closeDropdown()"
+                class="absolute z-50 mt-1 w-full rounded-md bg-white dark:bg-gray-800 shadow-lg max-h-60 overflow-hidden"
+                style="display: none;"
+            >
+                
+                <div class="p-2 border-b border-gray-200 dark:border-gray-700">
+                    <input
+                        type="search"
+                        x-model="search"
+                        x-ref="searchInput"
+                        @keydown="handleKeydown"
+                        placeholder="<?php echo e($searchPlaceholder); ?>"
+                        class="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    />
+                </div>
+                
+                
+                <ul class="max-h-48 overflow-y-auto">
+                    <div x-show="!loading" x-html="filteredOptionsHtml"></div>
+                    <li x-show="loading" class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 text-center">
+                        <i class="fas fa-spinner fa-spin mr-2"></i>Loading...
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        
+        <input 
+            type="hidden" 
+            name="<?php echo e($name); ?>" 
+            x-model="selectedValue"
+            id="<?php echo e($fieldId); ?>"
+            :value="selectedValue"
+            autocomplete="off"
+        />
+    </div>
+    
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal4d88ce4e7a623f35fd84edb3500e008f)): ?>
+<?php $attributes = $__attributesOriginal4d88ce4e7a623f35fd84edb3500e008f; ?>
+<?php unset($__attributesOriginal4d88ce4e7a623f35fd84edb3500e008f); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal4d88ce4e7a623f35fd84edb3500e008f)): ?>
+<?php $component = $__componentOriginal4d88ce4e7a623f35fd84edb3500e008f; ?>
+<?php unset($__componentOriginal4d88ce4e7a623f35fd84edb3500e008f); ?>
+<?php endif; ?>
+
+<?php $__env->startPush('scripts'); ?>
+<script>
+// Meet2Be: Searchable select component logic
+function searchableSelect(config) {
+    return {
+        showDropdown: false,
+        search: '',
+        selectedValue: config.value || '',
+        selectedLabel: '',
+        options: [],
+        filteredOptions: [],
+        highlightedIndex: -1,
+        loading: false,
+        disabled: config.disabled || false,
+        size: config.size || 'md',
+        errors: false,
+        
+        init() {
+            // Meet2Be: Parse options from slot content
+            this.parseOptions();
+            
+            // Set initial value if provided
+            if (config.value) {
+                this.selectedValue = config.value;
+            }
+            
+            this.updateSelectedLabel();
+            
+            // Watch for value changes
+            this.$watch('selectedValue', () => {
+                this.updateSelectedLabel();
+            });
+            
+            // Meet2Be: Handle x-model binding
+            if (config.xModel) {
+                // Watch external model changes
+                this.$watch('$parent.' + config.xModel, (value) => {
+                    if (value !== this.selectedValue) {
+                        this.selectedValue = value;
+                    }
+                });
+                
+                // Update parent model when selection changes
+                this.$watch('selectedValue', (value) => {
+                    this.$parent[config.xModel] = value;
+                });
+            }
+        },
+        
+        parseOptions() {
+            const optionsContainer = this.$el.querySelector('[data-select-options]');
+            if (!optionsContainer) return;
+            
+            const selectEl = document.createElement('div');
+            selectEl.innerHTML = optionsContainer.innerHTML;
+            
+            this.options = [];
+            
+            if (config.grouped) {
+                // Handle grouped options
+                selectEl.querySelectorAll('optgroup').forEach(group => {
+                    const groupOptions = [];
+                    group.querySelectorAll('option').forEach(option => {
+                        if (option.value) {
+                            groupOptions.push({
+                                value: option.value,
+                                label: option.textContent.trim(),
+                                group: group.label,
+                                disabled: option.disabled || false,
+                                data: this.getDataAttributes(option)
+                            });
+                        }
+                    });
+                    this.options.push(...groupOptions);
+                });
+            }
+            
+            // Handle regular options
+            selectEl.querySelectorAll('option').forEach(option => {
+                if (option.value && !option.closest('optgroup')) {
+                    this.options.push({
+                        value: option.value,
+                        label: option.textContent.trim(),
+                        group: null,
+                        disabled: option.disabled || false,
+                        data: this.getDataAttributes(option)
+                    });
+                }
+            });
+            
+            this.filterOptions();
+        },
+        
+        getDataAttributes(element) {
+            const data = {};
+            Array.from(element.attributes).forEach(attr => {
+                if (attr.name.startsWith('data-')) {
+                    const key = attr.name.replace('data-', '');
+                    data[key] = attr.value;
+                }
+            });
+            return data;
+        },
+        
+        filterOptions() {
+            if (!this.search) {
+                this.filteredOptions = this.options;
+                return;
+            }
+            
+            const searchLower = this.search.toLowerCase();
+            this.filteredOptions = this.options.filter(option => 
+                option.label.toLowerCase().includes(searchLower) ||
+                (option.group && option.group.toLowerCase().includes(searchLower))
+            );
+        },
+        
+        get filteredOptionsHtml() {
+            let html = '';
+            let currentGroup = null;
+            
+            this.filteredOptions.forEach((option, index) => {
+                if (config.grouped && option.group !== currentGroup) {
+                    if (currentGroup !== null) {
+                        html += '</div>';
+                    }
+                    currentGroup = option.group;
+                    html += `<div class="pt-2">
+                        <div class="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            ${option.group}
+                        </div>`;
+                }
+                
+                const isSelected = option.value === this.selectedValue;
+                const isHighlighted = index === this.highlightedIndex;
+                const isDisabled = option.disabled;
+                
+                // Meet2Be: Check if this is a country select with flag
+                let optionContent = option.label;
+                if (option.data && option.data.flag) {
+                    const flagPath = `/assets/images/flags/32x24/${option.data.flag.toLowerCase()}.png`;
+                    optionContent = `
+                        <div class="flex items-center">
+                            <img src="${flagPath}" 
+                                 alt="${option.label}"
+                                 class="w-5 h-4 mr-3 rounded-sm"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                            <span class="hidden items-center justify-center w-5 h-4 mr-3 text-xs font-medium bg-gray-200 dark:bg-gray-600 rounded-sm text-gray-600 dark:text-gray-300">
+                                ${option.data.flag}
+                            </span>
+                            <span>${option.label}</span>
+                        </div>`;
+                }
+                
+                html += `
+                    <button type="button"
+                            @click="${!isDisabled ? `selectOption('${option.value}', '${option.label.replace(/'/g, "\\'")}')` : ''}"
+                            @mouseenter="highlightedIndex = ${index}"
+                            class="w-full text-left px-3 py-2 text-sm transition-colors duration-150 ${
+                                isDisabled 
+                                    ? 'opacity-50 cursor-not-allowed' 
+                                    : 'hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none cursor-pointer'
+                            } ${
+                                isSelected 
+                                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' 
+                                    : 'text-gray-900 dark:text-white'
+                            } ${
+                                isHighlighted && !isDisabled
+                                    ? 'bg-gray-100 dark:bg-gray-700'
+                                    : ''
+                            }"
+                            ${isDisabled ? 'disabled' : ''}>
+                        ${optionContent}
+                    </button>`;
+            });
+            
+            if (config.grouped && currentGroup !== null) {
+                html += '</div>';
+            }
+            
+            if (this.filteredOptions.length === 0) {
+                html = `<div class="px-3 py-8 text-center text-gray-500 dark:text-gray-400">
+                    <?php echo e($noResultsText); ?>
+
+                </div>`;
+            }
+            
+            return html;
+        },
+        
+        toggleDropdown() {
+            if (this.disabled) return;
+            
+            this.showDropdown = !this.showDropdown;
+            if (this.showDropdown) {
+                this.$nextTick(() => {
+                    this.$refs.searchInput?.focus();
+                    this.highlightedIndex = -1;
+                });
+            }
+        },
+        
+        closeDropdown() {
+            this.showDropdown = false;
+            this.search = '';
+            this.filterOptions();
+            this.highlightedIndex = -1;
+        },
+        
+        selectOption(value, label) {
+            this.selectedValue = value;
+            this.selectedLabel = label;
+            this.closeDropdown();
+            
+            // Trigger change event
+            this.$nextTick(() => {
+                const input = this.$el.querySelector('input[type="hidden"]');
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+        },
+        
+        updateSelectedLabel() {
+            const selected = this.options.find(opt => opt.value === this.selectedValue);
+            this.selectedLabel = selected ? selected.label : '';
+            
+            // Meet2Be: Update display with flag if available
+            if (selected && selected.data && selected.data.flag) {
+                const flagPath = `/assets/images/flags/32x24/${selected.data.flag.toLowerCase()}.png`;
+                this.selectedDisplay = `
+                    <div class="flex items-center">
+                        <img src="${flagPath}" 
+                             alt="${selected.label}"
+                             class="w-5 h-4 mr-2 rounded-sm inline-block"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                        <span class="hidden items-center justify-center w-5 h-4 mr-2 text-xs font-medium bg-gray-200 dark:bg-gray-600 rounded-sm text-gray-600 dark:text-gray-300">
+                            ${selected.data.flag}
+                        </span>
+                        <span>${selected.label}</span>
+                    </div>`;
+            } else {
+                this.selectedDisplay = this.selectedLabel;
+            }
+        },
+        
+        get selectedDisplay() {
+            return this._selectedDisplay || this.selectedLabel;
+        },
+        
+        set selectedDisplay(value) {
+            this._selectedDisplay = value;
+        },
+        
+        highlightNext() {
+            if (this.highlightedIndex < this.filteredOptions.length - 1) {
+                this.highlightedIndex++;
+                this.scrollToHighlighted();
+            }
+        },
+        
+        highlightPrevious() {
+            if (this.highlightedIndex > 0) {
+                this.highlightedIndex--;
+                this.scrollToHighlighted();
+            }
+        },
+        
+        selectHighlighted() {
+            if (this.highlightedIndex >= 0 && this.highlightedIndex < this.filteredOptions.length) {
+                const option = this.filteredOptions[this.highlightedIndex];
+                if (!option.disabled) {
+                    this.selectOption(option.value, option.label);
+                }
+            }
+        },
+        
+        scrollToHighlighted() {
+            this.$nextTick(() => {
+                const highlighted = this.$refs.optionsList?.querySelectorAll('button')[this.highlightedIndex];
+                if (highlighted) {
+                    highlighted.scrollIntoView({ block: 'nearest' });
+                }
+            });
+        }
+    }
+}
+</script>
+<?php $__env->stopPush(); ?> <?php /**PATH C:\Users\Ali Erdem Sunar\Documents\Projects\meet2be.com\resources\views\components\form\select\searchable.blade.php ENDPATH**/ ?>

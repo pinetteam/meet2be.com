@@ -25,7 +25,7 @@
     $hasError = $errors->has($name);
     
     // Build classes
-    $baseClasses = 'block w-full rounded-md shadow-sm transition-colors duration-150 dark:bg-gray-700 dark:text-white';
+    $baseClasses = 'block w-full rounded-md shadow-sm transition-colors duration-150 dark:bg-gray-700 dark:text-white appearance-none';
     
     if ($hasError) {
         $borderClasses = 'border-red-300 dark:border-red-400 focus:border-red-500 focus:ring-red-500';
