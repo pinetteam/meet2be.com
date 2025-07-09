@@ -9,8 +9,7 @@
     'hint' => null,
     'required' => false,
     'disabled' => false,
-    'wrapperClass' => '',
-    'fieldId' => null
+    'wrapperClass' => ''
 ])
 
 @php
@@ -18,6 +17,9 @@
     
     $label = $label ?? __('settings.fields.date_format');
     $selectedValue = old($name, $value);
+    
+    // Generate unique ID
+    $fieldId = $name . '_' . uniqid();
     
     // Get date formats from Tenant model
     $formats = Tenant::DATE_FORMATS;
@@ -45,7 +47,8 @@
     :label="$label" 
     :required="$required" 
     :hint="$hint"
-    :wrapper-class="$wrapperClass">
+    :wrapper-class="$wrapperClass"
+    :field-id="$fieldId">
     
     <x-form.base.select-base 
         :name="$name"

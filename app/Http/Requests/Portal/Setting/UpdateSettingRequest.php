@@ -30,7 +30,7 @@ class UpdateSettingRequest extends FormRequest
             
             // Contact Information
             'email' => 'required|email|max:255',
-            'phone' => ['nullable', 'string', 'regex:/^\+\d{1,4}\d{4,15}$/'],
+            'phone' => 'nullable|string|max:30',
             'website' => 'nullable|url|max:255',
             
             // Address Information
@@ -61,9 +61,17 @@ class UpdateSettingRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'phone.regex' => __('validation.phone_format'),
-            'date_format.in' => __('validation.invalid_date_format'),
-            'time_format.in' => __('validation.invalid_time_format'),
+            'name.required' => __('validation.custom.tenant.name_required'),
+            'email.required' => __('validation.custom.tenant.email_required'),
+            'email.email' => __('validation.custom.tenant.email_invalid'),
+            'phone.regex' => __('validation.custom.tenant.phone_format'),
+            'website.regex' => __('validation.custom.tenant.website_format'),
+            'language_id.required' => __('validation.custom.tenant.language_required'),
+            'timezone_id.required' => __('validation.custom.tenant.timezone_required'),
+            'date_format.required' => __('validation.custom.tenant.date_format_required'),
+            'date_format.in' => __('validation.custom.tenant.date_format_invalid'),
+            'time_format.required' => __('validation.custom.tenant.time_format_required'),
+            'time_format.in' => __('validation.custom.tenant.time_format_invalid'),
         ];
     }
 } 

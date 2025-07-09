@@ -1,8 +1,114 @@
 import Alpine from 'alpinejs';
 import '../services/datetime';
+import focus from '@alpinejs/focus';
+import persist from '@alpinejs/persist';
+
+// Alpine.js plugins
+Alpine.plugin(focus);
+Alpine.plugin(persist);
 
 // Alpine'i window objesine ekle
 window.Alpine = Alpine;
+
+// Global Alpine stores - Define before Alpine.start()
+Alpine.store('theme', {
+    dark: Alpine.$persist(false),
+    
+    toggle() {
+        this.dark = !this.dark
+        this.updateHtmlClass()
+    },
+    
+    init() {
+        this.updateHtmlClass()
+    },
+    
+    updateHtmlClass() {
+        if (this.dark) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    }
+})
+
+// Global alert manager
+Alpine.store('alerts', {
+    items: [],
+    
+    add(type, message, options = {}) {
+        const id = Date.now();
+        const alert = {
+            id,
+            type,
+            message,
+            title: options.title || null,
+            list: options.list || [],
+            dismissible: options.dismissible !== false,
+            duration: options.duration || (type === 'error' ? 0 : 5000)
+        };
+        
+        this.items.push(alert);
+        
+        // Auto remove after duration (if not 0)
+        if (alert.duration > 0) {
+            setTimeout(() => {
+                this.remove(id);
+            }, alert.duration);
+        }
+        
+        return id;
+    },
+    
+    remove(id) {
+        this.items = this.items.filter(alert => alert.id !== id);
+    },
+    
+    clear() {
+        this.items = [];
+    },
+    
+    success(message, options = {}) {
+        return this.add('success', message, options);
+    },
+    
+    error(message, options = {}) {
+        return this.add('error', message, options);
+    },
+    
+    warning(message, options = {}) {
+        return this.add('warning', message, options);
+    },
+    
+    info(message, options = {}) {
+        return this.add('info', message, options);
+    }
+});
+
+// Global notification helper
+window.notify = function(title, message, type = 'info') {
+    Alpine.store('alerts')[type](message, { title });
+};
+
+// Global form validation error handler
+window.showValidationErrors = function(errors) {
+    const errorMessages = [];
+    for (const field in errors) {
+        errors[field].forEach(error => {
+            errorMessages.push(error);
+        });
+    }
+    
+    Alpine.store('alerts').error(null, {
+        title: window.translations?.validation?.errors_occurred || 'Please correct the following errors:',
+        list: errorMessages,
+        dismissible: true,
+        duration: 0
+    });
+    
+    // Scroll to top to show errors
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
 // Meet2Be: Searchable select component
 window.searchableSelect = function(config) {
@@ -782,4 +888,48 @@ window.portal = {
 console.log('Portal JS loaded');
 
 // Initialize Alpine.js
-Alpine.start(); 
+Alpine.start();
+
+// Initialize theme after Alpine starts
+document.addEventListener('alpine:initialized', () => {
+    Alpine.store('theme').init();
+});
+
+// Sidebar toggle for mobile
+window.toggleSidebar = function() {
+    const sidebar = document.getElementById('sidebar')
+    const overlay = document.getElementById('sidebar-overlay')
+    
+    if (sidebar && overlay) {
+        sidebar.classList.toggle('-translate-x-full')
+        overlay.classList.toggle('hidden')
+    }
+}
+
+// Global search functionality
+window.globalSearch = function(query) {
+    console.log('Searching for:', query)
+    // Implement search logic here
+}
+
+// Dropdown helper
+window.closeDropdown = function(event) {
+    if (!event.target.closest('[x-data]')) {
+        document.querySelectorAll('[x-data]').forEach(el => {
+            if (el.__x && el.__x.$data && typeof el.__x.$data.open !== 'undefined') {
+                el.__x.$data.open = false
+            }
+        })
+    }
+}
+
+// Add click outside listener for dropdowns
+document.addEventListener('click', window.closeDropdown)
+
+// FontAwesome configuration (if needed)
+if (window.FontAwesome) {
+    window.FontAwesome.config = {
+        searchPseudoElements: true,
+        observeMutations: true
+    }
+} 

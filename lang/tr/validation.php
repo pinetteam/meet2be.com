@@ -183,9 +183,24 @@ return [
     |
     */
 
+    'errors_occurred' => 'Lütfen aşağıdaki hataları düzeltin:',
+
     'custom' => [
         'attribute-name' => [
             'rule-name' => 'özel-mesaj',
+        ],
+        'tenant' => [
+            'name_required' => 'Organizasyon adı zorunludur.',
+            'email_required' => 'İletişim e-postası zorunludur.',
+            'email_invalid' => 'Lütfen geçerli bir e-posta adresi girin.',
+            'phone_format' => 'Lütfen geçerli bir telefon numarası girin.',
+            'website_format' => 'Lütfen geçerli bir web sitesi URL\'si girin (örn: https://www.example.com veya www.example.com).',
+            'language_required' => 'Lütfen bir dil seçin.',
+            'timezone_required' => 'Lütfen bir saat dilimi seçin.',
+            'date_format_required' => 'Lütfen bir tarih formatı seçin.',
+            'date_format_invalid' => 'Geçersiz tarih formatı seçildi.',
+            'time_format_required' => 'Lütfen bir saat formatı seçin.',
+            'time_format_invalid' => 'Geçersiz saat formatı seçildi.',
         ],
     ],
 

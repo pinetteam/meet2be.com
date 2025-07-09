@@ -14,6 +14,23 @@
         </p>
     </div>
 
+    {{-- Success Alert --}}
+    @if(session('success'))
+        <x-ui.alert 
+            type="success" 
+            :message="session('success')" 
+            dismissible />
+    @endif
+
+    {{-- Error Alert --}}
+    @if($errors->any())
+        <x-ui.alert 
+            type="error" 
+            :title="__('validation.errors_occurred')"
+            :list="$errors->all()"
+            dismissible />
+    @endif
+
     {{-- Tab Navigation - Atlassian Style --}}
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
         {{-- Desktop Tabs --}}
@@ -531,7 +548,8 @@ function settingsForm() {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify(this.form)
                 });
@@ -543,10 +561,10 @@ function settingsForm() {
                     this.originalForm = JSON.stringify(this.form);
                     this.hasChanges = false;
                     
-                    // Show success notification
-                    if (window.notify) {
-                        window.notify('{{ __('common.success') }}', data.message || '{{ __('settings.messages.saved_successfully') }}', 'success');
-                    }
+                    // Show success notification using global alert system
+                    Alpine.store('alerts').success(data.message || '{{ __('settings.messages.saved_successfully') }}', {
+                        duration: 5000
+                    });
                     
                     // If datetime settings changed or language/currency changed, reload page
                     if (data.datetime_updated || data.reload_required) {
@@ -554,11 +572,33 @@ function settingsForm() {
                             window.location.reload();
                         }, 1500);
                     }
-                } else {
-                    // Show error notification
-                    if (window.notify) {
-                        window.notify('{{ __('common.error') }}', data.message || '{{ __('settings.messages.save_failed') }}', 'error');
+                } else if (response.status === 422) {
+                    // Validation errors
+                    if (data.errors) {
+                        // Show validation errors using global alert system
+                        const errorMessages = [];
+                        for (const field in data.errors) {
+                            data.errors[field].forEach(error => {
+                                errorMessages.push(error);
+                            });
+                        }
+                        
+                        Alpine.store('alerts').error(null, {
+                            title: '{{ __('validation.errors_occurred') }}',
+                            list: errorMessages,
+                            dismissible: true,
+                            duration: 0
+                        });
+                        
+                        // Scroll to top to show errors
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
+                } else {
+                    // Other errors
+                    Alpine.store('alerts').error(data.message || '{{ __('settings.messages.save_failed') }}', {
+                        duration: 0,
+                        dismissible: true
+                    });
                     
                     // Handle validation errors
                     if (data.errors) {
@@ -567,9 +607,10 @@ function settingsForm() {
                 }
             } catch (error) {
                 console.error('Settings update error:', error);
-                if (window.notify) {
-                    window.notify('{{ __('common.error') }}', '{{ __('settings.messages.save_failed') }}', 'error');
-                }
+                Alpine.store('alerts').error('{{ __('settings.messages.save_failed') }}', {
+                    duration: 0,
+                    dismissible: true
+                });
             } finally {
                 this.loading = false;
             }

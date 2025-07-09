@@ -181,9 +181,24 @@ return [
     |
     */
 
+    'errors_occurred' => 'Please correct the following errors:',
+
     'custom' => [
         'attribute-name' => [
             'rule-name' => 'custom-message',
+        ],
+        'tenant' => [
+            'name_required' => 'Organization name is required.',
+            'email_required' => 'Contact email is required.',
+            'email_invalid' => 'Please enter a valid email address.',
+            'phone_format' => 'Please enter a valid phone number.',
+            'website_format' => 'Please enter a valid website URL (e.g., https://www.example.com or www.example.com).',
+            'language_required' => 'Please select a language.',
+            'timezone_required' => 'Please select a timezone.',
+            'date_format_required' => 'Please select a date format.',
+            'date_format_invalid' => 'Invalid date format selected.',
+            'time_format_required' => 'Please select a time format.',
+            'time_format_invalid' => 'Invalid time format selected.',
         ],
     ],
 
