@@ -1,34 +1,23 @@
-// Meet2Be: Theme Store
-// Author: Meet2Be Development Team
-// Manages theme (light/dark mode) state
+/**
+ * Theme Store
+ * Manages dark/light theme state with persistence
+ */
 
 import Alpine from 'alpinejs';
 
 // Register store after Alpine is available
 document.addEventListener('alpine:init', () => {
     Alpine.store('theme', {
-        dark: Alpine.$persist(false).as('theme_dark'),
-        
-        init() {
-            // Apply theme on initialization
-            this.apply();
-            
-            // Watch for changes
-            Alpine.effect(() => {
-                this.apply();
-            });
-        },
+        dark: localStorage.getItem('theme_dark') === 'true',
         
         toggle() {
             this.dark = !this.dark;
+            localStorage.setItem('theme_dark', this.dark);
+            document.documentElement.classList.toggle('dark', this.dark);
         },
         
-        apply() {
-            if (this.dark) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
+        init() {
+            document.documentElement.classList.toggle('dark', this.dark);
         }
     });
 }); 

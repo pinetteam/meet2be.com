@@ -52,6 +52,43 @@ export function closeDropdown(event) {
     });
 }
 
+/**
+ * Show loading indicator
+ */
+export function showLoading() {
+    window.dispatchEvent(new CustomEvent('loading'));
+}
+
+/**
+ * Hide loading indicator
+ */
+export function hideLoading() {
+    window.dispatchEvent(new CustomEvent('loaded'));
+}
+
+/**
+ * Wrap async function with loading indicator
+ */
+export async function withLoading(asyncFn) {
+    showLoading();
+    try {
+        return await asyncFn();
+    } finally {
+        hideLoading();
+    }
+}
+
+/**
+ * Create skeleton loader
+ */
+export function createSkeleton(count = 1, className = '') {
+    const skeletons = [];
+    for (let i = 0; i < count; i++) {
+        skeletons.push(`<div class="skeleton ${className}"></div>`);
+    }
+    return skeletons.join('');
+}
+
 // Export trans function from translations
 export { trans as t } from './translations';
 export { formatCurrency, formatDate } from './translations'; 

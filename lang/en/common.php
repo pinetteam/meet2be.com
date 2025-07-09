@@ -41,6 +41,9 @@ return [
     'success' => 'Success',
     'error' => 'Error',
     'no_results' => 'No results found',
+    'loading' => 'Loading...',
+    'saving' => 'Saving...',
+    'saved' => 'Saved',
     
     // Statuses
     'status' => [

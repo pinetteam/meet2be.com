@@ -1,7 +1,12 @@
+/**
+ * Portal Styles
+ * Core styles for the portal application
+ */
+
 @import 'tailwindcss';
 @import '~fontawesome/css/all.css';
 
-/* Portal specific source files */
+/* Source files for Tailwind CSS */
 @source '../../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../../storage/framework/views/*.php';
 @source '../../views/layouts/portal.blade.php';
@@ -10,10 +15,7 @@
 
 /* Theme configuration */
 @theme {
-    /* Font family */
-    --font-sans: Inter, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-    
-    /* Brand color palette - Atlassian Blue */
+    --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
     --color-brand-50: #eff6ff;
     --color-brand-100: #dbeafe;
     --color-brand-200: #bfdbfe;
@@ -30,10 +32,10 @@
 /* Dark mode variant */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Alpine.js x-cloak */
+/* Base styles */
 [x-cloak] { display: none !important; }
 
-/* Custom scrollbar */
+/* Scrollbar styling */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -60,7 +62,7 @@
     @apply ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-gray-800;
 }
 
-/* Sidebar Navigation */
+/* Navigation styles */
 .sidebar-nav-item {
     @apply flex items-center px-3 py-2 rounded-md text-sm font-medium transition-all duration-150;
 }
@@ -85,7 +87,7 @@
     @apply bg-gray-50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-200;
 }
 
-/* Form Elements - Consistent Styling */
+/* Form elements */
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -97,17 +99,16 @@ select {
     @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-150 text-sm;
 }
 
-/* Primary Button Style */
+/* Button styles */
 .btn-primary {
     @apply inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium text-sm transition-colors duration-150;
 }
 
-/* Secondary Button Style */
 .btn-secondary {
     @apply inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-md font-medium text-sm transition-colors duration-150;
 }
 
-/* Card Component */
+/* Card component */
 .portal-card {
     @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm;
 }
@@ -118,74 +119,6 @@ select {
 
 .portal-card-body {
     @apply p-6;
-}
-
-/* Sidebar specific styles */
-aside {
-    overflow-x: hidden;
-}
-
-aside nav {
-    overflow-x: hidden;
-    overflow-y: auto;
-}
-
-/* Alert component */
-.alert {
-    @apply px-4 py-3 rounded-md text-sm font-medium;
-}
-
-.alert-success {
-    @apply bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200;
-}
-
-.alert-error {
-    @apply bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200;
-}
-
-.alert-warning {
-    @apply bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200;
-}
-
-.alert-info {
-    @apply bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200;
-}
-
-/* Table styling */
-.table-responsive {
-    @apply overflow-x-auto;
-}
-
-.table-responsive table {
-    @apply w-full text-sm text-left;
-}
-
-.table-responsive th {
-    @apply font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800;
-}
-
-.table-responsive td {
-    @apply text-gray-600 dark:text-gray-400;
-}
-
-.table-responsive tr {
-    @apply border-b border-gray-200 dark:border-gray-700;
-}
-
-/* Footer styles */
-footer {
-    box-shadow: 0 -1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-/* Mobile responsive adjustments */
-@media (max-width: 640px) {
-    main {
-        padding-bottom: 3rem !important;
-    }
-    
-    footer {
-        padding: 0.5rem 1rem;
-    }
 }
 
 /* Table component */
@@ -213,7 +146,54 @@ footer {
     @apply px-6 py-4;
 }
 
-/* Dark mode transitions */
-* {
-    @apply transition-colors duration-200;
+/* Animations */
+@keyframes loading-bar {
+    0% { transform: translateX(-100%); }
+    50% { transform: translateX(0); }
+    100% { transform: translateX(100%); }
+}
+
+.animate-loading-bar {
+    animation: loading-bar 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-loading {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.animate-pulse-loading {
+    animation: pulse-loading 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes skeleton-loading {
+    0% { background-position: -200px 0; }
+    100% { background-position: calc(200px + 100%) 0; }
+}
+
+.skeleton {
+    @apply bg-gray-200 dark:bg-gray-700 rounded;
+    background-image: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    background-size: 200px 100%;
+    background-repeat: no-repeat;
+    animation: skeleton-loading 1.2s ease-in-out infinite;
+}
+
+.dark .skeleton {
+    background-image: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
+
+/* Backdrop filter support */
+@supports (backdrop-filter: blur(0px)) {
+    .backdrop-blur-sm { backdrop-filter: blur(4px); }
+    .backdrop-blur-md { backdrop-filter: blur(12px); }
+    .backdrop-blur-lg { backdrop-filter: blur(16px); }
+}
+
+@supports not (backdrop-filter: blur(0px)) {
+    .backdrop-blur-sm,
+    .backdrop-blur-md,
+    .backdrop-blur-lg {
+        background-color: rgba(0, 0, 0, 0.95);
+    }
 }

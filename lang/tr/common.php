@@ -41,6 +41,9 @@ return [
     'success' => 'Başarılı',
     'error' => 'Hata',
     'no_results' => 'Sonuç bulunamadı',
+    'loading' => 'Yükleniyor...',
+    'saving' => 'Kaydediliyor...',
+    'saved' => 'Kaydedildi',
     
     // Durumlar
     'status' => [
