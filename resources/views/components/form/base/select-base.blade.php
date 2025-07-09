@@ -4,6 +4,7 @@
 
 @props([
     'name',
+    'id' => null,
     'value' => '',
     'placeholder' => '',
     'required' => false,
@@ -30,11 +31,14 @@
     }
     
     $finalClasses = trim("$baseClasses $currentSizeClasses $selectClass");
+    
+    // Use provided ID or fallback to name
+    $selectId = $id ?? $name;
 @endphp
 
 <select 
     name="{{ $name }}{{ $multiple ? '[]' : '' }}"
-    id="{{ $name }}"
+    id="{{ $selectId }}"
     @if($model) x-model="{{ $model }}" @endif
     @if($required) required @endif
     @if($disabled) disabled @endif

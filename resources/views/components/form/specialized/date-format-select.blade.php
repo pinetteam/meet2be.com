@@ -9,7 +9,8 @@
     'hint' => null,
     'required' => false,
     'disabled' => false,
-    'wrapperClass' => ''
+    'wrapperClass' => '',
+    'fieldId' => null
 ])
 
 @php
@@ -48,6 +49,7 @@
     
     <x-form.base.select-base 
         :name="$name"
+        :id="$fieldId"
         :value="$selectedValue"
         :required="$required"
         :disabled="$disabled"
